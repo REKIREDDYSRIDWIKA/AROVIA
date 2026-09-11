@@ -812,97 +812,136 @@ function App() {
   };
 
   // ==================================================
-// VOICE INPUT
-// ==================================================
+  // VOICE INPUT
+  // ==================================================
 
-const startVoiceInput = () => {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+  const startVoiceInput = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
-  if (!SpeechRecognition) {
-    alert(t.voiceUnsupported);
-    return;
-  }
+    if (!SpeechRecognition) {
+      alert(t.voiceUnsupported);
+      return;
+    }
 
-  const recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognition();
 
-  recognition.lang =
-    language === "en"
-      ? "en-IN"
-      : language === "te"
-      ? "te-IN"
-      : "hi-IN";
+    recognition.lang =
+      language === "en"
+        ? "en-IN"
+        : language === "te"
+        ? "te-IN"
+        : "hi-IN";
 
-  recognition.continuous = false;
-  recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-  recognition.onstart = () => {
-    setListening(true);
+    recognition.onstart = () => {
+      setListening(true);
+    };
+      // ==================================================
+  // PRE-CONSULTATION VOICE INPUT
+  // ==================================================
+
+  const startPreConsultationVoice = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert(t.voiceUnsupported);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang =
+      language === "en"
+        ? "en-IN"
+        : language === "te"
+        ? "te-IN"
+        : "hi-IN";
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+
+      setPreConsultationInput(transcript);
+    };
+
+    recognition.onerror = () => {
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.start();
   };
 
-  recognition.onresult = (event) => {
-    setQuery(event.results[0][0].transcript);
+    recognition.onresult = (event) => {
+      setQuery(event.results[0][0].transcript);
+    };
+
+    recognition.onerror = () => {
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.start();
   };
+    const startPreConsultationVoice = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
-  recognition.onerror = () => {
-    setListening(false);
+    if (!SpeechRecognition) {
+      alert(t.voiceUnsupported);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang =
+      language === "en"
+        ? "en-IN"
+        : language === "te"
+        ? "te-IN"
+        : "hi-IN";
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setPreConsultationInput(transcript);
+    };
+
+    recognition.onerror = () => {
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.start();
   };
-
-  recognition.onend = () => {
-    setListening(false);
-  };
-
-  recognition.start();
-};
-
-// ==================================================
-// PRE-CONSULTATION VOICE INPUT
-// ==================================================
-
-const startPreConsultationVoice = () => {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert(t.voiceUnsupported);
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-
-  recognition.lang =
-    language === "en"
-      ? "en-IN"
-      : language === "te"
-      ? "te-IN"
-      : "hi-IN";
-
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  recognition.onstart = () => {
-    setListening(true);
-  };
-
-  recognition.onresult = (event) => {
-    const transcript =
-      event.results[0][0].transcript;
-
-    setPreConsultationInput(transcript);
-  };
-
-  recognition.onerror = () => {
-    setListening(false);
-  };
-
-  recognition.onend = () => {
-    setListening(false);
-  };
-
-  recognition.start();
-};
 
   // ==================================================
   // PATIENT LOGIN
@@ -2912,192 +2951,202 @@ if (page === "health-journey") {
     </div>
   );
 }
-// ==================================================
-// PRE-CONSULTATION ASSISTANT
-// ==================================================
+  // ==================================================
+  // PRE-CONSULTATION ASSISTANT
+  // ==================================================
 
-if (page === "pre-consultation") {
-  const complaintText =
-    (preConsultationAnswers.complaint || "").toLowerCase();
+  if (page === "pre-consultation") {
+   
+     
+  (preConsultationAnswers.complaint || "").toLowerCase();
 
-  const isHeadache =
-    complaintText.includes("headache") ||
-    complaintText.includes("migraine") ||
-    complaintText.includes("head pain") ||
-    complaintText.includes("తలనొప్పి") ||
-    complaintText.includes("सिरदर्द");
+const isHeadache =
+  complaintText.includes("headache") ||
+  complaintText.includes("migraine") ||
+  complaintText.includes("head pain") ||
+  complaintText.includes("తలనొప్పి") ||
+  complaintText.includes("सिरदर्द");
 
-  const isCough =
-    complaintText.includes("cough") ||
-    complaintText.includes("cold") ||
-    complaintText.includes("దగ్గు") ||
-    complaintText.includes("కఫం") ||
-    complaintText.includes("खांसी") ||
-    complaintText.includes("सर्दी");
+const isCough =
+  complaintText.includes("cough") ||
+  complaintText.includes("cold") ||
+  complaintText.includes("దగ్గు") ||
+  complaintText.includes("खांसी");
 
-  const isStomach =
-    complaintText.includes("stomach") ||
-    complaintText.includes("abdominal") ||
-    complaintText.includes("belly") ||
-    complaintText.includes("కడుపు") ||
-    complaintText.includes("పొట్ట") ||
-    complaintText.includes("पेट");
+const isStomach =
+  complaintText.includes("stomach") ||
+  complaintText.includes("abdominal") ||
+  complaintText.includes("belly") ||
+  complaintText.includes("కడుపు") ||
+  complaintText.includes("पेट");
 
-  const questions = {
-    intro: {
-      question: t.preConsultationIntro,
-      field: "complaint",
-    },
+const questions = {
+  intro: {
+    question: t.preConsultationIntro,
+    field: "complaint",
+  },
 
-    duration: {
-      question: t.preConsultationDuration,
-      field: "duration",
-    },
+  duration: {
+    question: t.preConsultationDuration,
+    field: "duration",
+  },
 
-    severity: {
-      question: t.preConsultationSeverity,
-      field: "severity",
-    },
+  severity: {
+    question: t.preConsultationSeverity,
+    field: "severity",
+  },
 
-    symptoms: {
-      question: isHeadache
-        ? "Are you having dizziness, vomiting, or vision changes?"
-        : isCough
-        ? "Do you have fever, breathing difficulty, or chest pain?"
-        : isStomach
-        ? "Are you having vomiting, diarrhea, or fever?"
-        : t.preConsultationSymptoms,
-      field: "associatedSymptoms",
-    },
+  symptoms: {
+    question: isHeadache
+      ? "Are you having dizziness, vomiting, or vision changes?"
+      : isCough
+      ? "Do you have fever, breathing difficulty, or chest pain?"
+      : isStomach
+      ? "Are you having vomiting, diarrhea, or fever?"
+      : t.preConsultationSymptoms,
+    field: "associatedSymptoms",
+  },
 
-    history: {
-      question: t.preConsultationHistory,
-      field: "relevantHistory",
-    },
+  history: {
+    question: t.preConsultationHistory,
+    field: "relevantHistory",
+  },
 
-    medications: {
-      question: t.preConsultationMedications,
-      field: "medications",
-    },
+  medications: {
+    question: t.preConsultationMedications,
+    field: "medications",
+  },
 
-    allergies: {
-      question: t.preConsultationAllergies,
-      field: "allergies",
-    },
-  };
-
-  const currentQuestion =
-    questions[preConsultationStep] || questions.intro;
-
-  const submitPreConsultationAnswer = () => {
-    const answer = preConsultationInput.trim();
-
-    if (!answer) {
-      return;
-    }
-
-    const field = currentQuestion.field;
-
-    setPreConsultationAnswers((prev) => ({
-      ...prev,
-      [field]: answer,
-    }));
-
-    setPreConsultationMessages((prev) => [
-      ...prev,
-      {
-        role: "patient",
-        text: answer,
-      },
-    ]);
-
-    setPreConsultationInput("");
-
-    const nextStepMap = {
-      intro: "duration",
-      duration: "severity",
-      severity: "symptoms",
-      symptoms: "history",
-      history: "medications",
-      medications: "allergies",
-      allergies: "summary",
-    };
-
-    const nextStep =
-      nextStepMap[preConsultationStep];
-
-    if (nextStep === "summary") {
-      setPreConsultationStep("summary");
-      return;
-    }
-
-    setPreConsultationStep(nextStep);
-  };
-
-  
- const generatePreConsultationSummary = () => {
-  const a = preConsultationAnswers;
-
-  const historyText =
-    medicalRecords.length > 0
-      ? medicalRecords
-          .slice(0, 3)
-          .map(
-            (record) =>
-              `${record.diagnosis}${
-                record.date ? ` (${record.date})` : ""
-              }`
-          )
-          .join(", ")
-      : "No previous records available";
-
-  const medicationText =
-    medications.length > 0
-      ? medications
-          .map(
-            (medicine) =>
-              `${medicine.name} ${medicine.dosage || ""}${
-                medicine.frequency
-                  ? ` • ${medicine.frequency}`
-                  : ""
-              }`
-          )
-          .join(", ")
-      : a.medications || "None reported";
-
-  return {
-    complaint: a.complaint || "Not provided",
-    duration: a.duration || "Not provided",
-    severity: a.severity
-      ? `${a.severity}/10`
-      : "Not provided",
-    pattern: a.pattern || "Not provided",
-    associatedSymptoms:
-      a.associatedSymptoms || "None reported",
-    relevantHistory: historyText,
-    currentMedications: medicationText,
-    allergies: a.allergies || "None reported",
-    patientDescription:
-      a.complaint || "Not provided",
-  };
+  allergies: {
+    question: t.preConsultationAllergies,
+    field: "allergies",
+  },
 };
 
-  if (preConsultationStep === "summary") {
-    const summary =
-      generatePreConsultationSummary();
+const currentQuestion =
+  questions[preConsultationStep] || questions.intro;
 
-    if (preConsultationSummary !== summary) {
-      setPreConsultationSummary(summary);
+const submitPreConsultationAnswer = () => {
+  const answer = preConsultationInput.trim();
+
+  if (!answer) {
+    return;
+  }
+
+  const field = currentQuestion.field;
+
+  setPreConsultationAnswers((prev) => ({
+    ...prev,
+    [field]: answer,
+  }));
+
+  setPreConsultationMessages((prev) => [
+    ...prev,
+    {
+      role: "patient",
+      text: answer,
+    },
+  ]);
+
+  setPreConsultationInput("");
+
+  const nextStepMap = {
+    intro: "duration",
+    duration: "severity",
+    severity: "symptoms",
+    symptoms: "history",
+    history: "medications",
+    medications: "allergies",
+    allergies: "summary",
+  };
+
+  const nextStep = nextStepMap[preConsultationStep];
+
+  if (nextStep === "summary") {
+    setPreConsultationStep("summary");
+    return;
+  }
+
+  setPreConsultationStep(nextStep);
+};
+      if (preConsultationSummary !== summary) {
+        setPreConsultationSummary(summary);
+      }
+
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-900">
+
+          <main className="mx-auto w-full max-w-2xl px-5 py-8">
+
+            <button
+              onClick={() => setPage("patient-dashboard")}
+              className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+            >
+              <ArrowLeft size={18} />
+              {t.back}
+            </button>
+
+            <div className="mt-8">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+                <Mic size={30} />
+              </div>
+
+              <h1 className="mt-5 text-3xl font-bold">
+                {t.preConsultation}
+              </h1>
+
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                {t.preConsultationDescription}
+              </p>
+            </div>
+
+            <div className="mt-8 rounded-3xl border border-teal-100 bg-white p-6 shadow-sm">
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                  <FileText size={24} />
+                </div>
+
+                <div>
+                  <h2 className="font-bold">
+                    {t.preConsultationSummary}
+                  </h2>
+
+                  <p className="text-sm text-slate-500">
+                    {t.reviewBeforeDoctor}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 whitespace-pre-line rounded-2xl bg-slate-50 p-5 text-sm leading-7 text-slate-700">
+                {preConsultationSummary}
+              </div>
+
+              <p className="mt-4 text-xs leading-5 text-slate-500">
+                {t.preConsultationDisclaimer}
+              </p>
+
+              <button
+                onClick={() => setPage("patient-dashboard")}
+                className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-bold text-white hover:bg-teal-700"
+              >
+                {t.done}
+              </button>
+
+            </div>
+
+          </main>
+        </div>
+      );
     }
 
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900">
-        <main className="mx-auto w-full max-w-2xl px-5 py-8">
+
+        <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-5 py-8">
 
           <button
-            onClick={() =>
-              setPage("patient-dashboard")
-            }
+            onClick={() => setPage("patient-dashboard")}
             className="flex items-center gap-2 text-sm font-semibold text-teal-700"
           >
             <ArrowLeft size={18} />
@@ -3105,6 +3154,7 @@ if (page === "pre-consultation") {
           </button>
 
           <div className="mt-8">
+
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
               <Mic size={30} />
             </div>
@@ -3116,168 +3166,27 @@ if (page === "pre-consultation") {
             <p className="mt-2 text-sm leading-6 text-slate-500">
               {t.preConsultationDescription}
             </p>
+
           </div>
 
-          <div className="mt-8 rounded-3xl border border-teal-100 bg-white p-6 shadow-sm">
+          {/* QUESTION */}
+          <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
-                <FileText size={24} />
-              </div>
-
-              <div>
-                <h2 className="font-bold">
-                  {t.preConsultationSummary}
-                </h2>
-
-                <p className="text-sm text-slate-500">
-                  {t.reviewBeforeDoctor}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-3">
-
-  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Main Concern
-    </p>
-    <p className="mt-1 font-semibold text-slate-800">
-      {preConsultationAnswers.complaint || "Not provided"}
-    </p>
-  </div>
-
-  <div className="grid grid-cols-2 gap-3">
-
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Duration
-      </p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">
-        {preConsultationAnswers.duration || "Not provided"}
-      </p>
-    </div>
-
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Severity
-      </p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">
-        {preConsultationAnswers.severity
-          ? `${preConsultationAnswers.severity}/10`
-          : "Not provided"}
-      </p>
-    </div>
-
-  </div>
-
-  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Associated Symptoms
-    </p>
-    <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.associatedSymptoms || "Not provided"}
-    </p>
-  </div>
-
-  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Relevant Medical History
-    </p>
-    <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.relevantHistory || "Not provided"}
-    </p>
-  </div>
-
-  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Current Medications
-    </p>
-    <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.medications || "Not provided"}
-    </p>
-  </div>
-
-  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Known Allergies
-    </p>
-    <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.allergies || "Not provided"}
-    </p>
-  </div>
-
-</div>
-
-            <p className="mt-4 text-xs leading-5 text-slate-500">
-              {t.preConsultationDisclaimer}
+            <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">
+              AROVIA
             </p>
 
-            <button
-              onClick={() =>
-                setPage("patient-dashboard")
-              }
-              className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-bold text-white hover:bg-teal-700"
-            >
-              {t.done}
-            </button>
+            <h2 className="mt-3 text-xl font-bold leading-8">
+              {currentQuestion.question}
+            </h2>
 
           </div>
-        </main>
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+          {/* CONVERSATION */}
+          {preConsultationMessages.length > 0 && (
+            <div className="mt-5 space-y-3">
 
-      <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-5 py-8">
-
-        <button
-          onClick={() =>
-            setPage("patient-dashboard")
-          }
-          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
-        >
-          <ArrowLeft size={18} />
-          {t.back}
-        </button>
-
-        <div className="mt-8">
-
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
-            <Mic size={30} />
-          </div>
-
-          <h1 className="mt-5 text-3xl font-bold">
-            {t.preConsultation}
-          </h1>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            {t.preConsultationDescription}
-          </p>
-
-        </div>
-
-        {/* QUESTION */}
-        <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">
-            AROVIA
-          </p>
-
-          <h2 className="mt-3 text-xl font-bold leading-8">
-            {currentQuestion.question}
-          </h2>
-
-        </div>
-
-        {/* CONVERSATION */}
-        {preConsultationMessages.length > 0 && (
-          <div className="mt-5 space-y-3">
-
-            {preConsultationMessages.map(
-              (message, index) => (
+              {preConsultationMessages.map((message, index) => (
                 <div
                   key={index}
                   className="rounded-2xl bg-teal-50 p-4 text-sm leading-6 text-slate-700"
@@ -3290,78 +3199,66 @@ if (page === "pre-consultation") {
                     {message.text}
                   </p>
                 </div>
-              )
-            )}
+              ))}
 
-          </div>
-        )}
-
-        {/* INPUT */}
-        <div className="mt-auto pt-8">
-
-          {listening && (
-            <div className="mb-3 flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
-              <Mic size={18} />
-              {t.aroviaListening}
             </div>
           )}
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+          {/* INPUT */}
+          <div className="mt-auto pt-8">
 
-            <textarea
-              value={preConsultationInput}
-              onChange={(e) =>
-                setPreConsultationInput(
-                  e.target.value
-                )
-              }
-              placeholder={t.typeYourResponse}
-              rows={3}
-              className="w-full resize-none bg-transparent p-2 text-sm outline-none"
-            />
+            {listening && (
+              <div className="mb-3 flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                <Mic size={18} />
+                {t.aroviaListening}
+              </div>
+            )}
 
-            <div className="mt-2 flex gap-3">
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
 
-              <button
-                onClick={startPreConsultationVoice}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
-                  listening
-                    ? "bg-red-500 text-white"
-                    : "bg-teal-600 text-white hover:bg-teal-700"
-                }`}
-              >
-                <Mic size={20} />
-                {listening
-                  ? (
-                    t.aroviaListening ||
-                    "AROVIA is listening..."
-                  )
-                  : (
-                    t.startSpeaking ||
-                    "Start Speaking"
-                  )}
-              </button>
+              <textarea
+                value={preConsultationInput}
+                onChange={(e) =>
+                  setPreConsultationInput(e.target.value)
+                }
+                placeholder={t.typeYourResponse}
+                rows={3}
+                className="w-full resize-none bg-transparent p-2 text-sm outline-none"
+              />
 
-              <button
-                onClick={submitPreConsultationAnswer}
-                className="flex-1 rounded-xl border-2 border-teal-600 bg-white py-3 font-semibold text-teal-700 hover:bg-teal-50"
-              >
-                {t.continue}
-              </button>
+              <div className="mt-2 flex gap-3">
+
+                <button
+                  onClick={startPreConsultationVoice}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
+                    listening
+                      ? "bg-red-500 text-white"
+                      : "bg-teal-600 text-white hover:bg-teal-700"
+                  }`}
+                >
+                  <Mic size={20} />
+                 {listening
+                 ? (t.aroviaListening || "AROVIA is listening...")
+                 : (t.startSpeaking || "Start Speaking")}
+                </button>
+
+                <button
+                  onClick={submitPreConsultationAnswer}
+                  className="flex-1 rounded-xl border-2 border-teal-600 bg-white py-3 font-semibold text-teal-700 hover:bg-teal-50"
+                >
+                  {t.continue}
+                </button>
+
+              </div>
 
             </div>
 
           </div>
 
-        </div>
-
-      </main>
-    </div>
-  );
-}
-
-
-  
+        </main>
+      </div>
+    );
+  }
   // ==================================================
   // PATIENT DASHBOARD
   // ==================================================
@@ -3512,7 +3409,7 @@ if (page === "pre-consultation") {
                     complaint: "",
                     duration: "",
                     severity: "",
-                  
+                    associatedSymptoms: "",
                     relevantHistory: "",
                     medications: "",
                     allergies: "",
