@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./supabase";
 import { QRCodeCanvas } from "qrcode.react";
 import {
   Mic,
@@ -551,11 +552,13 @@ preConsultationAllergies:
 };
 
 function App() {
+  
   const [language, setLanguage] = useState("en");
   const [page, setPage] = useState("home");
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
+  const [patientId, setPatientId] = useState(null);
 
   const healthId = phone
   ? `AROVIA-${phone.replace(/\D/g, "").slice(-4)}`
@@ -615,6 +618,24 @@ function App() {
 
   const [documentProcessing, setDocumentProcessing] = useState(false);
   const [documentReady, setDocumentReady] = useState(false);
+
+  // ==================================================
+  // DOCTOR / HEALTH WORKER DEMO FLOW
+  // ==================================================
+  const [doctorPhone, setDoctorPhone] = useState("");
+  const [doctorOtp, setDoctorOtp] = useState("");
+  const [doctorSearch, setDoctorSearch] = useState("");
+  const [doctorSearchError, setDoctorSearchError] = useState("");
+  const [doctorPatient, setDoctorPatient] = useState(null);
+  const [doctorPatientRecords, setDoctorPatientRecords] = useState([]);
+  const [doctorAllergiesMeds, setDoctorAllergiesMeds] = useState([]);
+  const [doctorConsent, setDoctorConsent] = useState([]);
+  const [doctorActiveTab, setDoctorActiveTab] = useState("overview");
+  const [doctorNote, setDoctorNote] = useState("");
+  const [doctorNoteSaved, setDoctorNoteSaved] = useState(false);
+  const [showEmergencyAccess, setShowEmergencyAccess] = useState(false);
+  const [emergencyReason, setEmergencyReason] = useState("");
+  const [emergencyGranted, setEmergencyGranted] = useState(false);
 
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(null);
   const [showRecordSharing, setShowRecordSharing] = useState(false);
@@ -690,7 +711,200 @@ function App() {
   });
 
   const t = translations[language];
-    // ==================================================
+  useEffect(() => {
+  if (!patientId) {
+    return;
+  }
+
+  const loadMedicalRecords = async () => {
+    const { data, error } = await supabase
+      .from("medical_records")
+      .select("*")
+      .eq("patient_id", patientId);
+
+    if (error) {
+      console.error("Medical records error:", error);
+      return;
+    }
+
+   setMedicalRecords(
+  (data || []).map((record) => ({
+    type: record.record_type || record.title || "Medical Record",
+    hospital: "AROVIA Healthcare",
+    doctor: "Healthcare Professional",
+    date: record.record_date
+      ? new Date(record.record_date).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "Date not available",
+    diagnosis: record.diagnosis || record.title || "Not provided",
+    notes:
+      record.notes ||
+      record.description ||
+      "No notes available",
+  }))
+);
+  };
+
+  loadMedicalRecords();
+}, [patientId]);
+
+  // ==================================================
+  // DOCTOR SEARCH / SHARED RECORD VIEW
+  // ==================================================
+  const searchPatientForDoctor = async (rawQuery) => {
+    setDoctorSearchError("");
+    setDoctorPatient(null);
+    setDoctorPatientRecords([]);
+    setDoctorAllergiesMeds([]);
+    setDoctorConsent([]);
+    setDoctorActiveTab("overview");
+    setDoctorNoteSaved(false);
+    setEmergencyGranted(false);
+    setEmergencyReason("");
+
+    const queryText = (rawQuery || "").trim();
+    if (!queryText) {
+      setDoctorSearchError("Enter a phone number or Health ID.");
+      return;
+    }
+
+    const phoneDigits = queryText.replace(/\D/g, "");
+    const healthIdMatch = queryText.toUpperCase().match(/AROVIA-(\d{4})/);
+    const last4 = healthIdMatch ? healthIdMatch[1] : phoneDigits.slice(-4);
+    let patientRow = null;
+
+    if (phoneDigits.length === 10) {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("id, full_name, phone")
+        .eq("phone", phoneDigits)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Doctor patient search error:", error);
+        setDoctorSearchError("Unable to search patient records.");
+        return;
+      }
+      patientRow = data;
+    }
+
+    if (!patientRow && last4) {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("id, full_name, phone")
+        .ilike("phone", `%${last4}`);
+
+      if (error) {
+        console.error("Doctor Health ID search error:", error);
+        setDoctorSearchError("Unable to search patient records.");
+        return;
+      }
+
+      if (data && data.length === 1) patientRow = data[0];
+      else if (data && data.length > 1) {
+        setDoctorSearchError("Multiple patients matched. Please enter the full phone number.");
+        return;
+      }
+    }
+
+    if (!patientRow) {
+      setDoctorSearchError("No patient found with that phone number or Health ID.");
+      return;
+    }
+
+    setDoctorPatient(patientRow);
+
+    const { data: records, error: recordsError } = await supabase
+      .from("medical_records")
+      .select("*")
+      .eq("patient_id", patientRow.id);
+
+    if (!recordsError) {
+      setDoctorPatientRecords(
+        (records || []).map((record) => ({
+          type: record.record_type || record.title || "Medical Record",
+          hospital: record.hospital || "AROVIA Healthcare",
+          doctor: record.doctor || "Healthcare Professional",
+          date: record.record_date
+            ? new Date(record.record_date).toLocaleDateString("en-IN", {
+                day: "2-digit", month: "short", year: "numeric",
+              })
+            : "Date not available",
+          diagnosis: record.diagnosis || record.title || "Not provided",
+          notes: record.notes || record.description || "No notes available",
+        }))
+      );
+    } else {
+      console.error("Doctor records error:", recordsError);
+    }
+
+    const { data: allergyRows, error: allergyError } = await supabase
+      .from("allergies_medications")
+      .select("*")
+      .eq("patient_id", patientRow.id);
+
+    if (!allergyError) setDoctorAllergiesMeds(allergyRows || []);
+    else console.error("Doctor allergies/medications error:", allergyError);
+
+    const { data: consentRows, error: consentError } = await supabase
+      .from("consent")
+      .select("*")
+      .eq("patient_id", patientRow.id);
+
+    if (!consentError) setDoctorConsent(consentRows || []);
+    else console.error("Doctor consent error:", consentError);
+  };
+
+    const downloadDoctorSummary = (patient, records, medicines, allergies, consentRows) => {
+    if (!patient) return;
+    const lines = [
+      "AROVIA PATIENT SUMMARY",
+      `Patient: ${patient.full_name || "Unnamed Patient"}`,
+      `Phone: +91 ${patient.phone || ""}`,
+      `Health ID: AROVIA-${String(patient.phone || "").slice(-4)}`,
+      "",
+      "MEDICAL RECORDS",
+      ...(records.length
+        ? records.flatMap((r, i) => [
+            `${i + 1}. ${r.diagnosis || r.type || "Medical Record"}`,
+            `   Date: ${r.date}`,
+            `   Facility: ${r.hospital}`,
+            `   Doctor: ${r.doctor}`,
+            `   Notes: ${r.notes}`,
+          ])
+        : ["No medical records found."]),
+      "",
+      "MEDICATIONS",
+      ...(medicines.length
+        ? medicines.map(
+            (item) => `- ${item.name || "Medication"} ${item.dosage || ""}${item.frequency ? ` • ${item.frequency}` : ""}`
+          )
+        : ["No medication data available."]),
+      "",
+      "ALLERGIES",
+      ...(allergies.length
+        ? allergies.map(
+            (item) => `- ${item.name || "Allergy"}${item.reaction ? ` — ${item.reaction}` : ""}`
+          )
+        : ["No allergy data available."]),
+      "",
+      `Consent status: ${consentRows.length ? "Available" : "Not available in demo session"}`,
+      "Generated from AROVIA hackathon demo.",
+    ];
+
+    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `AROVIA-${patient.phone || "patient"}-summary.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ==================================================
   // HEALTH JOURNEY
   // ==================================================
 
@@ -905,6 +1119,222 @@ const startPreConsultationVoice = () => {
 };
 
   // ==================================================
+  // DOCTOR LOGIN
+  // ==================================================
+
+  if (page === "doctor-login") {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
+          <button onClick={() => setPage("home")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700">
+            <ArrowLeft size={18} /> Back
+          </button>
+          <div className="mt-8 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
+            <h1 className="mt-5 text-3xl font-bold">Doctor / Health Worker</h1>
+            <p className="mt-2 text-sm text-slate-500">Secure access to authorized patient records</p>
+          </div>
+          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
+            <label className="mb-2 block text-sm font-semibold">Mobile Number</label>
+            <div className="flex overflow-hidden rounded-xl border border-slate-200">
+              <span className="flex items-center border-r border-slate-200 px-3 text-sm text-slate-500">+91</span>
+              <input type="tel" value={doctorPhone} onChange={(e) => setDoctorPhone(e.target.value.replace(/\D/g, ""))} maxLength="10" placeholder="Enter 10-digit number" className="min-w-0 flex-1 px-3 py-3 outline-none" />
+            </div>
+            <button onClick={() => { if (doctorPhone.length !== 10) { alert("Please enter a valid 10-digit mobile number."); return; } setPage("doctor-otp"); }} className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md">Send OTP</button>
+            <div className="mt-5 rounded-xl bg-teal-50 p-3 text-center text-xs text-teal-700">Demo mode • OTP is 123456</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ==================================================
+  // DOCTOR OTP
+  // ==================================================
+
+  if (page === "doctor-otp") {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
+          <button onClick={() => setPage("doctor-login")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700"><ArrowLeft size={18} /> Back</button>
+          <div className="mt-8 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
+            <h1 className="mt-5 text-3xl font-bold">Verify Your Number</h1>
+            <p className="mt-2 text-sm text-slate-500">Enter the 6-digit demo OTP</p>
+          </div>
+          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
+            <input type="text" inputMode="numeric" value={doctorOtp} onChange={(e) => setDoctorOtp(e.target.value.replace(/\D/g, ""))} maxLength="6" placeholder="000000" className="w-full rounded-xl border border-slate-200 px-4 py-4 text-center text-2xl tracking-[0.5em] outline-none" />
+            <button onClick={() => { if (doctorOtp !== "123456") { alert("Incorrect OTP. Use 123456."); return; } setPage("doctor-dashboard"); }} className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md">Verify OTP</button>
+            <p className="mt-5 text-center text-xs text-slate-400">Demo OTP: <strong>123456</strong></p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ==================================================
+  // DOCTOR DASHBOARD
+  // ==================================================
+
+  if (page === "doctor-dashboard") {
+    const activeRecords = doctorPatientRecords;
+    const allergyItems = doctorAllergiesMeds.filter((item) => (item.item_type || "").toLowerCase().includes("allerg"));
+    const medicineItems = doctorAllergiesMeds.filter((item) => !(item.item_type || "").toLowerCase().includes("allerg"));
+    const consentGranted = doctorConsent.filter((item) => String(item.status || "").toLowerCase() === "granted");
+
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <main className="mx-auto w-full max-w-3xl px-5 py-8">
+          <div className="flex items-center justify-between">
+            <button onClick={() => setPage("home")} className="flex items-center gap-2 text-sm font-semibold text-teal-700"><ArrowLeft size={18} /> Back</button>
+            <button onClick={() => { setDoctorPhone(""); setDoctorOtp(""); setDoctorSearch(""); setDoctorPatient(null); setDoctorPatientRecords([]); setDoctorAllergiesMeds([]); setDoctorConsent([]); setPage("home"); }} className="flex items-center gap-2 text-sm font-semibold text-red-500"><LogOut size={16} /> Logout</button>
+          </div>
+
+          <div className="mt-8 flex items-start gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-600"><Stethoscope size={27} /></div>
+            <div><h1 className="text-3xl font-bold">Healthcare Dashboard</h1><p className="mt-1 text-sm text-slate-500">Find a patient and review authorized health information.</p></div>
+          </div>
+
+          <section className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
+            <label className="text-sm font-semibold">Patient Phone / AROVIA Health ID</label>
+            <div className="mt-3 flex gap-2">
+              <input value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="9100000002 or AROVIA-0002" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-600" />
+              <button onClick={() => searchPatientForDoctor(doctorSearch)} className="rounded-xl bg-teal-600 px-5 py-3 font-semibold text-white">Search</button>
+            </div>
+            {doctorSearchError && <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-600">{doctorSearchError}</p>}
+          </section>
+
+          {doctorPatient && (
+            <div className="mt-6">
+              <section className="rounded-3xl bg-teal-600 p-6 text-white shadow-md">
+                <p className="text-sm text-teal-100">Patient Found</p>
+                <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+                  <div><h2 className="text-2xl font-bold">{doctorPatient.full_name || "Unnamed Patient"}</h2><p className="mt-1 text-sm text-teal-50">+91 {doctorPatient.phone}</p></div>
+                  <div className="rounded-xl bg-white/15 px-3 py-2 text-xs font-semibold">Health ID: AROVIA-{String(doctorPatient.phone || "").slice(-4)}</div>
+                </div>
+              </section>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <button
+                  onClick={() => downloadDoctorSummary(doctorPatient, activeRecords, medicineItems, allergyItems, doctorConsent)}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-300 hover:text-teal-700"
+                >
+                  Download Patient Summary
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-300 hover:text-teal-700"
+                >
+                  Print Record
+                </button>
+                <button
+                  onClick={() => setShowEmergencyAccess(true)}
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 hover:bg-red-100"
+                >
+                  Emergency Access
+                </button>
+              </div>
+
+              {showEmergencyAccess && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5">
+                  <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-900">Emergency Access</h3>
+                        <p className="mt-1 text-sm text-slate-500">Use only when immediate clinical access is necessary.</p>
+                      </div>
+                      <button onClick={() => setShowEmergencyAccess(false)} className="text-xl text-slate-400">✕</button>
+                    </div>
+
+                    {!emergencyGranted ? (
+                      <>
+                        <textarea
+                          value={emergencyReason}
+                          onChange={(e) => setEmergencyReason(e.target.value)}
+                          rows="4"
+                          placeholder="Reason for emergency access..."
+                          className="mt-5 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-red-400"
+                        />
+                        <button
+                          onClick={() => {
+                            if (!emergencyReason.trim()) {
+                              alert("Enter a reason for emergency access.");
+                              return;
+                            }
+                            setEmergencyGranted(true);
+                          }}
+                          className="mt-3 w-full rounded-xl bg-red-600 py-3.5 font-semibold text-white hover:bg-red-700"
+                        >
+                          Grant Emergency Access (Demo)
+                        </button>
+                      </>
+                    ) : (
+                      <div className="mt-5 rounded-2xl bg-amber-50 p-4">
+                        <p className="font-semibold text-amber-900">Emergency access granted for this demo.</p>
+                        <p className="mt-2 text-sm leading-6 text-amber-800">Reason: {emergencyReason}</p>
+                        <p className="mt-2 text-xs leading-5 text-amber-700">In production, this action should be restricted by role, consent policy and recorded in an emergency access audit log.</p>
+                        <button
+                          onClick={() => setShowEmergencyAccess(false)}
+                          className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"
+                        >
+                          Continue
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  ["Records", activeRecords.length],
+                  ["Medicines", medicineItems.length],
+                  ["Allergies", allergyItems.length],
+                  ["Consent", consentGranted.length],
+                ].map(([label, value]) => <div key={label} className="rounded-2xl bg-white p-4 text-center shadow-sm"><p className="text-2xl font-bold text-slate-900">{value}</p><p className="mt-1 text-xs text-slate-500">{label}</p></div>)}
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm sm:grid-cols-5">
+                {[['overview','Overview'],['history','Medical History'],['meds','Allergies & Meds'],['consent','Consent'],['notes','Consultation']].map(([key,label]) => <button key={key} onClick={() => setDoctorActiveTab(key)} className={`rounded-xl px-3 py-3 text-sm font-semibold ${doctorActiveTab === key ? 'bg-teal-600 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>{label}</button>)}
+              </div>
+
+              {doctorActiveTab === "overview" && (
+                <section className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Recent Medical History</h3>{activeRecords.slice(0,2).map((r,i)=><div key={i} className="mt-4 border-l-4 border-teal-500 pl-3"><p className="text-xs text-slate-400">{r.date}</p><p className="mt-1 font-semibold">{r.diagnosis}</p><p className="mt-1 text-sm text-slate-500">{r.hospital}</p></div>)}{activeRecords.length===0&&<p className="mt-3 text-sm text-slate-500">No records available.</p>}</div>
+                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Access & Safety</h3><div className="mt-4 rounded-xl bg-teal-50 p-4"><p className="text-sm font-semibold text-teal-800">Patient data retrieved through Supabase</p><p className="mt-1 text-xs leading-5 text-teal-700">Use only for authorized care. Sharing permissions should govern production access.</p></div><div className="mt-3 rounded-xl bg-amber-50 p-4"><p className="text-xs leading-5 text-amber-800">Hackathon demo mode — real authentication and emergency audit controls should be enforced in production.</p></div></div>
+                </section>
+              )}
+
+              {doctorActiveTab === "history" && (
+                <section className="mt-5 space-y-4">
+                  {activeRecords.map((r,i)=><div key={i} className="rounded-2xl bg-white p-5 shadow-sm"><div className="flex justify-between gap-3"><div><h3 className="font-bold">{r.diagnosis}</h3><p className="mt-1 text-sm text-slate-500">{r.type} • {r.hospital}</p></div><span className="text-xs text-slate-400">{r.date}</span></div><p className="mt-4 text-sm text-slate-600">{r.notes}</p><p className="mt-3 text-xs text-slate-400">Doctor: {r.doctor}</p></div>)}{activeRecords.length===0&&<div className="rounded-2xl bg-white p-5 text-sm text-slate-500 shadow-sm">No medical records found.</div>}
+                </section>
+              )}
+
+              {doctorActiveTab === "meds" && (
+                <section className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Current Medications</h3>{medicineItems.length ? medicineItems.map((item,i)=><div key={i} className="mt-3 rounded-xl bg-slate-50 p-4"><p className="font-semibold">{item.name || "Medication"}</p><p className="mt-1 text-sm text-slate-500">{item.dosage || "Dosage not recorded"}{item.frequency ? ` • ${item.frequency}` : ""}</p></div>) : <p className="mt-3 text-sm text-slate-500">No medication data available.</p>}</div>
+                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Known Allergies</h3>{allergyItems.length ? allergyItems.map((item,i)=><div key={i} className="mt-3 rounded-xl bg-red-50 p-4"><p className="font-semibold text-red-800">{item.name || "Allergy"}</p><p className="mt-1 text-sm text-red-700">{item.reaction || "Reaction not recorded"}</p></div>) : <p className="mt-3 text-sm text-slate-500">No allergy data available.</p>}</div>
+                </section>
+              )}
+
+              {doctorActiveTab === "consent" && (
+                <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Consent & Sharing Status</h3>{doctorConsent.length ? doctorConsent.map((item,i)=><div key={i} className="mt-3 flex items-center justify-between rounded-xl border border-slate-100 p-4"><div><p className="font-semibold">{item.consent_type || "Consent"}</p><p className="mt-1 text-xs text-slate-500">Status: {item.status || "Not specified"}</p></div><span className={`rounded-full px-3 py-1 text-xs font-semibold ${String(item.status||'').toLowerCase()==='granted' ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600'}`}>{item.status || "Unknown"}</span></div>) : <p className="mt-3 text-sm text-slate-500">Consent records are not available to this demo session.</p>}</section>
+              )}
+
+              {doctorActiveTab === "notes" && (
+                <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Consultation Notes</h3><p className="mt-1 text-sm text-slate-500">Add notes for this consultation demo.</p><textarea value={doctorNote} onChange={(e)=>{setDoctorNote(e.target.value);setDoctorNoteSaved(false);}} rows="6" placeholder="Enter consultation observations, plan or follow-up..." className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-600"/><button onClick={()=>setDoctorNoteSaved(true)} className="mt-3 rounded-xl bg-teal-600 px-5 py-3 font-semibold text-white">Save Note</button>{doctorNoteSaved&&<p className="mt-3 text-sm font-medium text-teal-700">Note saved for this demo session.</p>}</section>
+              )}
+            </div>
+          )}
+
+          <div className="mt-6 rounded-2xl bg-amber-50 p-4"><p className="text-xs leading-5 text-amber-800">AROVIA doctor portal demo: patient lookup is connected to Supabase. Production deployment should enforce authenticated roles, consent policies and full audit logging.</p></div>
+        </main>
+      </div>
+    );
+  }
+
+  // ==================================================
   // PATIENT LOGIN
   // ==================================================
 
@@ -1076,14 +1506,31 @@ const startPreConsultationVoice = () => {
             />
 
             <button
-              onClick={() => {
-                if (otp === "123456") {
-                  setPage("patient-dashboard");
-                } else {
-                  alert(
-                    t.incorrectOtp
-                  );
-                }
+              onClick={async () => {
+               if (otp !== "123456") {
+  alert(t.incorrectOtp);
+  return;
+}
+
+    const { data, error } = await supabase
+     .from("patients")
+    .select("id, full_name, phone")
+    .eq("phone", phone)
+    .maybeSingle();
+
+   if (error) {
+    console.error("Patient lookup error:", error);
+    alert("Unable to connect to patient records.");
+    return;
+    }
+
+    if (!data) {
+  alert("Patient not found.");
+  return;
+}
+
+setPatientId(data.id);
+setPage("patient-dashboard");
               }}
               className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
             >
@@ -3179,6 +3626,69 @@ if (page === "pre-consultation") {
       {preConsultationAnswers.associatedSymptoms || "Not provided"}
     </p>
   </div>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      Relevant Medical History
+    </p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {preConsultationAnswers.relevantHistory || "Not provided"}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      Current Medications
+    </p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {medications.length > 0
+        ? medications
+            .map(
+              (medicine) =>
+                `${medicine.name} ${medicine.dosage || ""}${
+                  medicine.frequency
+                    ? ` • ${medicine.frequency}`
+                    : ""
+                }`
+            )
+            .join(", ")
+        : preConsultationAnswers.medications || "None reported"}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      Known Allergies
+    </p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {preConsultationAnswers.allergies || "None reported"}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      Patient's Description
+    </p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {preConsultationAnswers.complaint || "Not provided"}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4">
+    <div className="flex items-center gap-2 text-sm font-bold text-teal-700">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-white">
+        ✓
+      </span>
+      Ready for Healthcare Professional Review
+    </div>
+
+    <p className="mt-2 text-xs font-semibold text-teal-700">
+      AI-assisted history
+    </p>
+
+    <p className="mt-2 text-xs leading-5 text-slate-600">
+      This summary organizes information provided by the patient. It is not a diagnosis.
+    </p>
+  </div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -3808,6 +4318,7 @@ if (page === "pre-consultation") {
           </button>
 
           <button
+            onClick={() => setPage("doctor-login")}
             className="flex w-full items-center gap-4 rounded-2xl border-2 border-teal-600 bg-white p-5 text-left text-teal-700 shadow-sm transition hover:bg-teal-50"
           >
 
