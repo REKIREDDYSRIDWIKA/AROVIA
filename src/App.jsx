@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-
 /*
   AROVIA — DOCTOR SIDE
   Self-contained React/Vite App.jsx
@@ -19,11 +18,29 @@ const demoPatients = [
     age: 52,
     gender: "Male",
     bloodType: "O+",
-    lastVisit: "2 Sep 2026",
+religion: "Hindu",
+occupation: "Farmer",
+diet: "Vegetarian",
+address: "Balapur, Hyderabad, Telangana",
+lastVisit: "2 Sep 2026",
     urgency: "Medium",
     condition: "Follow-up required",
     allergies: ["Penicillin"],
     medications: ["Metformin 500 mg", "Amlodipine 5 mg"],
+    medicationDetails: [
+  {
+    name: "Metformin",
+    dose: "500 mg",
+    schedule: "Twice daily",
+    status: "Active",
+  },
+  {
+    name: "Amlodipine",
+    dose: "5 mg",
+    schedule: "Once daily",
+    status: "Active",
+  },
+],
     history: [
       {
         date: "2 Sep 2026",
@@ -43,11 +60,23 @@ const demoPatients = [
     age: 51,
     gender: "Female",
     bloodType: "B+",
-    lastVisit: "28 Aug 2026",
+religion: "Hindu",
+occupation: "Teacher",
+diet: "Vegetarian",
+address: "LB Nagar, Hyderabad, Telangana",
+lastVisit: "28 Aug 2026",
     urgency: "High",
     condition: "Needs clinical review",
     allergies: ["Sulfa drugs"],
     medications: ["Amlodipine 5 mg"],
+    medicationDetails: [
+  {
+    name: "Amlodipine",
+    dose: "5 mg",
+    schedule: "Once daily",
+    status: "Active",
+  },
+],
     history: [
       {
         date: "28 Aug 2026",
@@ -62,11 +91,23 @@ const demoPatients = [
     age: 42,
     gender: "Female",
     bloodType: "A+",
-    lastVisit: "21 Aug 2026",
+religion: "Hindu",
+occupation: "Homemaker",
+diet: "Vegetarian",
+address: "Kothapet, Hyderabad, Telangana",
+lastVisit: "21 Aug 2026",
     urgency: "Routine",
     condition: "Stable",
     allergies: [],
     medications: ["Vitamin D"],
+    medicationDetails: [
+  {
+    name: "Vitamin D",
+    dose: "1 tablet",
+    schedule: "Once daily",
+    status: "Active",
+  },
+],
     history: [
       {
         date: "21 Aug 2026",
@@ -364,7 +405,15 @@ function Badge({ level }) {
   );
 }
 
-function Layout({ title, current, navigate, onBack, noNav = false, children }) {
+function Layout({
+  title,
+  current,
+  navigate,
+  onBack,
+  noNav = false,
+  children,
+  sessionSeconds = null,
+}) {
   return (
     <div className="arovia-app">
       <header className="topbar">
@@ -387,10 +436,47 @@ function Layout({ title, current, navigate, onBack, noNav = false, children }) {
           </div>
 
           {!onBack && (
-            <div className="doctor-mini">
-              <Icon name="user" size={18} />
-            </div>
-          )}
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+    }}
+  >
+    {sessionSeconds !== null && (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      padding: "6px 10px",
+      borderRadius: 999,
+      background: "#eaf8ef",
+      color: "#16794a",
+      fontSize: 11,
+      fontWeight: 700,
+      whiteSpace: "nowrap",
+    }}
+  >
+    <span
+      style={{
+        width: 7,
+        height: 7,
+        borderRadius: "50%",
+        background: "#22c55e",
+      }}
+    />
+    Session{" "}
+    {String(Math.floor(sessionSeconds / 60)).padStart(2, "0")}:
+    {String(sessionSeconds % 60).padStart(2, "0")}
+  </div>
+)}
+
+    <div className="doctor-mini">
+      <Icon name="user" size={18} />
+    </div>
+  </div>
+)}
         </div>
       </header>
 
@@ -429,6 +515,7 @@ function Layout({ title, current, navigate, onBack, noNav = false, children }) {
             >
               <Icon name="user" size={20} />
               Profile
+              
             </button>
           </div>
         </nav>
@@ -440,13 +527,25 @@ function Layout({ title, current, navigate, onBack, noNav = false, children }) {
 function DoctorLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpMode, setOtpMode] = useState(false);
   const [error, setError] = useState("");
 
-  function submit(e) {
+  function submitLogin(e) {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
       setError("Please enter your email and password.");
+      return;
+    }
+
+    setError("");
+    setOtpMode(true);
+  }
+
+  function verifyOtp() {
+    if (otp !== "123456") {
+      setError("Invalid OTP. Demo OTP: 123456");
       return;
     }
 
@@ -461,30 +560,71 @@ function DoctorLogin({ onLogin }) {
     onLogin(doctor);
   }
 
+  if (otpMode) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <h1 className="login-title">Enter OTP</h1>
+
+          <p className="login-sub">
+            Enter the 6-digit OTP.
+          </p>
+
+          <input
+            className="input"
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            value={otp}
+            onChange={(e) => {
+              setOtp(e.target.value.replace(/\D/g, ""));
+              setError("");
+            }}
+            placeholder="Enter OTP"
+          />
+
+          {error && <div className="error">{error}</div>}
+
+          <button
+            className="primary-btn full"
+            type="button"
+            onClick={verifyOtp}
+          >
+            Verify OTP
+          </button>
+
+          <button
+            className="secondary-btn full"
+            type="button"
+            onClick={() => {
+              setOtpMode(false);
+              setOtp("");
+              setError("");
+            }}
+          >
+            Back to Login
+          </button>
+
+          <p className="demo-hint">
+            Demo OTP: 123456
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="login-page">
       <div className="login-card">
-        <div className="login-icon">
-          <Icon name="stethoscope" size={29} />
-        </div>
-
-        <div className="eyebrow" style={{ marginTop: 20 }}>
-          Arovia Doctor Portal
-        </div>
-
         <h1 className="login-title">Welcome back</h1>
 
         <p className="login-sub">
-          Sign in to securely access patient records, reports and consultations.
+          Sign in to access the Arovia Doctor Portal.
         </p>
 
-        <div className="personnel-badge">
-          <Icon name="shield" size={14} />
-          For registered healthcare personnel
-        </div>
-
-        <form onSubmit={submit}>
+        <form onSubmit={submitLogin}>
           <label className="form-label">Email</label>
+
           <input
             className="input"
             type="email"
@@ -497,6 +637,7 @@ function DoctorLogin({ onLogin }) {
           />
 
           <label className="form-label">Password</label>
+
           <input
             className="input"
             type="password"
@@ -512,20 +653,378 @@ function DoctorLogin({ onLogin }) {
 
           <button className="primary-btn full" type="submit">
             Sign In
-            <Icon name="arrowRight" size={17} />
           </button>
         </form>
 
         <p className="demo-hint">
-          Demo: enter any email and password.
+          Demo: any email and password.
         </p>
       </div>
     </div>
   );
 }
 
+
+function DoctorClinicalWorkspace({ doctor, patient, navigate }) {
+  const currentPatient = patient || demoPatients[0];
+  const pre = getPatientPreConsultation(currentPatient);
+  const [tab, setTab] = useState("overview");
+  const [aiDraft, setAiDraft] = useState(`AI draft: ${currentPatient.name} has ${pre.currentComplaint || currentPatient.condition}. ${pre.duration ? `Duration ${pre.duration}. ` : ""}${pre.associatedSymptoms || "Review associated symptoms."} Review allergies, medications and the latest timeline before consultation.`);
+  const [aiStatus, setAiStatus] = useState("AI-generated draft");
+  const [reason, setReason] = useState("");
+  const [emergencyStatus, setEmergencyStatus] = useState("Not requested");
+  const [consent, setConsent] = useState(() => getPatientConsent(currentPatient.id) || { active: true, purpose: "Clinical consultation", expiresAt: "End of visit" });
+  const [note, setNote] = useState("");
+  const [savedNote, setSavedNote] = useState(false);
+  const investigations = [
+    ["Haemoglobin", "13.2 g/dL", "12–16 g/dL", "Normal"],
+    ["Fasting glucose", "118 mg/dL", "70–99 mg/dL", "Above reference"],
+    ["Blood pressure", "138/86 mmHg", "<120/80 mmHg", "Above reference"],
+  ];
+  const tabs = [
+    ["overview", "Clinical Dashboard"], ["timeline", "Medical Timeline"], ["ai", "AI Summary Review"],
+    ["investigations", "Investigations"], ["emergency", "Emergency Access"], ["consent", "Consent UI"],
+    ["notes", "Doctor Notes"], ["integration", "Integration States"],
+  ];
+  function saveConsent(active) {
+    const next = { active, purpose: consent.purpose || "Clinical consultation", expiresAt: active ? (consent.expiresAt || "End of visit") : "Revoked" };
+    setConsent(next);
+    const all = readStorage(CONSENT_STORAGE, {});
+    try { localStorage.setItem(CONSENT_STORAGE, JSON.stringify({ ...all, [currentPatient.id]: next })); } catch {}
+  }
+  function requestEmergency() {
+    if (!reason.trim()) { alert("Enter a reason before requesting emergency access."); return; }
+    setEmergencyStatus("Access granted · event logged");
+  }
+  function saveNote() {
+    if (!note.trim()) return;
+    const all = readStorage("arovia_doctor_notes", []);
+    const next = [{ id: `note-${Date.now()}`, patientId: currentPatient.id, doctor: doctor?.name || "Doctor", note: note.trim(), timestamp: new Date().toISOString() }, ...(Array.isArray(all) ? all : [])];
+    try { localStorage.setItem("arovia_doctor_notes", JSON.stringify(next)); } catch {}
+    setNote(""); setSavedNote(true); window.setTimeout(() => setSavedNote(false), 2500);
+  }
+  return (
+    <section className="clinical-workspace">
+      <div className="workspace-head"><div><div className="eyebrow">CLINICAL DASHBOARD</div><h2 className="section-title">Complete Doctor Workspace</h2><p className="section-sub">All required clinical review features in one dashboard.</p></div><button className="primary-btn" onClick={() => navigate("patient")}><Icon name="file" size={17}/> Open Full Patient Record</button></div>
+      <div className="workspace-tabs">{tabs.map(([key, label]) => <button key={key} className={`workspace-tab ${tab === key ? "active" : ""}`} onClick={() => setTab(key)}>{label}</button>)}</div>
+
+      {tab === "overview" && <div className="workspace-grid">
+        <section className="workspace-card workspace-wide"><div className="workspace-card-head"><div><div className="eyebrow">PATIENT DEMOGRAPHICS</div><h3>Patient identity</h3></div><Icon name="user" size={20}/></div><div className="workspace-data-grid">{[["Patient ID",currentPatient.id],["Name",currentPatient.name],["Age",`${currentPatient.age} years`],["Gender",currentPatient.gender],["Blood group",currentPatient.bloodType]].map(([a,b])=><div className="workspace-data" key={a}><span>{a}</span><strong>{b}</strong></div>)}</div></section>
+        <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">HPI</div><h3>History of Present Illness</h3></div><Icon name="activity" size={20}/></div><div className="workspace-list">{[["Chief complaint",pre.currentComplaint || currentPatient.condition],["Duration",pre.duration || "Not recorded"],["Severity",pre.severity || "Not recorded"],["Pattern",pre.pattern || "Not recorded"],["Associated symptoms",pre.associatedSymptoms || "None recorded"]].map(([a,b])=><div key={a}><span>{a}</span><strong>{b}</strong></div>)}</div></section>
+        <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">PAST HISTORY</div><h3>Clinical history</h3></div><Icon name="history" size={20}/></div><div className="workspace-list">{currentPatient.history.map((h,i)=><div key={i}><strong>{h.title}</strong><span>{h.date}</span><p>{h.note}</p></div>)}</div></section>
+        <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">MEDICATIONS</div><h3>Current medications</h3></div><Icon name="pill" size={20}/><div style={{ display: "grid", gap: 10 }}>
+  {(currentPatient.medicationDetails || []).map((medicine) => (
+    <div
+      key={medicine.name}
+      style={{
+        padding: 14,
+        border: "1px solid #e5ecee",
+        borderRadius: 12,
+        background: "#fbfdfd",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Icon name="pill" size={16} />
+          <strong style={{ fontSize: 12 }}>
+            {medicine.name}
+          </strong>
+        </div>
+
+        <span
+          style={{
+            padding: "5px 9px",
+            borderRadius: 999,
+            background: "#eaf8ef",
+            color: "#18794e",
+            fontSize: 9,
+            fontWeight: 800,
+          }}
+        >
+          {medicine.status}
+        </span>
+      </div>
+
+      <div
+        style={{
+          marginTop: 8,
+          display: "flex",
+          gap: 12,
+          flexWrap: "wrap",
+          color: "#667085",
+          fontSize: 10,
+        }}
+      >
+        <span>Dose: {medicine.dose}</span>
+        <span>Schedule: {medicine.schedule}</span>
+      </div>
+    </div>
+  ))}
+</div></div></section> 
+        <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">ALLERGIES</div><h3>Safety alerts</h3></div><Icon name="alertTriangle" size={20}/></div><div className="allergy-alert-list">{currentPatient.allergies.length ? currentPatient.allergies.map(a=><div key={a}><Icon name="alertTriangle" size={16}/><strong>{a}</strong></div>) : <div>No known allergies</div>}</div></section>
+        <section className="workspace-card">
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">AYUSH HISTORY</div>
+      <h3>AYUSH / Traditional Medicine</h3>
+    </div>
+    <Icon name="heart" size={20} />
+  </div>
+
+  <div className="workspace-list">
+    <div>
+      <span>System of medicine</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Previous AYUSH treatment</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Treatment / therapy</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Duration</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Practitioner / centre</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Notes</span>
+      <strong>Clinician verification required.</strong>
+    </div>
+  </div>
+</section>
+        <section className="workspace-card workspace-wide">
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">REVIEW OF SYSTEMS</div>
+      <h3>ROS — System Review</h3>
+      <p>System-by-system review for clinician verification.</p>
+    </div>
+    <Icon name="clipboard" size={20} />
+  </div>
+
+  <div className="workspace-list">
+    <div>
+      <span>General</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Cardiovascular</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Respiratory</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Gastrointestinal</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Neurological</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Musculoskeletal</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Genitourinary</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Skin</span>
+      <strong>Not recorded</strong>
+    </div>
+  </div>
+
+  <div
+    style={{
+      marginTop: 14,
+      padding: 12,
+      borderRadius: 10,
+      background: "#f8f9fc",
+      fontSize: 12,
+      color: "#667085",
+    }}
+  >
+    ROS information requires clinician verification.
+  </div>
+</section>
+      </div>}
+
+      {tab === "timeline" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">MEDICAL TIMELINE</div><h3>Chronological records</h3><p>Visits, documents, investigations, procedures/surgeries and medication history.</p></div><Icon name="clock" size={20}/></div><div className="workspace-timeline">{currentPatient.history.map((h,i)=><div className="workspace-timeline-item" key={i}><span className="timeline-dot"/><div><strong>{h.title}</strong><span>{h.date}</span><p>{h.note}</p></div></div>)}<div className="workspace-timeline-item"><span className="timeline-dot"/><div><strong>Medication history</strong><span>Current</span><p>{currentPatient.medications.join(" · ")}</p></div></div><div className="workspace-timeline-item"><span className="timeline-dot"/><div><strong>Documents / investigations</strong><span>Patient record</span><p>Open the full record to review original uploaded documents.</p></div></div></div><button className="secondary-btn" onClick={() => navigate("patient")}>Open Full Patient Timeline</button></section>}
+
+      {tab === "ai" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">AI SUMMARY REVIEW</div><h3>Structured AI-generated draft
+        <div
+  style={{
+    marginTop: 8,
+    padding: "9px 12px",
+    borderRadius: 10,
+    background: "#f4f7fb",
+    border: "1px solid #e1e7ef",
+    color: "#475467",
+    fontSize: 10,
+    fontWeight: 700,
+  }}
+>
+  AI-assisted draft · Doctor review required before confirmation
+</div></h3><p>Show → edit → confirm/accept or reject/request correction.</p></div><span className="workspace-status">{aiStatus}</span></div><div className="ai-draft-label"><Icon name="shield" size={16}/> Clearly labelled AI-generated draft · decision support only</div><textarea className="input textarea ai-review-text" value={aiDraft} onChange={e=>{setAiDraft(e.target.value);setAiStatus("Edited draft");}}/><div className="modal-actions"><button className="secondary-btn" onClick={()=>{setAiStatus("Correction requested");alert("Correction request recorded in this frontend demo.");}}>Reject / Request Correction</button><button className="primary-btn" onClick={()=>setAiStatus("Accepted by doctor")}>Confirm / Accept</button></div></section>}
+
+      {tab === "investigations" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">INVESTIGATION DISPLAY</div><h3>Lab values</h3><p>Reference ranges, abnormal-value flags and original-document access.</p></div><Icon name="activity" size={20}/></div><div className="investigation-table"><div className="investigation-row investigation-head"><span>Lab value</span><span>Value</span><span>Reference</span><span>Status</span></div>{investigations.map(([a,b,c,d])=><div className={`investigation-row ${d !== "Normal" ? "abnormal" : ""}`} key={a}><span>{a}</span><strong>{b}</strong><span>{c}</span><span>{d}</span></div>)}</div><button className="secondary-btn" style={{marginTop:12}} onClick={()=>navigate("patient")}>Open Original Document</button></section>}
+
+      {tab === "emergency" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">EMERGENCY ACCESS</div><h3>Protected critical information</h3><p>Emergency request, reason, critical-information view, status and visible access event.</p></div><Icon name="shield" size={20}/></div><div className="emergency-mini-grid"><div><span>Emergency status</span><strong>{emergencyStatus}</strong></div><div><span>Critical information</span><strong>{currentPatient.bloodType} · {currentPatient.allergies.join(", ") || "No known allergies"} · {currentPatient.medications.join(", ")}</strong></div></div><label className="form-label">Reason field</label><textarea className="input textarea" rows="3" value={reason} onChange={e=>setReason(e.target.value)} placeholder="Why is emergency access required?"/><div className="modal-actions"><button className="secondary-btn" onClick={()=>navigate("emergency")}>Open Protected Emergency Page</button><button className="primary-btn" onClick={requestEmergency}>Request / Grant Demo Access</button></div><div className="access-event"><Icon name="checkCircle" size={17}/><div><strong>Access event visible</strong><span>{emergencyStatus === "Not requested" ? "No access event yet." : `Access event recorded for ${doctor?.name || "Doctor"}.`}</span></div></div></section>}
+      <section className="workspace-card">
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">FAMILY / PERSONAL HISTORY</div>
+      <h3>Family, Personal & Surgical History</h3>
+    </div>
+    <Icon name="users" size={20} />
+  </div>
+
+  <div className="workspace-list">
+    <div>
+      <span>Past Surgical History</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Family History</span>
+      <strong>Not recorded</strong>
+    </div>
+
+    <div>
+      <span>Personal History</span>
+      <strong>Not recorded</strong>
+    </div>
+  </div>
+
+  <div
+    style={{
+      marginTop: 14,
+      padding: 12,
+      borderRadius: 10,
+      background: "#f8f9fc",
+      fontSize: 12,
+      color: "#667085",
+    }}
+  >
+    History information requires clinician verification.
+  </div>
+</section>
+
+      {tab === "consent" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">CONSENT UI</div><h3>Patient-controlled access</h3><p>Consent status, what data can be shared, purpose and revocation status.</p></div><Icon name="shield" size={20}/></div><div className="consent-grid"><div><span>Consent status</span><strong>{consent.active ? "Active" : "Revoked"}</strong></div><div><span>What can be shared</span><strong>Clinical record, reports & medications</strong></div><div><span>Purpose</span><strong>{consent.purpose}</strong></div><div><span>Revocation / expiry</span><strong>{consent.active ? consent.expiresAt : "Revoked"}</strong></div></div><div className="modal-actions"><button className="secondary-btn" onClick={()=>saveConsent(false)}>Revoke Consent</button><button className="primary-btn" onClick={()=>saveConsent(true)}>Grant / Restore Consent</button></div></section>}
+
+      {tab === "notes" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">DOCTOR NOTES</div><h3>Consultation notes</h3><p>Add, save/update notes and keep timestamps in the frontend demo.</p></div><Icon name="edit" size={20}/></div><textarea className="input textarea" rows="6" value={note} onChange={e=>setNote(e.target.value)} placeholder="Add consultation notes, observations or follow-up instructions..."/>{savedNote && <div className="success-banner"><Icon name="checkCircle" size={17}/> Note saved locally with timestamp.</div>}<div className="modal-actions"><button className="primary-btn" onClick={saveNote}>Save / Update Note</button></div></section>}
+
+      {tab === "integration" && <section className="workspace-card"><div className="workspace-card-head"><div><div className="eyebrow">INTEGRATION STATES</div><h3>System readiness</h3><p>Frontend status placeholders for backend/API/AI integration.</p></div><Icon name="activity" size={20}/></div><div className="integration-grid"><div><span>ABDM / FHIR status</span><strong>Frontend ready · API pending</strong></div><div><span>Submission status</span><strong>Demo data saved locally</strong></div><div><span>API errors</span><strong>None in frontend demo</strong></div><div><span>Loading / empty states</span><strong>Patient search and reports supported</strong></div></div></section>}
+    </section>
+  );
+}
+
 function DoctorDashboard({ doctor, navigate, openPatient }) {
   const [query, setQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [sessionSeconds, setSessionSeconds] = useState(15 * 60);
+const [showSessionWarning, setShowSessionWarning] = useState(false);
+const [verifiedCases, setVerifiedCases] = useState({});
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    setSessionSeconds((seconds) => {
+      if (seconds <= 1) {
+        clearInterval(timer);
+        localStorage.removeItem(DOCTOR_STORAGE);
+        window.location.reload();
+        return 0;
+      }
+
+      if (seconds <= 60) {
+        setShowSessionWarning(true);
+      }
+
+      return seconds - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []);
+
+const sessionMinutes = String(Math.floor(sessionSeconds / 60)).padStart(2, "0");
+const sessionRemainingSeconds = String(sessionSeconds % 60).padStart(2, "0");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+const [pendingSync, setPendingSync] = useState(3);
+
+useEffect(() => {
+  const handleOnline = () => {
+    setIsOnline(true);
+    setPendingSync(0);
+  };
+
+  const handleOffline = () => {
+    setIsOnline(false);
+    setPendingSync(3);
+  };
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  return () => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  };
+}, []);
+  const doctorTasks = [
+  {
+    title: "Reports awaiting review",
+    count: 8,
+    detail: "Laboratory and diagnostic reports",
+    icon: "file",
+  },
+  {
+    title: "Patients needing follow-up",
+    count: 4,
+    detail: "Follow-up actions due today",
+    icon: "clock",
+  },
+  {
+    title: "Pending referrals",
+    count: 3,
+    detail: "Referrals awaiting action",
+    icon: "arrowRight",
+  },
+  {
+    title: "Incomplete consultations",
+    count: 2,
+    detail: "Consultation notes still pending",
+    icon: "edit",
+  },
+];
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -539,13 +1038,28 @@ function DoctorDashboard({ doctor, navigate, openPatient }) {
   }, [query]);
 
   function searchPatient() {
+  if (!query.trim()) {
+    return;
+  }
+
+  setIsSearching(true);
+
+  setTimeout(() => {
+    setIsSearching(false);
+
     if (filtered.length > 0) {
       openPatient(filtered[0]);
     }
-  }
+  }, 700);
+}
 
   return (
-    <Layout title="Doctor Dashboard" current="dashboard" navigate={navigate}>
+    <Layout
+  title="Doctor Dashboard"
+  current="dashboard"
+  navigate={navigate}
+  sessionSeconds={sessionSeconds}
+>
       <main className="page-container">
         <div className="hero-grid">
           <section className="hero">
@@ -616,6 +1130,42 @@ function DoctorDashboard({ doctor, navigate, openPatient }) {
             </div>
           </section>
         </div>
+        <section className="dashboard-section">
+  <div className="search-card">
+    <div className="section-head">
+      <div>
+        <div className="eyebrow">TODAY'S FOCUS</div>
+        <h2 className="section-title">Doctor Focus Today</h2>
+        <p className="section-sub">
+          Quick view of the items that may need your attention first.
+        </p>
+      </div>
+      <Icon name="activity" size={20} />
+    </div>
+
+    <div className="workspace-data-grid">
+      <div className="workspace-data">
+        <span>Reports awaiting review</span>
+        <strong>8</strong>
+      </div>
+
+      <div className="workspace-data">
+        <span>High-priority patients</span>
+        <strong>2</strong>
+      </div>
+
+      <div className="workspace-data">
+        <span>New patient cases</span>
+        <strong>2</strong>
+      </div>
+
+      <div className="workspace-data">
+        <span>AI summaries</span>
+        <strong>Review required</strong>
+      </div>
+    </div>
+  </div>
+</section>
 
         <section className="dashboard-section">
           <div className="search-card">
@@ -650,16 +1200,876 @@ function DoctorDashboard({ doctor, navigate, openPatient }) {
                 />
               </div>
 
-              <button className="dark-btn" onClick={searchPatient}>
-                Search
-              </button>
+              <button
+  className="dark-btn"
+  onClick={searchPatient}
+  disabled={isSearching}
+>
+  {isSearching ? "Searching..." : "Search"}
+</button>
             </div>
+            {isSearching && (
+  <div
+    style={{
+      marginTop: 14,
+      padding: 12,
+      borderRadius: 10,
+      background: "#eef3ff",
+      color: "#344054",
+      fontSize: 13,
+      fontWeight: 600,
+    }}
+  >
+    Searching patient records...
+  </div>
+)}
 
             {query && filtered.length === 0 && (
-              <div className="error">No patient matched your search.</div>
-            )}
+  <div
+    style={{
+      marginTop: 14,
+      padding: 16,
+      borderRadius: 12,
+      background: "#f8fafc",
+      textAlign: "center",
+      color: "#667085",
+      fontSize: 13,
+    }}
+  >
+    <strong style={{ display: "block", marginBottom: 5 }}>
+      No patient found
+    </strong>
+    Try searching with a different patient name or Arovia ID.
+  </div>
+)}
           </div>
         </section>
+
+        <section className="dashboard-section">
+          <div className="search-card">
+
+          </div>
+        </section>
+                {/* NEW PATIENT CASES */}
+                <section className="dashboard-section">
+  <div className="search-card">
+    <div className="section-head">
+      <div>
+        <div className="eyebrow">CASE REVIEW</div>
+        <h2 className="section-title">Doctor Case Overview</h2>
+        <p className="section-sub">
+          Quick view of patient cases waiting for clinical review.
+        </p>
+      </div>
+
+      <Icon name="file" size={21} />
+    </div>
+
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 10,
+        marginTop: 14,
+      }}
+    >
+      <div className="workspace-data">
+        <span>New cases</span>
+        <strong>2</strong>
+      </div>
+
+      <div className="workspace-data">
+        <span>Needs verification</span>
+        <strong>2</strong>
+      </div>
+
+      <div className="workspace-data">
+        <span>Next action</span>
+        <strong>Review patient record</strong>
+      </div>
+    </div>
+  </div>
+</section>
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">New Patient Cases</h2>
+              <p className="section-sub">
+                Patient cases submitted for doctor review.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-card">
+            {[
+            {
+  patientId: "ARV-001",
+  patient: "Ravi Kumar",
+  complaint: "Chest discomfort",
+  duration: "3 days",
+  submitted: "10 min ago",
+  completeness: 82,
+  missing: ["Allergy history", "Family history"],
+},
+              {
+  patientId: "ARV-018",
+  patient: "Sita Devi",
+  complaint: "Diabetes follow-up",
+  duration: "1 day",
+  submitted: "25 min ago",
+  completeness: 94,
+  missing: ["Diet history"],
+},
+        
+            ].map((caseItem, index) => (
+              <div
+                key={caseItem.patientId}
+                style={{
+                  padding: "16px 0",
+            borderBottom:
+                    index !== 1 ? "1px solid #e9edf3" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 15,
+                      }}
+                    >
+                      {caseItem.patient} · {caseItem.patientId}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 5,
+                        color: "#344054",
+                        fontSize: 13,
+                      }}
+                    >
+                      Chief complaint: {caseItem.complaint}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 4,
+                        color: "#667085",
+                        fontSize: 13,
+                      }}
+                    >
+                      Duration: {caseItem.duration}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 4,
+                        color: "#98a2b3",
+                        fontSize: 12,
+                      }}
+                    >
+                      Submitted {caseItem.submitted}
+                    </div>
+                    <div
+  style={{
+    marginTop: 12,
+    fontSize: 13,
+    fontWeight: 700,
+    color: caseItem.completeness < 90 ? "#b54708" : "#16794a",
+  }}
+>
+  Case completeness: {caseItem.completeness}%
+</div>
+
+{caseItem.missing.length > 0 && (
+  <div
+    style={{
+      marginTop: 6,
+      fontSize: 12,
+      color: "#667085",
+    }}
+  >
+    Missing: {caseItem.missing.join(", ")}
+  </div>
+)}
+<button
+  type="button"
+  onClick={() =>
+    alert(
+      `Request sent to ${caseItem.patient} for: ${caseItem.missing.join(", ")}`
+    )
+  }
+  style={{
+    marginTop: 10,
+    border: "none",
+    background: "transparent",
+    padding: 0,
+    color: "#4f46e5",
+    fontSize: 12,
+    fontWeight: 700,
+    cursor: "pointer",
+  }}
+>
+  Request Missing Information →
+</button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <span
+                      style={{
+                        padding: "6px 10px",
+                        borderRadius: 999,
+                        background: "#fff4e5",
+                        color: "#b54708",
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      NEW
+                    </span>
+
+                    <button
+  type="button"
+  className="secondary-btn"
+  onClick={() => {
+    setVerifiedCases((prev) => ({
+      ...prev,
+      [caseItem.patientId]: true,
+    }));
+  }}
+>
+  {verifiedCases[caseItem.patientId] ? "✓ Verified" : "Verify Case"}
+</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Doctor Task Queue</h2>
+              <p className="section-sub">
+                Clinical actions that may need your attention.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="patients-grid"
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            }}
+          >
+            {[
+  {
+    title: "Reports awaiting review",
+    count: 8,
+    detail: "Laboratory and diagnostic reports",
+    icon: "file",
+    action: () => navigate("upload"),
+  },
+  {
+    title: "Patients needing follow-up",
+    count: 4,
+    detail: "Follow-up actions due today",
+    icon: "clock",
+    action: () => openPatient(demoPatients[0]),
+  },
+  {
+    title: "Pending referrals",
+    count: 3,
+    detail: "Referrals awaiting action",
+    icon: "arrowRight",
+    action: () => openPatient(demoPatients[2]),
+  },
+  {
+    title: "Incomplete consultations",
+    count: 2,
+    detail: "Consultation notes still pending",
+    icon: "edit",
+    action: () => openPatient(demoPatients[0]),
+  },
+].map((task) => (
+              <div
+                key={task.title}
+                className="patient-card"
+                style={{
+                  cursor: "default",
+                  textAlign: "left",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: 12,
+                      display: "grid",
+                      placeItems: "center",
+                      background: "#eef3ff",
+                    }}
+                  >
+                    <Icon name={task.icon} size={19} />
+                  </div>
+
+                  <strong
+                    style={{
+                      fontSize: 28,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {task.count}
+                  </strong>
+                </div>
+
+                <p className="patient-name">{task.title}</p>
+
+                <div className="condition">
+                  {task.detail}
+                </div>
+
+ <button
+  type="button"
+  onClick={() => navigate("upload")}
+  style={{
+    marginTop: 14,
+    border: "none",
+    background: "transparent",
+    padding: 0,
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#4f46e5",
+    cursor: "pointer",
+  }}
+></button>
+  <button
+  type="button"
+  onClick={task.action}
+  style={{
+    marginTop: 14,
+    border: "none",
+    background: "transparent",
+    padding: 0,
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#4f46e5",
+    cursor: "pointer",
+  }}
+>
+  Review task →
+</button>
+              </div>
+            ))}
+          </div>
+</section>
+                
+
+        {/* RECENT ACTIVITY / AUDIT TRAIL */}
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Recent Activity</h2>
+              <p className="section-sub">
+                Recent clinical and access activity for this doctor.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-card">
+            {[
+              {
+                action: "Patient record opened",
+                patient: "Ravi Kumar · ARV-001",
+                time: "2 min ago",
+                icon: "user",
+              },
+              {
+                action: "Investigation reviewed",
+                patient: "Ravi Kumar · Troponin I",
+                time: "8 min ago",
+                icon: "file",
+              },
+              {
+                action: "Consent status checked",
+                patient: "Ravi Kumar · ARV-001",
+                time: "15 min ago",
+                icon: "shield",
+              },
+              {
+                action: "Doctor note added",
+                patient: "Ravi Kumar · ARV-001",
+                time: "24 min ago",
+                icon: "edit",
+              },
+              {
+                action: "Emergency access reviewed",
+                patient: "Lakshmi Bai · ARV-024",
+                time: "41 min ago",
+                icon: "alertTriangle",
+              },
+            ].map((item, index) => (
+              <div
+                key={`${item.action}-${index}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "14px 0",
+                  borderBottom:
+                    index !== 4 ? "1px solid #e9edf3" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                    display: "grid",
+                    placeItems: "center",
+                    background: "#eef3ff",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Icon name={item.icon} size={18} />
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: 14,
+                      marginBottom: 4,
+                    }}
+                  >
+                    {item.action}
+                  </div>
+
+                  <div
+                    style={{
+                      color: "#667085",
+                      fontSize: 13,
+                    }}
+                  >
+                    {item.patient}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    color: "#98a2b3",
+                    fontSize: 12,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.time}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+        
+                
+
+        {/* OFFLINE SYNC STATUS */}
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Offline Sync Status</h2>
+              <p className="section-sub">
+                Monitor connectivity and pending changes.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-card">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 20,
+                flexWrap: "wrap",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    display: "grid",
+                    placeItems: "center",
+                    background: isOnline ? "#eaf8ef" : "#fff4e5",
+                  }}
+                >
+                  <Icon
+                    name={isOnline ? "wifi" : "wifiOff"}
+                    size={20}
+                  />
+                </div>
+
+                <div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: 15,
+                    }}
+                  >
+                    {isOnline
+                      ? "Connection restored"
+                      : "Working offline"}
+                  </div>
+
+                  <div
+                    style={{
+                      color: "#667085",
+                      fontSize: 13,
+                      marginTop: 4,
+                    }}
+                  >
+                    {isOnline
+                      ? pendingSync === 0
+                        ? "All changes synchronized."
+                        : `${pendingSync} changes waiting to sync.`
+                      : `${pendingSync} changes waiting to sync.`}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 999,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  background: isOnline ? "#eaf8ef" : "#fff4e5",
+                }}
+              >
+                {isOnline ? "ONLINE" : "OFFLINE"}
+              </div>
+            </div>
+          </div>
+        </section>
+       
+        
+
+        {/* REFERRAL TRACKING */}
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Referral Tracking</h2>
+              <p className="section-sub">
+                Track referred patients and follow-up status.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-card">
+          {[
+  {
+    patient: "Ravi Kumar · ARV-001",
+    patientId: "ARV-001",
+    referredTo: "Cardiology",
+    reason: "Chest discomfort",
+    status: "Pending",
+    followUp: "18 Sep 2026",
+  },
+  {
+    patient: "Lakshmi Bai · ARV-024",
+    patientId: "ARV-024",
+    referredTo: "General Medicine",
+    reason: "Hypertension review",
+    status: "Accepted",
+    followUp: "20 Sep 2026",
+  },
+  {
+    patient: "Sita Devi · ARV-018",
+    patientId: "ARV-018",
+    referredTo: "Diabetes Clinic",
+    reason: "HbA1c follow-up",
+    status: "Completed",
+    followUp: "25 Sep 2026",
+  },
+].map((referral, index) => (
+            
+              <div
+                key={`${referral.patient}-${index}`}
+                style={{
+                  padding: "16px 0",
+                  borderBottom:
+                    index !== 2 ? "1px solid #e9edf3" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 15,
+                      }}
+                    >
+                      {referral.patient}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 5,
+                        color: "#667085",
+                        fontSize: 13,
+                      }}
+                    >
+                      Referred to: {referral.referredTo}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 3,
+                        color: "#667085",
+                        fontSize: 13,
+                      }}
+                    >
+                      Reason: {referral.reason}
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: "right" }}>
+                  <button
+  type="button"
+  onClick={() => {
+    const patient = demoPatients.find(
+      (p) => p.id === referral.patientId
+    );
+
+    if (patient) {
+      openPatient(patient);
+    }
+  }}
+  style={{
+    border: "none",
+    fontSize: 12,
+    fontWeight: 700,
+    padding: "6px 10px",
+    borderRadius: 999,
+    background:
+      referral.status === "Completed"
+        ? "#eaf8ef"
+        : referral.status === "Accepted"
+        ? "#eef3ff"
+        : "#fff4e5",
+    cursor: "pointer",
+  }}
+>
+  {referral.status}
+</button>
+
+                    <div
+                      style={{
+                        marginTop: 6,
+                        color: "#667085",
+                        fontSize: 12,
+                      }}
+                    >
+                      Follow-up: {referral.followUp}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* EXISTING APPOINTMENTS */}
+        <section className="dashboard-section">
+
+                </section>
+
+        {/* MEDICATION SAFETY REVIEW */}
+        <section className="dashboard-section">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Medication Safety Review</h2>
+              <p className="section-sub">
+                Clinical decision support for medication review.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-card">
+            {[
+  {
+    patient: "Ravi Kumar · ARV-001",
+    patientId: "ARV-001",
+    medication: "Aspirin",
+    issue: "No recorded medication conflict.",
+    status: "Review",
+    icon: "pill",
+  },
+  {
+    patient: "Ravi Kumar · ARV-001",
+    patientId: "ARV-001",
+    medication: "Penicillin",
+    issue: "Recorded allergy requires clinician review.",
+    status: "Alert",
+    icon: "alertTriangle",
+  },
+  {
+    patient: "Sita Devi · ARV-018",
+    patientId: "ARV-018",
+    medication: "Metformin",
+    issue: "Current medication listed in patient record.",
+    status: "Review",
+    icon: "pill",
+  },
+].map((item, index) => (
+              <div
+                key={`${item.patient}-${item.medication}-${index}`}
+                style={{
+                  padding: "16px 0",
+                  borderBottom:
+                    index !== 2 ? "1px solid #e9edf3" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: 12,
+                      display: "grid",
+                      placeItems: "center",
+                      background:
+                        item.status === "Alert"
+                          ? "#fff4e5"
+                          : "#eef3ff",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Icon
+                      name={item.icon}
+                      size={19}
+                    />
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 14,
+                      }}
+                    >
+                      {item.patient}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 4,
+                        fontSize: 13,
+                        color: "#344054",
+                      }}
+                    >
+                      Medication: {item.medication}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 4,
+                        fontSize: 13,
+                        color:
+                          item.status === "Alert"
+                            ? "#b54708"
+                            : "#667085",
+                      }}
+                    >
+                      {item.issue}
+                    </div>
+                  </div>
+
+                  <button
+  type="button"
+  onClick={() => {
+    const patient = demoPatients.find(
+      (p) => p.id === item.patientId
+    );
+
+    if (patient) {
+      openPatient(patient);
+    }
+  }}
+  style={{
+    padding: "7px 10px",
+    border: "none",
+    borderRadius: 999,
+    fontSize: 12,
+    fontWeight: 700,
+    background:
+      item.status === "Alert"
+        ? "#fff4e5"
+        : "#eef3ff",
+    cursor: "pointer",
+  }}
+>
+  {item.status}
+</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p
+            style={{
+              marginTop: 10,
+              fontSize: 12,
+              color: "#667085",
+            }}
+          >
+            Decision support only — the clinician makes the final medication decision.
+          </p>
+        </section>
+
+        {/* EXISTING APPOINTMENTS */}
+        <section className="dashboard-section">
+
+        </section>
+
+        {/* EXISTING APPOINTMENTS */}
 
         <section className="dashboard-section">
           <div className="section-head">
@@ -705,6 +2115,8 @@ function DoctorDashboard({ doctor, navigate, openPatient }) {
             ))}
           </div>
         </section>
+
+        <DoctorClinicalWorkspace doctor={doctor} patient={demoPatients[0]} navigate={navigate} />
       </main>
     </Layout>
   );
@@ -846,6 +2258,27 @@ function SmartDoctorAssistance({ patient, reports }) {
 }
 
 function PatientRecord({ doctor, patient, navigate, openReferral }) {
+  const caseBriefs = {
+  "ARV-001": {
+    complaint: "Chest discomfort",
+    duration: "3 days",
+    history: "Hypertension",
+    symptom: "Breathlessness",
+    missing: "Allergy history",
+  },
+
+  "ARV-018": {
+    complaint: "Diabetes follow-up",
+    duration: "1 day",
+    history: "Type 2 diabetes",
+    symptom: "Fatigue",
+    missing: "Diet history",
+  }
+};
+
+
+  const [patientLoadError, setPatientLoadError] = useState(false);
+  const [lastUpdated] = useState(() => new Date());
   const currentPatient = patient || demoPatients[0];
   const [reports, setReports] = useState(getReports());
   const [showNote, setShowNote] = useState(false);
@@ -935,6 +2368,8 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
   ].sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
   const visibleTimeline = showAllTimeline ? timelineItems : timelineItems.slice(0, 4);
+  
+  
 
   return (
     <Layout
@@ -946,6 +2381,79 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
       <main className="page-container">
         <section className="patient-banner">
           <div className="patient-banner-inner">
+            {patientLoadError && (
+  <div
+    style={{
+      marginBottom: 18,
+      padding: 16,
+      borderRadius: 12,
+      background: "#fff4e5",
+      border: "1px solid #f6d7a7",
+    }}
+  >
+    <div
+      style={{
+        fontWeight: 700,
+        fontSize: 15,
+        marginBottom: 6,
+      }}
+    >
+      Unable to load patient data
+    </div>
+
+    <div
+      style={{
+        fontSize: 13,
+        color: "#667085",
+        marginBottom: 12,
+      }}
+    >
+      Please try again.
+    </div>
+
+    <button
+      type="button"
+      className="secondary-btn"
+      onClick={() => setPatientLoadError(false)}
+    >
+      Retry
+    </button>
+  </div>
+)}
+
+  <div
+  style={{
+    marginTop: 14,
+    padding: 14,
+    borderRadius: 12,
+    background: "#f8fafc",
+    border: "1px solid #e4e7ec",
+  }}
+>
+  <div
+    style={{
+      fontWeight: 700,
+      fontSize: 13,
+      marginBottom: 4,
+    }}
+  >
+    Record status: Up to date
+  </div>
+
+  <div
+    style={{
+      fontSize: 12,
+      color: "#667085",
+    }}
+  >
+    Last updated:{" "}
+    {lastUpdated.toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    })}
+  </div>
+</div>
+
             <div className="patient-banner-left">
               <div className="avatar-xl">{initials(currentPatient.name)}</div>
               <div>
@@ -981,6 +2489,147 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
             </div>
           </div>
         </section>
+        <section className="workspace-card" style={{ marginTop: 20 }}>
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">PATIENT DETAILS</div>
+      <h3>Patient information</h3>
+      <p>Basic patient information for quick review.</p>
+    </div>
+    <Icon name="user" size={20} />
+  </div>
+
+  <div className="workspace-data-grid">
+    {[
+      ["Patient ID", currentPatient.id],
+      ["Name", currentPatient.name],
+      ["Address", currentPatient.address || "Not recorded"],
+      ["Age", `${currentPatient.age} years`],
+      ["Gender", currentPatient.gender],
+      ["Religion", currentPatient.religion || "Not recorded"],
+      ["Occupation / Work", currentPatient.occupation || "Not recorded"],
+      ["Diet", currentPatient.diet || "Not recorded"],
+      ["Blood group", currentPatient.bloodType],
+      ["Last visit", currentPatient.lastVisit],
+    ].map(([label, value]) => (
+      <div className="workspace-data" key={label}>
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+    ))}
+  </div>
+</section>
+<section className="workspace-card">
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">CURRENT MEDICATIONS</div>
+      <h3>Medicines</h3>
+      <div
+  style={{
+    marginTop: 8,
+    padding: "10px 12px",
+    borderRadius: 10,
+    background: "#f0f8f6",
+    color: "#087f74",
+    fontSize: 10,
+    fontWeight: 700,
+  }}
+>
+  {currentPatient.medications.length} medication(s) currently recorded
+</div>
+      <p>Currently recorded medications.</p>
+    </div>
+    <Icon name="pill" size={20} />
+  </div>
+
+  <div className="tag-list">
+    {currentPatient.medications.map((medicine) => (
+      <span className="clinical-tag" key={medicine}>
+        <Icon name="pill" size={14} />
+        {medicine}
+      </span>
+    ))}
+  </div>
+</section>
+<section className="workspace-card">
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">ALLERGIES</div>
+      <h3>Allergy information</h3>
+      <div
+  style={{
+    marginTop: 8,
+    padding: "10px 12px",
+    borderRadius: 10,
+    background: currentPatient.allergies.length
+      ? "#fff4f2"
+      : "#eef8f6",
+    color: currentPatient.allergies.length
+      ? "#a13d32"
+      : "#087f74",
+    fontSize: 10,
+    fontWeight: 700,
+  }}
+>
+  {currentPatient.allergies.length
+    ? `${currentPatient.allergies.length} known allergy recorded · Review before prescribing`
+    : "No known allergies recorded"}
+</div>
+      <p>Important allergy and safety information.</p>
+    </div>
+    <Icon name="alertTriangle" size={20} />
+  </div>
+
+  <div className="allergy-alert-list">
+    {currentPatient.allergies.length ? (
+      currentPatient.allergies.map((allergy) => (
+        <div key={allergy}>
+          <Icon name="alertTriangle" size={16} />
+          <strong>{allergy}</strong>
+        </div>
+      ))
+    ) : (
+      <div>No known allergies</div>
+    )}
+  </div>
+</section>
+<section className="workspace-card" style={{ marginTop: 18 }}>
+  <div className="workspace-card-head">
+    <div>
+      <div className="eyebrow">SAFETY ALERTS</div>
+      <h3>Important clinical alerts</h3>
+      <p>Key information the doctor should notice before consultation.</p>
+    </div>
+    <Icon name="alertTriangle" size={20} />
+  </div>
+
+  <div className="workspace-data-grid">
+    <div className="workspace-data">
+      <span>Allergies</span>
+      <strong>
+        {currentPatient.allergies.length
+          ? currentPatient.allergies.join(", ")
+          : "None known"}
+      </strong>
+    </div>
+
+    <div className="workspace-data">
+      <span>Priority</span>
+      <strong>{currentPatient.urgency}</strong>
+    </div>
+
+    <div className="workspace-data">
+      <span>Condition</span>
+      <strong>{currentPatient.condition}</strong>
+    </div>
+
+    <div className="workspace-data">
+      <span>Current medications</span>
+      <strong>{currentPatient.medications.length} recorded</strong>
+    </div>
+  </div>
+</section>
+
 
         <section className="patient-brief-card">
           <div className="brief-header">
@@ -1140,6 +2789,35 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
                 <div>
                   <h2 className="section-title">Patient Health Timeline</h2>
                   <p className="section-sub">Visits and uploaded reports in one chronological view.</p>
+                  <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: 10,
+    marginTop: 14,
+    marginBottom: 16,
+  }}
+>
+  <div className="workspace-data">
+    <span>Total Events</span>
+    <strong>{timelineItems.length}</strong>
+  </div>
+
+  <div className="workspace-data">
+    <span>Visits</span>
+    <strong>{timelineItems.filter(item => item.kind === "Visit").length}</strong>
+  </div>
+
+  <div className="workspace-data">
+    <span>Reports</span>
+    <strong>{timelineItems.filter(item => item.kind === "Report").length}</strong>
+  </div>
+
+  <div className="workspace-data">
+    <span>Consultations</span>
+    <strong>{timelineItems.filter(item => item.kind === "Consultation").length}</strong>
+  </div>
+</div>
                 </div>
                 <Icon name="clock" size={22} />
               </div>
@@ -1198,6 +2876,69 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
                 </div>
               </div>
             </section>
+            <div className="card">
+  <h2 className="section-title">AI Case Brief</h2>
+
+  <p className="section-sub">
+    Structured summary from the patient's case-taking information.
+  </p>
+
+  <div style={{ marginTop: 16 }}>
+    <strong>Chief complaint</strong>
+    <div style={{ marginTop: 4, color: "#667085", fontSize: 13 }}>
+    {patient?.id === "ARV-018" ? "Diabetes follow-up" : "Chest discomfort"}
+    </div>
+  </div>
+
+  <div style={{ marginTop: 12 }}>
+    <strong>Duration</strong>
+    <div style={{ marginTop: 4, color: "#667085", fontSize: 13 }}>
+      {patient?.id === "ARV-018" ? "1 day" : "3 days"}
+    </div>
+  </div>
+
+  <div style={{ marginTop: 12 }}>
+    <strong>Key history</strong>
+    <div style={{ marginTop: 4, color: "#667085", fontSize: 13 }}>
+      {patient?.id === "ARV-018" ? "Type 2 diabetes" : "Hypertension"}
+    </div>
+  </div>
+
+  <div style={{ marginTop: 12 }}>
+    <strong>Important symptom</strong>
+    <div style={{ marginTop: 4, color: "#667085", fontSize: 13 }}>
+      
+    </div>
+  </div>{patient?.id === "ARV-018" ? "Fatigue" : "Breathlessness"}
+
+  <div style={{ marginTop: 12 }}>
+    <strong>Missing information</strong>
+    <div
+      style={{
+        marginTop: 4,
+        color: "#b54708",
+        fontSize: 13,
+        fontWeight: 600,
+      }}
+    >
+      {patient?.id === "ARV-018" ? "Diet history" : "Allergy history"}
+    </div>
+  </div>
+
+  <div
+    style={{
+      marginTop: 16,
+      padding: 10,
+      borderRadius: 10,
+      background: "#eef3ff",
+      color: "#344054",
+      fontSize: 12,
+      fontWeight: 600,
+    }}
+  >
+    AI-assisted clinical review — doctor verification required.
+  </div>
+</div>
 
             <section className="card">
               <div className="section-head">
@@ -1212,7 +2953,8 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
               </div>
 
               <div className="report-scroll">
-                {patientReports.map((report) => (
+                {patientReports.length > 0 ? (
+                   patientReports.map((report) => (
                   <button className="report-card" key={report.id} onClick={() => setSelectedReport(report)}>
                     <div className="report-thumb">
                       {report.fileData && report.fileType?.startsWith("image/") ? (
@@ -1225,7 +2967,32 @@ function PatientRecord({ doctor, patient, navigate, openReferral }) {
                     <div className="doctor-tag">{report.doctor}</div>
                     <div className="facility-tag">{report.facility}</div>
                   </button>
-                ))}
+                  ))
+) : (
+  <div
+    style={{
+      padding: 28,
+      textAlign: "center",
+      color: "#667085",
+      background: "#f8fafc",
+      borderRadius: 12,
+    }}
+  >
+    <div
+      style={{
+        fontSize: 15,
+        fontWeight: 700,
+        marginBottom: 6,
+      }}
+    >
+      No reports available
+    </div>
+
+    <div style={{ fontSize: 13 }}>
+      Reports uploaded for this patient will appear here.
+    </div>
+  </div>
+)}
               </div>
             </section>
           </div>
@@ -3774,6 +5541,23 @@ function styles() {
 }
 
 
+
+
+const clinicalWorkspaceStyles = `
+  .clinical-workspace{margin-top:22px;background:linear-gradient(180deg,#ffffff,#f9fcfc);border:1px solid #dce8e7;border-radius:20px;padding:20px;box-shadow:0 10px 28px rgba(24,64,74,.06)}
+  .workspace-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}
+  .workspace-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:10px;margin-bottom:16px;border-bottom:1px solid #e7eeee}
+  .workspace-tab{border:1px solid #dce6e8;background:#fff;border-radius:999px;padding:9px 12px;font-size:10px;font-weight:800;color:#596976;white-space:nowrap;cursor:pointer}
+  .workspace-tab.active{background:#087f74;color:#fff;border-color:#087f74}
+  .workspace-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .workspace-card{background:#fff;border:1px solid #e0e9ea;border-radius:16px;padding:16px;margin-top:12px}
+  .workspace-grid .workspace-card{margin-top:0}.workspace-wide{grid-column:1/-1}
+  .workspace-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}.workspace-card-head h3{margin:4px 0 0;font-size:16px;color:#18303d}.workspace-card-head p,.workspace-card>p{font-size:10px;color:#6d7b86;line-height:1.5;margin:5px 0 0}
+  .workspace-data-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.workspace-data,.workspace-list>div,.emergency-mini-grid>div,.consent-grid>div,.integration-grid>div{padding:11px;border:1px solid #e5ecee;border-radius:12px;background:#fbfdfd}.workspace-data span,.workspace-list span,.emergency-mini-grid span,.consent-grid span,.integration-grid span{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#7b8891;font-weight:800}.workspace-data strong,.workspace-list strong,.emergency-mini-grid strong,.consent-grid strong,.integration-grid strong{display:block;font-size:11px;color:#203442;margin-top:5px;line-height:1.4}.workspace-list{display:grid;gap:8px}.workspace-list p{font-size:9px;color:#64737e;line-height:1.4;margin:4px 0 0}.workspace-muted{font-size:10px;color:#5f6f7b;line-height:1.55}.tag-list{display:flex;flex-wrap:wrap;gap:7px}.clinical-tag{display:flex;align-items:center;gap:6px;border:1px solid #d7ebe8;background:#eff9f7;color:#087f74;border-radius:999px;padding:8px 10px;font-size:10px;font-weight:800}.allergy-alert-list{display:grid;gap:8px}.allergy-alert-list>div{display:flex;align-items:center;gap:8px;padding:10px;border-radius:11px;background:#fff4f2;border:1px solid #f1d8d3;color:#a13d32;font-size:10px}.workspace-timeline{display:grid;gap:0;margin:4px 0 16px}.workspace-timeline-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #edf1f2}.workspace-timeline-item>div{flex:1}.workspace-timeline-item strong{display:block;font-size:12px;color:#203442}.workspace-timeline-item span:not(.timeline-dot){display:block;font-size:9px;color:#8a97a0;margin-top:3px}.workspace-timeline-item p{font-size:10px;color:#62717c;line-height:1.45;margin:5px 0 0}.workspace-status{padding:7px 10px;border-radius:999px;background:#eef8f6;color:#087f74;font-size:9px;font-weight:900}.ai-draft-label{display:flex;align-items:center;gap:6px;padding:9px 11px;background:#f6f9fa;border-radius:10px;color:#667580;font-size:9px;margin-bottom:9px}.ai-review-text{min-height:130px}.investigation-table{border:1px solid #e2eaec;border-radius:12px;overflow:hidden}.investigation-row{display:grid;grid-template-columns:1.2fr .9fr 1.1fr .9fr;gap:8px;padding:11px;border:0;border-bottom:1px solid #edf1f2;background:#fff;font-size:9px;color:#52636e}.investigation-row:last-child{border-bottom:0}.investigation-head{background:#f7fafb;font-size:8px;text-transform:uppercase;font-weight:900;color:#7a8790}.investigation-row.abnormal{background:#fff9f7}.investigation-row.abnormal span:last-child{color:#a13d32;font-weight:900}.emergency-mini-grid,.consent-grid,.integration-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}.access-event{display:flex;gap:8px;align-items:center;margin-top:12px;padding:11px;border-radius:12px;background:#eef8f6;border:1px solid #d5ebe7;color:#087f74}.access-event strong,.access-event span{display:block}.access-event strong{font-size:10px}.access-event span{font-size:9px;color:#5d6e77;margin-top:2px}.success-banner{font-size:10px}
+  @media(max-width:800px){.workspace-grid{grid-template-columns:1fr}.workspace-wide{grid-column:auto}.workspace-data-grid{grid-template-columns:repeat(2,1fr)}.workspace-head{flex-direction:column}.workspace-head .primary-btn{width:100%}.investigation-row{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.clinical-workspace{padding:14px}.workspace-data-grid,.emergency-mini-grid,.consent-grid,.integration-grid{grid-template-columns:1fr}.investigation-row{grid-template-columns:1fr;gap:3px}.investigation-head{display:none}}
+`;
+
 const featureStyles = `
   .clinical-snapshot {
     margin: 22px 0;
@@ -4305,7 +6089,8 @@ function ReferralCoordination({ doctor, patient, onBack }) {
     {showForm&&<div className="modal-overlay" onClick={()=>setShowForm(false)}><div className="modal referral-modal" onClick={e=>e.stopPropagation()}><div className="modal-head"><div><div className="eyebrow">NEW REFERRAL</div><h2 className="section-title">Refer {patient.name}</h2></div><button className="icon-btn" onClick={()=>setShowForm(false)}><Icon name="x" size={20}/></button></div><label className="form-label">Specialist</label><select className="input" value={specialist} onChange={e=>setSpecialist(e.target.value)}><option>General Medicine</option><option>Cardiology</option><option>Dermatology</option><option>Paediatrics</option><option>Gynaecology</option><option>Orthopaedics</option><option>ENT</option></select><label className="form-label">Facility</label><select className="input" value={facility} onChange={e=>setFacility(e.target.value)}><option>District Telemedicine Unit</option><option>District Hospital</option><option>Community Health Centre</option><option>Specialist Referral Centre</option></select><label className="form-label">Priority</label><select className="input" value={priority} onChange={e=>setPriority(e.target.value)}><option>High</option><option>Medium</option><option>Routine</option></select><label className="form-label">Suggested Follow-up</label><input className="input" type="date" value={followUp} onChange={e=>setFollowUp(e.target.value)}/><label className="form-label">Reason for Referral</label><textarea className="textarea" rows="4" value={reason} onChange={e=>setReason(e.target.value)} placeholder="Why is specialist review needed?"/><div className="attachment-preview"><Icon name="checkCircle" size={18}/><span>Up to 3 recent reports will be attached automatically.</span></div><div className="modal-actions"><button className="secondary-btn" onClick={()=>setShowForm(false)}>Cancel</button><button className="primary-btn" onClick={createReferral}>Create Referral</button></div></div></div>}
     {selected&&<div className="modal-overlay" onClick={()=>setSelected(null)}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modal-head"><div><div className="eyebrow">{selected.id}</div><h2 className="section-title">{selected.specialist}</h2></div><button className="icon-btn" onClick={()=>setSelected(null)}><Icon name="x" size={20}/></button></div><div className="referral-detail-status"><strong>{selected.status}</strong><span>{selected.facility}</span></div><div className="detail-block"><div className="info-label">Reason</div><p>{selected.reason}</p></div><div className="info-grid"><div className="info-box"><div className="info-label">Priority</div><div className="info-value">{selected.priority}</div></div><div className="info-box"><div className="info-label">Follow-up</div><div className="info-value">{selected.followUp}</div></div><div className="info-box"><div className="info-label">Reports attached</div><div className="info-value">{selected.attachedReports?.length||0}</div></div></div><div className="modal-actions"><button className="secondary-btn" onClick={()=>status(selected.id,"Accepted")}>Mark Accepted</button><button className="primary-btn" onClick={()=>status(selected.id,"Completed")}>Mark Completed</button></div></div></div>}
   </div>;
-}
+};
+
 
 export default function App() {
   const [doctor, setDoctor] = useState(getDoctor);
@@ -4370,6 +6155,7 @@ export default function App() {
     <>
       <style>{styles()}</style>
       <style>{featureStyles}</style>
+      <style>{clinicalWorkspaceStyles}</style>
 
       {screen === "emergency" ? (
         <EmergencyPage
@@ -4415,4 +6201,5 @@ export default function App() {
       )}
     </>
   );
-}
+};
+
