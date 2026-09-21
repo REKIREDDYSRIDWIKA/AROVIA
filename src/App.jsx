@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { QRCodeCanvas } from "qrcode.react";
 
+
 import {
   Mic,
   User,
@@ -477,6 +478,123 @@ demographicsReviewNote: "You can review this information later. Sensitive fields
 patientInformation: "PATIENT INFORMATION",
 demographicsDescription: "Tell us about yourself so your healthcare professional has the right background information.",
 abdmBackendNote: "Live ABDM/FHIR communication will be connected through the backend.",
+
+    backToDashboard: "Back to Dashboard",
+    yourAyushHealthHistory: "Your AYUSH Health History",
+    whatAssessmentCovers: "What this assessment covers",
+    reviewAndEdit: "Review & Edit",
+    reviewEditDescription: "Move between questions and update your answers before completing the assessment.",
+    optionalAssessment: "Optional assessment",
+    optionalAssessmentDescription: "You can complete this assessment separately from your regular clinical consultation.",
+    startAyushAssessment: "Start AYUSH Assessment",
+    completeAyushAssessment: "Complete AYUSH Assessment",
+    ayushAnswersSaved: "Your answers are saved automatically. Use Previous to review and edit earlier answers.",
+    trackNewSymptoms: "Track new symptoms",
+    trackNewSymptomsDescription: "Add symptoms that develop later so your healthcare professional can see how your condition changed over time.",
+    symptomTimeline: "Symptom Timeline",
+    symptomTimelineDescription: "See how your symptoms developed over time.",
+    addNewSymptom: "Add New Symptom",
+    addNewSymptomDescription: "Tell us about a new symptom that developed after your initial consultation.",
+    newSymptomQuestion: "What new symptom did you develop?",
+    newSymptomPlaceholder: "Example: Vomiting",
+    symptomStartedQuestion: "When did this symptom actually start?",
+    symptomStartedNote: "Enter when the symptom began, not when you are reporting it.",
+    howSevere: "How severe is it?",
+    tellUsMore: "Tell us more",
+    symptomDetailsPlaceholder: "Describe anything else you noticed...",
+    urgentSymptomsReported: "Urgent symptoms reported",
+    noRedFlagSymptoms: "No red-flag symptoms reported",
+    safetyScreenDisclaimer: "This is a safety screen, not a diagnosis. A healthcare professional should review the information.",
+    aiClinicalInterview: "AI Clinical Interview",
+    aiClinicalInterviewDescription: "Guided history with adaptive questions, voice/text input and safety screening.",
+    shareMedicalReport: "Share This Medical Report",
+    chooseWhatHealthcareWorkersSee: "Choose exactly what healthcare workers can see.",
+    manageSharing: "Manage Sharing",
+    sharingPreferencesSaved: "Sharing preferences saved.",
+    saveSharingSettings: "Save Sharing Settings",
+    shared: "Shared",
+    private: "Private",
+    consentStatus: "Consent Status",
+    purpose: "Purpose",
+    consentPurposeText: "Healthcare access, consultation, medical record review and emergency care.",
+    accessState: "Access State",
+    consentAccessStateText: "Patient-controlled access is currently active.",
+    expiry: "Expiry",
+    noConsentExpiry: "No expiry set for this consent.",
+    revokeConsent: "Revoke Consent",
+    dataSharingControls: "Data Sharing Controls",
+    chooseHealthCategories: "Choose which categories of your health information can be accessed.",
+    allowed: "Allowed",
+    notAllowed: "Not allowed",
+    recentAccessPatientControlled: "Patient-controlled access",
+    consentActive: "Active",
+    consentRevokeAlert: "Consent revocation request recorded. Healthcare access should be reviewed before revocation is finalized.",
+    myDemographics: "My Demographics",
+    myDemographicsDescription: "Manage your personal, lifestyle, menstrual and obstetric health information.",
+    emergencyAccessCardDescription: "Control emergency access to your critical health information.",
+    summaryNoneReported: "None reported",
+    symptomSaveRequired: "Please enter the symptom and when it started.",
+    patientSessionNotFound: "Patient session not found.",
+    unableToSaveSymptom: "Unable to save symptom.",
+    invalidAadhaar: "Please enter a valid 12-digit Aadhaar number.",
+    aadhaarProductionMessage:
+  "Aadhaar verification will be connected through a secure identity service in the production version.",
+  aadhaarPrototypeWarning:
+  "Aadhaar verification is not live in this prototype. Your Aadhaar number is not actually verified or stored.",
+  irregular: "Irregular",
+  ayushAssessmentSaved: "Your AYUSH assessment has been saved to your health record.",
+  investigationDocumentDescription:
+  "Investigation document associated with this health record.",
+  keepInfoUpdated: "Keep this information updated so healthcare workers can quickly understand your medications and allergies.",
+  dashavidhaPariksha: "Dashavidha Pariksha",
+dashavidhaParikshaDescription:
+  "Prakriti, Vikriti, Sara, Samhanana, Pramana, Satmya, Sattva, Ahara Shakti, Vyayama Shakti and Vaya.",
+aharaVihara: "Ahara & Vihara",
+aharaViharaDescription:
+  "Diet, daily routine, sleep, physical activity and lifestyle information.",
+  sex: "Sex",
+  consentRevocationMessage:
+  "Consent revocation request recorded. Healthcare access should be reviewed before revocation is finalized.",
+  recentAccessEvent: "Recent Access Event",
+currentSharingPreferences:
+  "Your current sharing preferences are being applied to normal healthcare access.",
+statusLabel: "Status",
+normalAccessEmergencyNote:
+  "Your permissions control normal healthcare access. Emergency access will follow a separate doctor verification process.",
+  ayushPrakritiQuestion: "What is your natural body constitution or Prakriti?",
+ayushPrakritiPlaceholder: "Describe your natural body type, habits, and tendencies...",
+
+ayushVikritiQuestion: "What changes or imbalances are you currently experiencing?",
+ayushVikritiPlaceholder: "Describe your current health changes or imbalances...",
+
+ayushSaraQuestion: "How would you describe the quality or strength of your body tissues?",
+ayushSaraPlaceholder: "Describe your general tissue quality and strength...",
+
+ayushSamhananaQuestion: "How would you describe your body build and physical structure?",
+ayushSamhananaPlaceholder: "Describe your body build and physical structure...",
+
+ayushPramanaQuestion: "What are your height, weight, and general body proportions?",
+ayushPramanaPlaceholder: "Enter your height, weight, and body proportions...",
+
+ayushSatmyaQuestion: "What foods, routines, or habits suit your body well?",
+ayushSatmyaPlaceholder: "Describe foods, routines, climate, or habits that suit you...",
+
+ayushSattvaQuestion: "How would you describe your mental and emotional state?",
+ayushSattvaPlaceholder: "Describe your mood, stress, emotional stability, and mental state...",
+
+ayushAharaShaktiQuestion: "How would you describe your appetite and digestive capacity?",
+ayushAharaShaktiPlaceholder: "Describe your appetite, digestion, and ability to eat...",
+
+ayushVyayamaShaktiQuestion: "How would you describe your physical activity capacity?",
+ayushVyayamaShaktiPlaceholder: "Describe your exercise tolerance and physical activity...",
+
+ayushVayaQuestion: "What is your age and how would you describe your current stage of life?",
+ayushVayaPlaceholder: "Enter your age and relevant life-stage information...",
+
+ayushAharaViharaQuestion: "Tell us about your diet, daily routine, sleep, activity, and lifestyle.",
+ayushAharaViharaPlaceholder: "Describe your food habits, sleep, exercise, daily routine, and lifestyle...",
+ayushAnswersSaved: "Your answers are saved automatically. Use",
+ayushReviewEdit: "to review and edit earlier answers.",
   },
   te: {
     tagline: "మీ ఆరోగ్య రికార్డు, మీరు ఎక్కడ ఉన్నా",
@@ -935,6 +1053,123 @@ demographicsReviewNote: "మీరు ఈ సమాచారాన్ని త�
 patientInformation: "రోగి సమాచారం",
 demographicsDescription: "మీ గురించి వివరాలను అందించండి, తద్వారా మీ ఆరోగ్య నిపుణుడికి అవసరమైన నేపథ్య సమాచారం అందుతుంది.",
 abdmBackendNote: "లైవ్ ABDM/FHIR కమ్యూనికేషన్ బ్యాకెండ్ ద్వారా అనుసంధానించబడుతుంది.",
+
+    backToDashboard: "డ్యాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి",
+    yourAyushHealthHistory: "మీ ఆయుష్ ఆరోగ్య చరిత్ర",
+    whatAssessmentCovers: "ఈ అంచనాలో ఏమి ఉంటుంది",
+    reviewAndEdit: "సమీక్ష & సవరణ",
+    reviewEditDescription: "అంచనాను పూర్తి చేయడానికి ముందు ప్రశ్నల మధ్య వెళ్లి మీ సమాధానాలను సవరించండి.",
+    optionalAssessment: "ఐచ్ఛిక అంచనా",
+    optionalAssessmentDescription: "మీ సాధారణ వైద్య సంప్రదింపుతో విడిగా ఈ అంచనాను పూర్తి చేయవచ్చు.",
+    startAyushAssessment: "ఆయుష్ అంచనాను ప్రారంభించండి",
+    completeAyushAssessment: "ఆయుష్ అంచనాను పూర్తి చేయండి",
+    ayushAnswersSaved: "మీ సమాధానాలు స్వయంచాలకంగా సేవ్ చేయబడతాయి. మునుపటి ప్రశ్నలను సమీక్షించి సవరించడానికి Previous ఉపయోగించండి.",
+    trackNewSymptoms: "కొత్త లక్షణాలను నమోదు చేయండి",
+    trackNewSymptomsDescription: "తర్వాత అభివృద్ధి చెందిన లక్షణాలను జోడించండి, తద్వారా మీ ఆరోగ్య నిపుణుడు మీ పరిస్థితి ఎలా మారిందో చూడగలరు.",
+    symptomTimeline: "లక్షణాల కాలక్రమం",
+    symptomTimelineDescription: "మీ లక్షణాలు కాలక్రమేణా ఎలా అభివృద్ధి చెందాయో చూడండి.",
+    addNewSymptom: "కొత్త లక్షణాన్ని జోడించండి",
+    addNewSymptomDescription: "ప్రాథమిక సంప్రదింపుల తర్వాత అభివృద్ధి చెందిన కొత్త లక్షణం గురించి చెప్పండి.",
+    newSymptomQuestion: "మీకు ఏ కొత్త లక్షణం వచ్చింది?",
+    newSymptomPlaceholder: "ఉదాహరణ: వాంతులు",
+    symptomStartedQuestion: "ఈ లక్షణం నిజంగా ఎప్పుడు ప్రారంభమైంది?",
+    symptomStartedNote: "మీరు నివేదిస్తున్న సమయాన్ని కాదు, లక్షణం ప్రారంభమైన సమయాన్ని నమోదు చేయండి.",
+    howSevere: "ఇది ఎంత తీవ్రంగా ఉంది?",
+    tellUsMore: "మరింత వివరించండి",
+    symptomDetailsPlaceholder: "మీరు గమనించిన ఇతర విషయాలను వివరించండి...",
+    urgentSymptomsReported: "అత్యవసర లక్షణాలు నివేదించబడ్డాయి",
+    noRedFlagSymptoms: "ప్రమాద సూచించే లక్షణాలు నివేదించబడలేదు",
+    safetyScreenDisclaimer: "ఇది భద్రతా తనిఖీ మాత్రమే, నిర్ధారణ కాదు. ఆరోగ్య నిపుణుడు సమాచారాన్ని సమీక్షించాలి.",
+    aiClinicalInterview: "AI క్లినికల్ ఇంటర్వ్యూ",
+    aiClinicalInterviewDescription: "అనుకూల ప్రశ్నలు, వాయిస్/టెక్స్ట్ ఇన్‌పుట్ మరియు భద్రతా తనిఖీతో మార్గదర్శక వైద్య చరిత్ర.",
+    shareMedicalReport: "ఈ వైద్య నివేదికను పంచుకోండి",
+    chooseWhatHealthcareWorkersSee: "ఆరోగ్య కార్యకర్తలు ఏమి చూడాలో ఖచ్చితంగా ఎంచుకోండి.",
+    manageSharing: "షేరింగ్‌ను నిర్వహించండి",
+    sharingPreferencesSaved: "షేరింగ్ ప్రాధాన్యతలు సేవ్ చేయబడ్డాయి.",
+    saveSharingSettings: "షేరింగ్ సెట్టింగ్‌లను సేవ్ చేయండి",
+    shared: "పంపబడింది",
+    private: "ప్రైవేట్",
+    consentStatus: "సమ్మతి స్థితి",
+    purpose: "ఉద్దేశ్యం",
+    consentPurposeText: "ఆరోగ్య సేవలు, సంప్రదింపులు, వైద్య రికార్డు సమీక్ష మరియు అత్యవసర సంరక్షణ.",
+    accessState: "యాక్సెస్ స్థితి",
+    consentAccessStateText: "రోగి నియంత్రిత యాక్సెస్ ప్రస్తుతం క్రియాశీలంగా ఉంది.",
+    expiry: "గడువు",
+    noConsentExpiry: "ఈ సమ్మతికి గడువు సెట్ చేయలేదు.",
+    revokeConsent: "సమ్మతిని ఉపసంహరించండి",
+    dataSharingControls: "డేటా షేరింగ్ నియంత్రణలు",
+    chooseHealthCategories: "మీ ఆరోగ్య సమాచారంలో ఏ వర్గాలను యాక్సెస్ చేయవచ్చో ఎంచుకోండి.",
+    allowed: "అనుమతించబడింది",
+    notAllowed: "అనుమతించబడలేదు",
+    recentAccessPatientControlled: "రోగి నియంత్రిత యాక్సెస్",
+    consentActive: "క్రియాశీలం",
+    consentRevokeAlert: "సమ్మతి ఉపసంహరణ అభ్యర్థన నమోదు చేయబడింది. ఉపసంహరణను ఖరారు చేసే ముందు ఆరోగ్య సేవల యాక్సెస్‌ను సమీక్షించాలి.",
+    myDemographics: "నా రోగి వివరాలు",
+    myDemographicsDescription: "మీ వ్యక్తిగత, జీవనశైలి, మాసిక ధర్మ మరియు ప్రసూతి ఆరోగ్య సమాచారాన్ని నిర్వహించండి.",
+    emergencyAccessCardDescription: "మీ ముఖ్యమైన ఆరోగ్య సమాచారానికి అత్యవసర యాక్సెస్‌ను నియంత్రించండి.",
+    summaryNoneReported: "ఏవీ నివేదించలేదు",
+    symptomSaveRequired: "దయచేసి లక్షణం మరియు అది ప్రారంభమైన సమయాన్ని నమోదు చేయండి.",
+    patientSessionNotFound: "రోగి సెషన్ కనుగొనబడలేదు.",
+    unableToSaveSymptom: "లక్షణాన్ని సేవ్ చేయడం సాధ్యపడలేదు.",
+    invalidAadhaar: "దయచేసి చెల్లుబాటు అయ్యే 12 అంకెల ఆధార్ నంబర్‌ను నమోదు చేయండి.",
+    aadhaarProductionMessage:
+  "ఉత్పత్తి వెర్షన్‌లో ఆధార్ ధృవీకరణ సురక్షిత గుర్తింపు సేవ ద్వారా అనుసంధానించబడుతుంది.",
+  aadhaarPrototypeWarning:
+  "ఈ ప్రోటోటైప్‌లో ఆధార్ ధృవీకరణ అందుబాటులో లేదు. మీ ఆధార్ నంబర్ వాస్తవంగా ధృవీకరించబడదు లేదా నిల్వ చేయబడదు.",
+  irregular: "అసమానమైన",
+  ayushAssessmentSaved: "మీ ఆయుష్ అంచనా మీ ఆరోగ్య రికార్డులో సేవ్ చేయబడింది.",
+  investigationDocumentDescription:
+  "ఈ ఆరోగ్య రికార్డుకు సంబంధించిన వైద్య పరిశీలన పత్రం.",
+  keepInfoUpdated: "మీ మందులు మరియు అలర్జీలను ఆరోగ్య కార్యకర్తలు త్వరగా అర్థం చేసుకునేలా ఈ సమాచారాన్ని ఎప్పటికప్పుడు నవీకరించండి.",
+  dashavidhaPariksha: "దశవిధ పరీక్ష",
+dashavidhaParikshaDescription:
+  "ప్రకృతి, వికృతి, సార, సంహనన, ప్రమాణ, సాత్మ్య, సత్త్వ, ఆహార శక్తి, వ్యాయామ శక్తి మరియు వయస్సు.",
+aharaVihara: "ఆహార & విహార",
+aharaViharaDescription:
+  "ఆహారం, రోజువారీ దినచర్య, నిద్ర, శారీరక శ్రమ మరియు జీవనశైలి సమాచారం.",
+  sex: "లింగం",
+  consentRevocationMessage:
+  "సమ్మతి రద్దు అభ్యర్థన నమోదు చేయబడింది. రద్దు ఖరారు చేయడానికి ముందు ఆరోగ్య సంరక్షణ ప్రాప్యతను సమీక్షించాలి.",
+  recentAccessEvent: "ఇటీవలి ప్రాప్యత ఈవెంట్",
+currentSharingPreferences:
+  "మీ ప్రస్తుత భాగస్వామ్య ప్రాధాన్యతలు సాధారణ ఆరోగ్య సంరక్షణ ప్రాప్యతకు వర్తింపజేయబడుతున్నాయి.",
+statusLabel: "స్థితి",
+normalAccessEmergencyNote:
+  "మీ అనుమతులు సాధారణ ఆరోగ్య సంరక్షణ ప్రాప్యతను నియంత్రిస్తాయి. అత్యవసర ప్రాప్యత ప్రత్యేక వైద్యుల ధృవీకరణ ప్రక్రియను అనుసరిస్తుంది.",
+  ayushPrakritiQuestion: "మీ సహజ శరీర స్వభావం లేదా ప్రకృతి ఏమిటి?",
+ayushPrakritiPlaceholder: "మీ సహజ శరీర నిర్మాణం, అలవాట్లు మరియు స్వభావ లక్షణాలను వివరించండి...",
+
+ayushVikritiQuestion: "మీరు ప్రస్తుతం ఎలాంటి మార్పులు లేదా అసమతుల్యతలను అనుభవిస్తున్నారు?",
+ayushVikritiPlaceholder: "మీ ప్రస్తుత ఆరోగ్య మార్పులు లేదా అసమతుల్యతలను వివరించండి...",
+
+ayushSaraQuestion: "మీ శరీర ధాతువుల నాణ్యత లేదా బలాన్ని ఎలా వివరిస్తారు?",
+ayushSaraPlaceholder: "మీ శరీర ధాతువుల సాధారణ నాణ్యత మరియు బలాన్ని వివరించండి...",
+
+ayushSamhananaQuestion: "మీ శరీర నిర్మాణం మరియు భౌతిక ఆకృతిని ఎలా వివరిస్తారు?",
+ayushSamhananaPlaceholder: "మీ శరీర నిర్మాణం మరియు భౌతిక ఆకృతిని వివరించండి...",
+
+ayushPramanaQuestion: "మీ ఎత్తు, బరువు మరియు సాధారణ శరీర నిష్పత్తులు ఏమిటి?",
+ayushPramanaPlaceholder: "మీ ఎత్తు, బరువు మరియు శరీర నిష్పత్తులను నమోదు చేయండి...",
+
+ayushSatmyaQuestion: "ఏ ఆహారాలు, దినచర్యలు లేదా అలవాట్లు మీ శరీరానికి బాగా సరిపోతాయి?",
+ayushSatmyaPlaceholder: "మీకు అనుకూలమైన ఆహారాలు, దినచర్యలు, వాతావరణం లేదా అలవాట్లను వివరించండి...",
+
+ayushSattvaQuestion: "మీ మానసిక మరియు భావోద్వేగ స్థితిని ఎలా వివరిస్తారు?",
+ayushSattvaPlaceholder: "మీ మానసిక స్థితి, ఒత్తిడి, భావోద్వేగ స్థిరత్వం మరియు మనోభావాలను వివరించండి...",
+
+ayushAharaShaktiQuestion: "మీ ఆకలి మరియు జీర్ణశక్తిని ఎలా వివరిస్తారు?",
+ayushAharaShaktiPlaceholder: "మీ ఆకలి, జీర్ణక్రియ మరియు ఆహారం తీసుకునే సామర్థ్యాన్ని వివరించండి...",
+
+ayushVyayamaShaktiQuestion: "మీ శారీరక కార్యకలాపాల సామర్థ్యాన్ని ఎలా వివరిస్తారు?",
+ayushVyayamaShaktiPlaceholder: "మీ వ్యాయామ సామర్థ్యం మరియు శారీరక కార్యకలాపాలను వివరించండి...",
+
+ayushVayaQuestion: "మీ వయస్సు ఎంత మరియు మీ ప్రస్తుత జీవిత దశను ఎలా వివరిస్తారు?",
+ayushVayaPlaceholder: "మీ వయస్సు మరియు సంబంధిత జీవిత దశ సమాచారాన్ని నమోదు చేయండి...",
+
+ayushAharaViharaQuestion: "మీ ఆహారం, రోజువారీ దినచర్య, నిద్ర, కార్యకలాపాలు మరియు జీవనశైలి గురించి చెప్పండి.",
+ayushAharaViharaPlaceholder: "మీ ఆహారపు అలవాట్లు, నిద్ర, వ్యాయామం, రోజువారీ దినచర్య మరియు జీవనశైలిని వివరించండి...",
+ayushAnswersSaved: "మీ సమాధానాలు స్వయంచాలకంగా సేవ్ చేయబడతాయి. ముందుగా ఇచ్చిన సమాధానాలను సమీక్షించి సవరించడానికి",
+ayushReviewEdit: "ను ఉపయోగించండి.",
   },
   hi: {
     tagline: "आपका स्वास्थ्य रिकॉर्ड, जहां भी आप हों",
@@ -1395,12 +1630,130 @@ demographicsReviewNote: "आप बाद में इस जानकारी
 patientInformation: "रोगी की जानकारी",
 demographicsDescription: "अपने बारे में जानकारी दें ताकि आपके स्वास्थ्य विशेषज्ञ को आवश्यक पृष्ठभूमि की जानकारी मिल सके।",
 abdmBackendNote: "लाइव ABDM/FHIR संचार बैकएंड के माध्यम से जोड़ा जाएगा.",
+
+    backToDashboard: "डैशबोर्ड पर वापस जाएं",
+    yourAyushHealthHistory: "आपका आयुष स्वास्थ्य इतिहास",
+    whatAssessmentCovers: "इस आकलन में क्या शामिल है",
+    reviewAndEdit: "समीक्षा और संपादन",
+    reviewEditDescription: "आकलन पूरा करने से पहले प्रश्नों के बीच जाएं और अपने उत्तरों को अपडेट करें।",
+    optionalAssessment: "वैकल्पिक आकलन",
+    optionalAssessmentDescription: "आप यह आकलन अपनी नियमित चिकित्सा परामर्श प्रक्रिया से अलग पूरा कर सकते हैं।",
+    startAyushAssessment: "आयुष आकलन शुरू करें",
+    completeAyushAssessment: "आयुष आकलन पूरा करें",
+    ayushAnswersSaved: "आपके उत्तर अपने आप सेव हो जाते हैं। पहले के उत्तरों की समीक्षा और संपादन के लिए Previous का उपयोग करें।",
+    trackNewSymptoms: "नए लक्षण दर्ज करें",
+    trackNewSymptomsDescription: "बाद में विकसित होने वाले लक्षण जोड़ें ताकि आपका स्वास्थ्य विशेषज्ञ समय के साथ आपकी स्थिति में हुए बदलाव देख सके।",
+    symptomTimeline: "लक्षण समयरेखा",
+    symptomTimelineDescription: "देखें कि आपके लक्षण समय के साथ कैसे विकसित हुए।",
+    addNewSymptom: "नया लक्षण जोड़ें",
+    addNewSymptomDescription: "प्रारंभिक परामर्श के बाद विकसित हुए नए लक्षण के बारे में बताएं।",
+    newSymptomQuestion: "आपको कौन सा नया लक्षण हुआ?",
+    newSymptomPlaceholder: "उदाहरण: उल्टी",
+    symptomStartedQuestion: "यह लक्षण वास्तव में कब शुरू हुआ?",
+    symptomStartedNote: "वह समय दर्ज करें जब लक्षण शुरू हुआ था, न कि जब आप इसकी रिपोर्ट कर रहे हैं।",
+    howSevere: "यह कितना गंभीर है?",
+    tellUsMore: "और बताएं",
+    symptomDetailsPlaceholder: "आपने और क्या देखा, उसका विवरण दें...",
+    urgentSymptomsReported: "तत्काल लक्षण रिपोर्ट किए गए",
+    noRedFlagSymptoms: "कोई रेड-फ्लैग लक्षण रिपोर्ट नहीं किया गया",
+    safetyScreenDisclaimer: "यह सुरक्षा जांच है, निदान नहीं। स्वास्थ्य विशेषज्ञ को जानकारी की समीक्षा करनी चाहिए।",
+    aiClinicalInterview: "AI क्लिनिकल इंटरव्यू",
+    aiClinicalInterviewDescription: "अनुकूल प्रश्नों, वॉइस/टेक्स्ट इनपुट और सुरक्षा जांच के साथ मार्गदर्शित चिकित्सा इतिहास।",
+    shareMedicalReport: "यह चिकित्सा रिपोर्ट साझा करें",
+    chooseWhatHealthcareWorkersSee: "ठीक चुनें कि स्वास्थ्यकर्मी क्या देख सकते हैं।",
+    manageSharing: "शेयरिंग प्रबंधित करें",
+    sharingPreferencesSaved: "शेयरिंग प्राथमिकताएं सेव हो गई हैं।",
+    saveSharingSettings: "शेयरिंग सेटिंग्स सेव करें",
+    shared: "साझा",
+    private: "निजी",
+    consentStatus: "सहमति स्थिति",
+    purpose: "उद्देश्य",
+    consentPurposeText: "स्वास्थ्य सेवा, परामर्श, चिकित्सा रिकॉर्ड समीक्षा और आपातकालीन देखभाल।",
+    accessState: "एक्सेस स्थिति",
+    consentAccessStateText: "मरीज द्वारा नियंत्रित एक्सेस वर्तमान में सक्रिय है।",
+    expiry: "समाप्ति",
+    noConsentExpiry: "इस सहमति के लिए कोई समाप्ति निर्धारित नहीं है।",
+    revokeConsent: "सहमति वापस लें",
+    dataSharingControls: "डेटा साझा करने के नियंत्रण",
+    chooseHealthCategories: "चुनें कि आपकी स्वास्थ्य जानकारी की कौन-सी श्रेणियां एक्सेस की जा सकती हैं।",
+    allowed: "अनुमत",
+    notAllowed: "अनुमत नहीं",
+    recentAccessPatientControlled: "मरीज द्वारा नियंत्रित एक्सेस",
+    consentActive: "सक्रिय",
+    consentRevokeAlert: "सहमति वापस लेने का अनुरोध दर्ज किया गया है। अंतिम रूप देने से पहले स्वास्थ्य सेवा एक्सेस की समीक्षा की जानी चाहिए।",
+    myDemographics: "मेरी मरीज जानकारी",
+    myDemographicsDescription: "अपनी व्यक्तिगत, जीवनशैली, मासिक धर्म और प्रसूति स्वास्थ्य जानकारी प्रबंधित करें।",
+    emergencyAccessCardDescription: "आपकी महत्वपूर्ण स्वास्थ्य जानकारी के आपातकालीन एक्सेस को नियंत्रित करें।",
+    summaryNoneReported: "कोई नहीं बताया गया",
+    symptomSaveRequired: "कृपया लक्षण और उसके शुरू होने का समय दर्ज करें।",
+    patientSessionNotFound: "मरीज का सत्र नहीं मिला।",
+    unableToSaveSymptom: "लक्षण सेव नहीं किया जा सका।",
+    invalidAadhaar: "कृपया एक मान्य 12 अंकों का आधार नंबर दर्ज करें।",
+   aadhaarProductionMessage:
+  "प्रोडक्शन संस्करण में आधार सत्यापन एक सुरक्षित पहचान सेवा के माध्यम से जोड़ा जाएगा।",
+  aadhaarPrototypeWarning:
+  "इस प्रोटोटाइप में आधार सत्यापन लाइव नहीं है। आपका आधार नंबर वास्तव में सत्यापित या संग्रहीत नहीं किया जाता है।",
+  irregular: "अनियमित",
+  ayushAssessmentSaved: "आपका आयुष मूल्यांकन आपके स्वास्थ्य रिकॉर्ड में सहेज लिया गया है।",
+  investigationDocumentDescription:
+  "इस स्वास्थ्य रिकॉर्ड से संबंधित जांच दस्तावेज़।",
+  keepInfoUpdated: "यह जानकारी अपडेट रखें ताकि स्वास्थ्यकर्मी आपकी दवाओं और एलर्जी को जल्दी समझ सकें।",
+  dashavidhaPariksha: "दशविध परीक्षा",
+dashavidhaParikshaDescription:
+  "प्रकृति, विकृति, सार, संहनन, प्रमाण, सात्म्य, सत्त्व, आहार शक्ति, व्यायाम शक्ति और वय।",
+aharaVihara: "आहार एवं विहार",
+aharaViharaDescription:
+  "आहार, दैनिक दिनचर्या, नींद, शारीरिक गतिविधि और जीवनशैली की जानकारी।",
+  sex: "लिंग",
+  consentRevocationMessage:
+  "सहमति रद्द करने का अनुरोध दर्ज किया गया है। रद्द करने को अंतिम रूप देने से पहले स्वास्थ्य सेवा की पहुंच की समीक्षा की जानी चाहिए।",
+  recentAccessEvent: "हाल की पहुंच घटना",
+currentSharingPreferences:
+  "आपकी वर्तमान साझाकरण प्राथमिकताएं सामान्य स्वास्थ्य सेवा पहुंच पर लागू की जा रही हैं।",
+statusLabel: "स्थिति",
+normalAccessEmergencyNote:
+  "आपकी अनुमतियां सामान्य स्वास्थ्य सेवा पहुंच को नियंत्रित करती हैं। आपातकालीन पहुंच एक अलग डॉक्टर सत्यापन प्रक्रिया का पालन करेगी।",
+  ayushPrakritiQuestion: "आपकी प्राकृतिक शारीरिक प्रकृति या प्रकृति क्या है?",
+ayushPrakritiPlaceholder: "अपने प्राकृतिक शरीर प्रकार, आदतों और प्रवृत्तियों का वर्णन करें...",
+
+ayushVikritiQuestion: "आप वर्तमान में किन बदलावों या असंतुलनों का अनुभव कर रहे हैं?",
+ayushVikritiPlaceholder: "अपने वर्तमान स्वास्थ्य परिवर्तनों या असंतुलनों का वर्णन करें...",
+
+ayushSaraQuestion: "आप अपने शरीर के ऊतकों की गुणवत्ता या ताकत का वर्णन कैसे करेंगे?",
+ayushSaraPlaceholder: "अपने शरीर के ऊतकों की सामान्य गुणवत्ता और ताकत का वर्णन करें...",
+
+ayushSamhananaQuestion: "आप अपने शरीर की बनावट और शारीरिक संरचना का वर्णन कैसे करेंगे?",
+ayushSamhananaPlaceholder: "अपने शरीर की बनावट और शारीरिक संरचना का वर्णन करें...",
+
+ayushPramanaQuestion: "आपकी लंबाई, वजन और शरीर के सामान्य अनुपात क्या हैं?",
+ayushPramanaPlaceholder: "अपनी लंबाई, वजन और शरीर के अनुपात दर्ज करें...",
+
+ayushSatmyaQuestion: "कौन से खाद्य पदार्थ, दिनचर्या या आदतें आपके शरीर के लिए अनुकूल हैं?",
+ayushSatmyaPlaceholder: "अपने लिए अनुकूल खाद्य पदार्थों, दिनचर्या, जलवायु या आदतों का वर्णन करें...",
+
+ayushSattvaQuestion: "आप अपनी मानसिक और भावनात्मक स्थिति का वर्णन कैसे करेंगे?",
+ayushSattvaPlaceholder: "अपने मूड, तनाव, भावनात्मक स्थिरता और मानसिक स्थिति का वर्णन करें...",
+
+ayushAharaShaktiQuestion: "आप अपनी भूख और पाचन क्षमता का वर्णन कैसे करेंगे?",
+ayushAharaShaktiPlaceholder: "अपनी भूख, पाचन और भोजन करने की क्षमता का वर्णन करें...",
+
+ayushVyayamaShaktiQuestion: "आप अपनी शारीरिक गतिविधि की क्षमता का वर्णन कैसे करेंगे?",
+ayushVyayamaShaktiPlaceholder: "अपनी व्यायाम सहनशीलता और शारीरिक गतिविधियों का वर्णन करें...",
+
+ayushVayaQuestion: "आपकी उम्र क्या है और आप अपने वर्तमान जीवन चरण का वर्णन कैसे करेंगे?",
+ayushVayaPlaceholder: "अपनी उम्र और संबंधित जीवन चरण की जानकारी दर्ज करें...",
+
+ayushAharaViharaQuestion: "अपने आहार, दैनिक दिनचर्या, नींद, गतिविधियों और जीवनशैली के बारे में बताएं।",
+ayushAharaViharaPlaceholder: "अपनी खान-पान की आदतों, नींद, व्यायाम, दैनिक दिनचर्या और जीवनशैली का वर्णन करें...",
+ayushAnswersSaved: "आपके उत्तर स्वचालित रूप से सहेजे जाते हैं। पहले दिए गए उत्तरों की समीक्षा और उन्हें संपादित करने के लिए",
+ayushReviewEdit: "का उपयोग करें।",
   },
 };
 
 function App() {
+ 
   
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState("en"); 
   const [page, setPage] = useState("home");
   const [aadhaarNumber, setAadhaarNumber] = useState("");
 
@@ -1410,6 +1763,9 @@ function App() {
 const [emergencyStatus, setEmergencyStatus] = useState("Not Requested");
 const [emergencyAccessEvent, setEmergencyAccessEvent] = useState("");
   const [patientId, setPatientId] = useState(null);
+  const [patient, setPatient] = useState(null);
+  const [allergiesMedications, setAllergiesMedications] = useState([]);
+  const [medicalHistoryRecords, setMedicalHistoryRecords] = useState([]);
   // Clinical Interview
 const [clinicalConcern, setClinicalConcern] = useState("");
 const [clinicalAnswers, setClinicalAnswers] = useState({});
@@ -1689,15 +2045,10 @@ const getSpeechLanguage = () => {
   // MEDICATIONS
   // ==================================================
 
-  const [medications, setMedications] = useState([
-    {
-      name: "Paracetamol",
-      dosage: "500 mg",
-      frequency: "As needed",
-    },
-  ]);
+  
 
   const [showAddMedication, setShowAddMedication] = useState(false);
+  const [medications, setMedications] = useState([]);
 
   const [newMedication, setNewMedication] = useState({
     name: "",
@@ -1751,12 +2102,12 @@ useEffect(() => {
     if (savedSession) {
       const session = JSON.parse(savedSession);
 
-      if (session?.patientId && session?.phone) {
-        setPatientId(session.patientId);
-        setPhone(session.phone);
-        setAbhaId(session.abhaId || "");
-        setPage("patient-dashboard");
-      }
+     if (session?.patientId && session?.phone) {
+  setPatientId(session.patientId);
+  setPhone(session.phone);
+  setAbhaId(session.abhaId || "");
+  setPage("patient-dashboard");
+}
     }
   } catch (error) {
     console.error("Unable to restore patient session:", error);
@@ -1803,7 +2154,90 @@ useEffect(() => {
 
   loadMedicalRecords();
 }, [patientId]);
+useEffect(() => {
+  if (!patientId) {
+    return;
+  }
 
+  const loadPatientProfile = async () => {
+    const { data, error } = await supabase
+      .from("patients")
+      .select("*")
+      .eq("id", patientId)
+      .single();
+
+    if (error) {
+      console.error("Patient profile error:", error);
+      return;
+    }
+
+  setPatient(data);
+console.log("PATIENT PROFILE:", data);
+  };
+
+  loadPatientProfile();
+}, [patientId]);
+useEffect(() => {
+  if (!patientId) {
+    return;
+  }
+
+  const loadAllergiesMedications = async () => {
+    const { data, error } = await supabase
+      .from("allergies_medications")
+      .select("*")
+      .eq("patient_id", patientId);
+
+    if (error) {
+      console.error("Allergies & medications error:", error);
+      return;
+    }
+
+    const records = data || [];
+
+    setAllergiesMedications(records);
+
+    setMedications(
+      records
+        .filter((item) => item.item_type === "medication")
+        .map((item) => ({
+          id: item.id,
+          name: item.name || "",
+          dosage: item.dosage || "",
+          frequency: item.frequency || "",
+        }))
+    );
+
+    console.log("ALLERGIES & MEDICATIONS:", records);
+  };
+
+  loadAllergiesMedications();
+}, [patientId]);
+
+useEffect(() => {
+  if (!patientId) {
+    return;
+  }
+
+  const loadMedicalHistory = async () => {
+    const { data, error } = await supabase
+      .from("medical_history")
+      .select("*")
+      .eq("patient_id", patientId)
+      .order("diagnosis_date", { ascending: false });
+
+    if (error) {
+      console.error("Medical history error:", error);
+      return;
+    }
+
+    setMedicalHistoryRecords(data || []);
+
+    console.log("MEDICAL HISTORY:", data);
+  };
+
+  loadMedicalHistory();
+}, [patientId]);
   // ==================================================
   // HEALTH JOURNEY
   // ==================================================
@@ -1919,7 +2353,7 @@ if (
         sortDate: new Date().toISOString(),
         year: new Date().getFullYear().toString(),
         type: "ayush",
-        title: "AYUSH Assessment",
+        title: "{t.ayushHistory}",
         hospital: "AROVIA AYUSH History",
         diagnosis: "",
         notes: "AYUSH Dashavidha Pariksha assessment completed.",
@@ -2214,7 +2648,7 @@ if (page === "aadhaar-entry") {
           </h1>
 
           <p className="mt-2 text-sm text-slate-500">
-            Enter your 12-digit Aadhaar number to continue.
+            {t.aadhaarDescription}
           </p>
         </div>
 
@@ -2245,18 +2679,15 @@ if (page === "aadhaar-entry") {
                 return;
               }
 
-              alert(
-                "Aadhaar verification will be connected through a secure identity service in the production version."
-              );
+             alert(t.aadhaarProductionMessage);
             }}
             className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
           >
-            Continue
+           {t.continueButton}
           </button>
 
           <div className="mt-5 rounded-xl bg-amber-50 p-3 text-center text-xs leading-5 text-amber-700">
-            Aadhaar verification is not live in this prototype.
-            Your Aadhaar number is not actually verified or stored.
+           alert(t.invalidAadhaar);
           </div>
 
         </div>
@@ -2580,7 +3011,7 @@ if (page === "patient-demographics") {
                 <option value="Former">{t.former}</option>
                 <option value="Current">{t.current}</option>
                 <option value="Prefer not to say">
-                  Prefer not to say
+                  {t.preferNotToSay}
                 </option>
               </select>
             </div>
@@ -2685,14 +3116,11 @@ if (page === "patient-demographics") {
                     }
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"
                   >
-                    <option value="">{t.selectOption}</option>
-                    <option value="Regular">Regular</option>
-                    <option value="Irregular">Irregular</option>
-                    <option value="Not started">{t.notStarted}</option>
-                    <option value="Menopausal">{t.menopausal}</option>
-                    <option value="Not applicable">
-                      Not applicable
-                    </option>
+                   <option value="Regular">{t.regular}</option>
+<option value="Irregular">{t.irregular}</option>
+<option value="Not started">{t.notStarted}</option>
+<option value="Menopausal">{t.menopausal}</option>
+<option value="Not applicable">{t.notApplicable}</option>
                   </select>
                 </div>
 
@@ -2712,14 +3140,14 @@ if (page === "patient-demographics") {
                           e.target.value
                         )
                       }
-                      placeholder="Age"
+                     placeholder={t.agePlaceholder}
                       className="w-full rounded-xl border border-slate-200 px-4 py-3"
                     />
                   </div>
 
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                      Cycle Duration
+                     {t.cycleDuration}
                     </label>
 
                     <input
@@ -2808,7 +3236,7 @@ if (page === "patient-demographics") {
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700">
-                    Gynaecological History
+                    {t.gynaecologicalHistory}
                   </label>
 
                   <textarea
@@ -2827,7 +3255,7 @@ if (page === "patient-demographics") {
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700">
-                    Previous Gynaecological Procedures
+                    {t.previousGynaecologicalProcedures}
                   </label>
 
                   <textarea
@@ -3228,7 +3656,7 @@ if (page === "patient-login") {
               </h2>
 
               <p className="text-sm text-slate-500">
-                Secure access to your health records
+                 {t.privateInfo}
               </p>
             </div>
 
@@ -3389,7 +3817,7 @@ if (page === "patient-login") {
         <div className="mt-6 flex items-center justify-center gap-2 text-center">
           <span className="text-sm">🔒</span>
           <p className="text-xs leading-5 text-slate-400">
-            {t.healthInformationPrivate}
+            {t.healthInformation}{t.private}
           </p>
         </div>
 
@@ -3477,9 +3905,17 @@ if (page === "patient-login") {
 
 setPatientId(data.id);
 setOtp("");
-sessionStorage.setItem("arovia_patient_session", JSON.stringify({ patientId: data.id, phone, abhaId }));
-setPage("patient-dashboard");
-              }}
+
+sessionStorage.setItem(
+  "arovia_patient_session",
+  JSON.stringify({
+    patientId: data.id,
+    phone,
+    abhaId,
+  })
+);
+
+setPage("patient-dashboard");            }}
               className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
             >
               {t.verifyOTP}
@@ -3496,6 +3932,7 @@ setPage("patient-dashboard");
       </div>
     );
   }
+  
   // ==================================================
   // HEALTH JOURNEY
   // ==================================================
@@ -3774,12 +4211,12 @@ Object.keys(groupedJourney).forEach((year) => {
     <div className="flex items-center justify-between gap-3">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-green-600">
-          🌿 AYUSH History
-        </p>
+  🌿 {t.ayushHistory}
+</p>
 
-        <p className="mt-1 text-sm text-green-800">
-          Your AYUSH assessment has been saved to your health record.
-        </p>
+<p className="mt-1 text-sm text-green-800">
+  {t.ayushAssessmentSaved}
+</p>
       </div>
 
       <button
@@ -3862,7 +4299,7 @@ setPage("pre-consultation");
                                 {event.type === "procedure" && (
   <div className="rounded-xl bg-purple-50 p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-purple-600">
-      Procedure / Surgery
+      {t.procedureSurgery}
     </p>
 
     <p className="mt-1 text-sm font-semibold text-purple-800">
@@ -3879,7 +4316,7 @@ setPage("pre-consultation");
                                   {event.medication && (
                                     <div className="rounded-xl bg-orange-50 p-4">
                                       <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
-                                       Medication History
+                                       {t.medicationHistory}
                                          {t.relatedMedication}
                                       </p>
 
@@ -3920,16 +4357,16 @@ setPage("pre-consultation");
                                   {event.type === "medicalReport" && (
   <div className="rounded-xl bg-blue-50 p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-  Investigation / Medical Report / Document
+  {t.investigationMedicalReport}
 </p>
 
-    <p className="mt-1 text-sm font-semibold text-blue-800">
-      {event.report}
-    </p>
+<p className="mt-1 text-sm font-semibold text-blue-800">
+  {event.report}
+</p>
 
-    <p className="mt-2 text-xs text-blue-700">
-      Investigation document associated with this health record.
-    </p>
+<p className="mt-2 text-xs text-blue-700">
+  {t.investigationDocumentDescription}
+</p>
   </div>
 )}
                                   <p className="pt-1 text-xs font-semibold text-teal-600">
@@ -3998,7 +4435,7 @@ if (page === "medical-history") {
           </h1>
 
           <p className="mt-2 text-sm text-slate-500">
-            {t.viewPreviousRecords}
+           <span>{t.view} {t.previous} Records</span>
           </p>
 
         </div>
@@ -4072,7 +4509,7 @@ if (page === "medical-history") {
                 }}
                 className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-teal-200 bg-teal-50 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-100"
               >
-                🔐 Manage Sharing
+              🔐 {t.manageSharing}
               </button>
 
             </div>
@@ -4095,11 +4532,11 @@ if (page === "medical-history") {
 
               <div>
                 <h2 className="text-xl font-bold">
-                  Share This Medical Report
+                  {t.shareMedicalReport}
                 </h2>
 
                 <p className="mt-1 text-xs text-slate-500">
-                  Choose exactly what healthcare workers can see.
+                 {t.chooseWhatHealthcareWorkersSee}
                 </p>
               </div>
 
@@ -4130,8 +4567,8 @@ if (page === "medical-history") {
 
                    <p className="mt-1 text-xs text-slate-400">
                    {recordSharing[selectedRecordIndex]?.[option.key]
-                   ? "Shared"
-                   : "Private"}
+                   ? "{t.shared}"
+                   : "{t.private}"}
                     </p>
 
                   </div>
@@ -4174,11 +4611,11 @@ if (page === "medical-history") {
             <button
               onClick={() => {
                 setShowRecordSharing(false);
-                alert("Sharing preferences saved.");
+               alert(t.sharingPreferencesSaved);
               }}
               className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white hover:bg-teal-700"
             >
-              Save Sharing Settings
+              {t.saveSharingSettings}
             </button>
 
           </div>
@@ -4237,13 +4674,26 @@ if (page === "medical-history") {
 
                 <div>
 
-                  <h3 className="font-bold">
-                    {t.noKnownAllergies}
-                  </h3>
+                  <div>
+  <h3 className="font-bold">
+    {allergiesMedications.filter(
+      (item) => item.item_type === "allergy"
+    ).length > 0
+      ? allergiesMedications
+          .filter((item) => item.item_type === "allergy")
+          .map((item) => item.name)
+          .join(", ")
+      : t.noKnownAllergies}
+  </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
-                    {t.noAllergiesAdded}
-                  </p>
+  <p className="mt-1 text-sm text-slate-500">
+    {allergiesMedications.filter(
+      (item) => item.item_type === "allergy"
+    ).length > 0
+      ? t.addedToRecord
+      : t.noAllergiesAdded}
+  </p>
+</div>
 
                 </div>
 
@@ -4318,9 +4768,8 @@ if (page === "medical-history") {
           <div className="mt-8 rounded-2xl bg-orange-50 p-4">
 
             <p className="text-sm leading-6 text-orange-800">
-              Keep this information updated so healthcare workers can
-              quickly understand your medications and allergies.
-            </p>
+  {t.keepInfoUpdated}
+</p>
 
           </div>
 
@@ -4329,7 +4778,7 @@ if (page === "medical-history") {
       </div>
     );
   }
-
+ 
    // ==================================================
 // ADD NEW MEDICAL RECORD
 // ==================================================
@@ -4429,7 +4878,7 @@ if (page === "add-record") {
           </h1>
 
           <p className="mt-2 text-sm text-slate-500">
-            Add your medical record using voice, camera, or manually
+             {t.addRecordDescription}
           </p>
 
         </div>
@@ -4465,7 +4914,7 @@ if (page === "add-record") {
                 listening ? "text-white/80" : "text-slate-500"
               }`}
             >
-              Tell us about your medical visit
+               {t.tellVisit}
             </p>
           </button>
 
@@ -4483,7 +4932,7 @@ if (page === "add-record") {
             </h3>
 
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              Take a photo of a prescription or report
+               {t.scanDocumentDescription}
             </p>
           </button>
 
@@ -4505,7 +4954,7 @@ if (page === "add-record") {
                 }}
                 className="text-sm font-semibold text-red-500"
               >
-                Remove
+              {t.remove}
               </button>
             </div>
 
@@ -4552,7 +5001,7 @@ if (page === "add-record") {
                   </div>
 
                   <p className="mt-1 text-xs text-teal-700">
-                    Please review the information before saving.
+                    {t.reviewBeforeSaving}
                   </p>
 
                 </div>
@@ -4579,7 +5028,7 @@ if (page === "add-record") {
                 {/* DOCTOR */}
                 <div className="mt-4">
                   <label className="mb-2 block text-sm font-semibold">
-                    Doctor Name
+                    {t.doctorNameLabel}
                   </label>
 
                   <input
@@ -4598,7 +5047,7 @@ if (page === "add-record") {
                 {/* DIAGNOSIS */}
                 <div className="mt-4">
                   <label className="mb-2 block text-sm font-semibold">
-                    Diagnosis
+                   placeholder={t.diagnosisPlaceholder}
                   </label>
 
                   <input
@@ -4617,7 +5066,7 @@ if (page === "add-record") {
                 {/* NOTES */}
                 <div className="mt-4">
                   <label className="mb-2 block text-sm font-semibold">
-                    Notes
+                   placeholder={t.notesPlaceholder}
                   </label>
 
                   <textarea
@@ -4922,7 +5371,7 @@ if (page === "health-id") {
           className="flex items-center gap-2 text-sm font-semibold text-teal-700"
         >
           <ArrowLeft size={18} />
-          Back
+         {t.back}
         </button>
 
         {/* HEADER */}
@@ -4948,11 +5397,11 @@ if (page === "health-id") {
         <div className="mt-8 rounded-3xl bg-white p-6 text-center shadow-sm">
 
           <p className="text-sm font-semibold text-slate-500">
-            Patient
+           {t.patient}
           </p>
 
           <h2 className="mt-1 text-xl font-bold">
-            Demo Patient
+          {patient?.full_name || t.patient}
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
@@ -4973,7 +5422,7 @@ if (page === "health-id") {
           <div className="mt-6">
 
             <p className="text-xs text-slate-400">
-              AROVIA HEALTH ID
+              {t.aroviaHealthID}
             </p>
 
             <p className="mt-1 text-lg font-bold tracking-widest text-teal-700">
@@ -4986,30 +5435,27 @@ if (page === "health-id") {
 
         {/* INFORMATION */}
 
-        <div className="mt-6 rounded-2xl bg-teal-50 p-4">
+<div className="mt-6 rounded-2xl bg-teal-50 p-4">
 
-          <p className="text-sm font-semibold text-teal-800">
-            How it works
-          </p>
+  <p className="text-sm font-semibold text-teal-800">
+    {t.howItWorks}
+  </p>
 
-          <p className="mt-2 text-sm leading-6 text-teal-700">
-            A healthcare worker can scan this code to identify the
-            patient and access their authorized medical records.
-          </p>
+  <p className="mt-2 text-sm leading-6 text-teal-700">
+    {t.healthIDDescription}
+  </p>
 
-        </div>
+</div>
 
-        {/* SAFETY NOTE */}
+{/* SAFETY NOTE */}
 
-        <div className="mt-4 rounded-2xl bg-amber-50 p-4">
+<div className="mt-4 rounded-2xl bg-amber-50 p-4">
 
-          <p className="text-xs leading-5 text-amber-800">
-            Demo QR code for the hackathon prototype. A production
-            version would connect this ID to a secure patient-record
-            system.
-          </p>
+  <p className="text-xs leading-5 text-amber-800">
+    {t.demoQR}
+  </p>
 
-        </div>
+</div>
 
       </main>
 
@@ -5080,22 +5526,17 @@ if (page === "health-id") {
                   symptomText.includes("breathing") ||
                   symptomText.includes("shortness of breath")
                 ) {
-                  setQuery(
-                    "Possible emergency symptoms detected. Please seek immediate medical attention."
-                  );
+                 setQuery(t.emergencyMessage);
                 } else if (
                   symptomText.includes("fever") ||
                   symptomText.includes("headache") ||
                   symptomText.includes("cold") ||
                   symptomText.includes("cough")
                 ) {
-                  setQuery(
-                    "Your symptoms may need a medical consultation. Stay hydrated and consider speaking with a healthcare professional."
-                  );
+                  
+                  setQuery(t.feverMessage);
                 } else {
-                  setQuery(
-                    "Please consult a healthcare professional for a proper evaluation of your symptoms."
-                  );
+                  setQuery(t.generalSymptomMessage);
                 }
 
               }}
@@ -5110,8 +5551,6 @@ if (page === "health-id") {
 
             <p className="text-sm leading-6 text-amber-800">
               {t.symptomWarning}
-              medical diagnosis. For serious or worsening symptoms,
-              contact a healthcare professional immediately.
             </p>
 
           </div>
@@ -5122,7 +5561,7 @@ if (page === "health-id") {
     );
   }
   // ==================================================
-// AYUSH HISTORY LANDING PAGE
+// {t.ayushHistory} LANDING PAGE
 // ==================================================
 
 if (page === "ayush-history") {
@@ -5136,7 +5575,7 @@ if (page === "ayush-history") {
           className="flex items-center gap-2 text-sm font-semibold text-teal-700"
         >
           <ArrowLeft size={18} />
-          Back to Dashboard
+          {t.backToDashboard}
         </button>
 
         {/* HEADER */}
@@ -5147,16 +5586,15 @@ if (page === "ayush-history") {
           </div>
 
           <p className="mt-6 text-xs font-bold uppercase tracking-widest text-teal-600">
-            AYUSH HISTORY
+            {t.ayushHistory}
           </p>
 
           <h1 className="mt-2 text-3xl font-bold">
-            Your AYUSH Health History
+            {t.yourAyushHealthHistory}
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-slate-500">
-            An optional guided assessment to capture important
-            traditional health-history information.
+            {t.ayushHistoryDescription}
           </p>
 
         </div>
@@ -5165,47 +5603,45 @@ if (page === "ayush-history") {
         <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <h2 className="text-lg font-bold">
-            What this assessment covers
+            {t.whatAssessmentCovers}
           </h2>
 
           <div className="mt-5 space-y-4">
 
             <div className="flex gap-3">
               <div className="mt-1 text-teal-600">✓</div>
-              <div>
-                <p className="font-semibold">
-                  Dashavidha Pariksha
-                </p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Prakriti, Vikriti, Sara, Samhanana, Pramana,
-                  Satmya, Sattva, Ahara Shakti, Vyayama Shakti
-                  and Vaya.
-                </p>
-              </div>
+             <div>
+  <p className="font-semibold">
+    {t.dashavidhaPariksha}
+  </p>
+
+  <p className="mt-1 text-xs leading-5 text-slate-500">
+    {t.dashavidhaParikshaDescription}
+  </p>
+</div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="mt-1 text-teal-600">✓</div>
+             <div>
+  <p className="font-semibold">
+    {t.aharaVihara}
+  </p>
+
+  <p className="mt-1 text-xs leading-5 text-slate-500">
+    {t.aharaViharaDescription}
+  </p>
+</div>
             </div>
 
             <div className="flex gap-3">
               <div className="mt-1 text-teal-600">✓</div>
               <div>
                 <p className="font-semibold">
-                  Ahara & Vihara
+                  {t.reviewAndEdit}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Diet, daily routine, sleep, physical activity
-                  and lifestyle information.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="mt-1 text-teal-600">✓</div>
-              <div>
-                <p className="font-semibold">
-                  Review & Edit
-                </p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Move between questions and update your answers
-                  before completing the assessment.
+                  {t.reviewEditDescription}
                 </p>
               </div>
             </div>
@@ -5217,12 +5653,11 @@ if (page === "ayush-history") {
         <div className="mt-5 rounded-2xl bg-teal-50 p-4">
 
           <p className="text-sm font-semibold text-teal-800">
-            Optional assessment
+            {t.optionalAssessment}
           </p>
 
           <p className="mt-1 text-xs leading-5 text-teal-700">
-            You can complete this assessment separately from
-            your regular clinical consultation.
+            {t.optionalAssessmentDescription}
           </p>
 
         </div>
@@ -5236,7 +5671,7 @@ if (page === "ayush-history") {
           }}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 py-4 font-semibold text-white shadow-md transition hover:bg-teal-700"
         >
-          Start AYUSH Assessment
+          {t.startAyushAssessment}
           <span>→</span>
         </button>
 
@@ -5261,7 +5696,7 @@ if (page === "profile") {
           className="flex items-center gap-2 text-sm font-semibold text-teal-700"
         >
           <ArrowLeft size={18} />
-          Back
+         {t.back}
         </button>
 
         {/* HEADER */}
@@ -5291,7 +5726,7 @@ if (page === "profile") {
             </p>
 
             <p className="mt-2 text-lg font-bold text-slate-900">
-             {patientDemographics.name || "Not provided"}
+            {patientDemographics.name || t.summaryNotProvided}
             </p>
           </div>
 
@@ -5318,9 +5753,11 @@ if (page === "profile") {
           </div>
           {/* PERSONAL & MEDICAL INFORMATION */}
 <div>
-  <p className="text-sm text-slate-500">Sex</p>
+  <p className="text-sm text-slate-500">
+    {t.sex}
+  </p>
   <p className="font-medium text-slate-900">
-    {patientDemographics.sex || "Not provided"}
+    {patientDemographics.sex || t.summaryNotProvided}
   </p>
 </div>
           {/* LANGUAGE */}
@@ -5388,13 +5825,15 @@ if (page === "profile") {
         {/* LOGOUT */}
         <button
           onClick={() => {
-            setPhone("");
-            setOtp("");
-            setPatientId(null);
-            setAbhaId("");
-            setPage("home");
-            sessionStorage.removeItem("arovia_patient_session");
-          }}
+  sessionStorage.removeItem("arovia_patient_session");
+
+  setPhone("");
+  setOtp("");
+  setPatientId(null);
+  setAbhaId("");
+  setPatient(null);
+  setPage("home");
+}}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-50 px-5 py-4 font-semibold text-red-600"
         >
           <LogOut size={20} />
@@ -5415,10 +5854,12 @@ if (page === "privacy-permissions") {
       key: "medicalHistory",
       label: t.medicalHistoryPermission,
     },
-    {
+    
+  {
   key: "ayushHistory",
-  label: "AYUSH History",
+  label: t.ayushHistory,
 },
+
     {
       key: "medications",
       label: t.medicationsPermission,
@@ -5472,57 +5913,54 @@ if (page === "privacy-permissions") {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
-                Consent Status
+                {t.consentStatus}
               </p>
 
               <p className="mt-1 text-lg font-bold text-slate-900">
-                Active
+                {t.consentActive}
               </p>
             </div>
 
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-              Active
+              {t.consentActive}
             </span>
           </div>
 
           <div className="mt-4 space-y-2 text-sm text-slate-700">
             <p>
-              <span className="font-semibold">Purpose:</span>{" "}
-              Healthcare access, consultation, medical record review and
-              emergency care.
+              <span className="font-semibold">{t.purpose}:</span>{" "}
+              {t.consentPurposeText}
             </p>
 
             <p>
-              <span className="font-semibold">Access State:</span>{" "}
-              Patient-controlled access is currently active.
+              <span className="font-semibold">{t.accessState}:</span>{" "}
+              {t.consentAccessStateText}
             </p>
 
             <p>
-              <span className="font-semibold">Expiry:</span>{" "}
-              No expiry set for this consent.
+              <span className="font-semibold">{t.expiry}:</span>{" "}
+              {t.noConsentExpiry}
             </p>
           </div>
 
           <button
             onClick={() =>
-              alert(
-                "Consent revocation request recorded. Healthcare access should be reviewed before revocation is finalized."
-              )
+              alert(t.consentRevocationMessage)
             }
             className="mt-4 w-full rounded-xl border border-red-200 bg-white py-3 font-semibold text-red-600 hover:bg-red-50"
           >
-            Revoke Consent
+            {t.revokeConsent}
           </button>
         </div>
 
         {/* DATA SHARING CONTROLS */}
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            Data Sharing Controls
+            {t.dataSharingControls}
           </p>
 
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            Choose which categories of your health information can be accessed.
+            {t.chooseHealthCategories}
           </p>
 
           <div className="mt-4">
@@ -5542,8 +5980,8 @@ if (page === "privacy-permissions") {
 
                   <p className="mt-1 text-xs text-slate-400">
                     {permissions[item.key]
-                      ? "Allowed"
-                      : "Not allowed"}
+                      ? "{t.allowed}"
+                      : "{t.notAllowed}"}
                   </p>
                 </div>
 
@@ -5584,28 +6022,26 @@ if (page === "privacy-permissions") {
         {/* ACCESS EVENT */}
         <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            Recent Access Event
-          </p>
+  {t.recentAccessEvent}
+</p>
 
-          <p className="mt-2 text-sm font-semibold text-slate-800">
-            Patient-controlled access
-          </p>
+<p className="mt-1 text-xs leading-5 text-slate-500">
+  {t.currentSharingPreferences}
+</p>
 
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            Your current sharing preferences are being applied to normal
-            healthcare access.
-          </p>
+<p className="mt-2 text-xs text-slate-400">
+  {t.statusLabel}: {t.consentActive}
+</p>
 
           <p className="mt-2 text-xs text-slate-400">
-            Status: Active
+            Status: {t.consentActive}
           </p>
         </div>
 
         {/* INFO */}
         <div className="mt-5 rounded-2xl bg-amber-50 p-4">
           <p className="text-sm leading-6 text-amber-800">
-            Your permissions control normal healthcare access. Emergency
-            access will follow a separate doctor verification process.
+           {t.normalAccessEmergencyNote}
           </p>
         </div>
 
@@ -5636,11 +6072,11 @@ if (page === "add-symptom") {
           </div>
 
           <h1 className="mt-5 text-3xl font-bold">
-            Add New Symptom
+            {t.addNewSymptom}
           </h1>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Tell us about a new symptom that developed after your initial consultation.
+            {t.addNewSymptomDescription}
           </p>
         </div>
 
@@ -5648,7 +6084,7 @@ if (page === "add-symptom") {
 
           <div>
             <label className="text-sm font-semibold text-slate-700">
-              What new symptom did you develop?
+              {t.newSymptomQuestion}
             </label>
 
             <input
@@ -5659,14 +6095,14 @@ if (page === "add-symptom") {
                   name: e.target.value
                 }))
               }
-              placeholder="Example: Vomiting"
+              placeholder="{t.newSymptomPlaceholder}"
               className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
             />
           </div>
 
           <div>
             <label className="text-sm font-semibold text-slate-700">
-              When did this symptom actually start?
+              {t.symptomStartedQuestion}
             </label>
 
             <input
@@ -5682,13 +6118,13 @@ if (page === "add-symptom") {
             />
 
             <p className="mt-1 text-xs text-slate-400">
-              Enter when the symptom began, not when you are reporting it.
+              {t.symptomStartedNote}
             </p>
           </div>
 
           <div>
             <label className="text-sm font-semibold text-slate-700">
-              How severe is it?
+              {t.howSevere}
             </label>
 
             <select
@@ -5710,7 +6146,7 @@ if (page === "add-symptom") {
 
           <div>
             <label className="text-sm font-semibold text-slate-700">
-              Tell us more
+              {t.tellUsMore}
             </label>
 
             <textarea
@@ -5721,7 +6157,7 @@ if (page === "add-symptom") {
                   details: e.target.value
                 }))
               }
-              placeholder="Describe anything else you noticed..."
+              placeholder="{t.symptomDetailsPlaceholder}"
               rows={4}
               className="mt-2 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
             />
@@ -5730,12 +6166,12 @@ if (page === "add-symptom") {
           <button
             onClick={async () => {
   if (!newSymptom.name.trim() || !newSymptom.startedAt) {
-    alert("Please enter the symptom and when it started.");
+    alert(t.symptomSaveRequired);
     return;
   }
 
   if (!patientId) {
-    alert("Patient session not found.");
+    alert(t.patientSessionNotFound);
     return;
   }
 
@@ -5754,7 +6190,7 @@ if (page === "add-symptom") {
 
   if (error) {
     console.error("Save symptom error:", error);
-    alert("Unable to save symptom.");
+    alert(t.unableToSaveSymptom);
     return;
   }
 
@@ -6010,120 +6446,119 @@ const nextStepMap = {
       : a.medications || "None reported";
 
   return {
-    complaint: a.complaint || "Not provided",
-    duration: a.duration || "Not provided",
-    severity: a.severity ? `${a.severity}/10` : "Not provided",
-    associatedSymptoms: a.associatedSymptoms || "None reported",
-    relevantHistory: a.relevantHistory || historyText,
-    pastSurgicalHistory: a.pastSurgicalHistory || "None reported",
-    currentMedications: medicationText,
-    allergies: a.allergies || "None reported",
-    familyHistory: a.familyHistory || "Not provided",
-    personalHistory: a.personalHistory || "Not provided",
-    reviewOfSystems: a.reviewOfSystems || "Not provided",
-    redFlags: a.redFlags || "Not reported",
-    redFlagDetected: hasRedFlag(a.redFlags) || hasRedFlag(a.associatedSymptoms),
-    patientDescription: a.complaint || "Not provided",
-    ayush: ayushMode
-  ? {
-      prakriti: ayushAnswers.prakriti || "Not provided",
-      vikriti: ayushAnswers.vikriti || "Not provided",
-      sara: ayushAnswers.sara || "Not provided",
-      samhanana: ayushAnswers.samhanana || "Not provided",
-      pramana: ayushAnswers.pramana || "Not provided",
-      satmya: ayushAnswers.satmya || "Not provided",
-      sattva: ayushAnswers.sattva || "Not provided",
-      aharaShakti: ayushAnswers.aharaShakti || "Not provided",
-      vyayamaShakti: ayushAnswers.vyayamaShakti || "Not provided",
-      vaya: ayushAnswers.vaya || "Not provided",
-      aharaVihara: ayushAnswers.aharaVihara || "Not provided",
-    }
-  : null,
-  };
+  complaint: a.complaint || t.summaryNotProvided,
+  duration: a.duration || t.summaryNotProvided,
+  severity: a.severity ? `${a.severity}/10` : t.summaryNotProvided,
+  associatedSymptoms: a.associatedSymptoms || t.summaryNotReported,
+  relevantHistory: a.relevantHistory || historyText,
+  pastSurgicalHistory: a.pastSurgicalHistory || t.summaryNotReported,
+  currentMedications: medicationText,
+  allergies: a.allergies || t.summaryNotReported,
+  familyHistory: a.familyHistory || t.summaryNotProvided,
+  personalHistory: a.personalHistory || t.summaryNotProvided,
+  reviewOfSystems: a.reviewOfSystems || t.summaryNotProvided,
+  redFlags: a.redFlags || t.summaryNotReported,
+  redFlagDetected:
+    hasRedFlag(a.redFlags) || hasRedFlag(a.associatedSymptoms),
+  patientDescription: a.complaint || t.summaryNotProvided,
+  ayush: ayushMode
+    ? {
+        prakriti: ayushAnswers.prakriti || t.summaryNotProvided,
+        vikriti: ayushAnswers.vikriti || t.summaryNotProvided,
+        sara: ayushAnswers.sara || t.summaryNotProvided,
+        samhanana: ayushAnswers.samhanana || t.summaryNotProvided,
+        pramana: ayushAnswers.pramana || t.summaryNotProvided,
+        satmya: ayushAnswers.satmya || t.summaryNotProvided,
+        sattva: ayushAnswers.sattva || t.summaryNotProvided,
+        aharaShakti: ayushAnswers.aharaShakti || t.summaryNotProvided,
+        vyayamaShakti: ayushAnswers.vyayamaShakti || t.summaryNotProvided,
+        vaya: ayushAnswers.vaya || t.summaryNotProvided,
+        aharaVihara: ayushAnswers.aharaVihara || t.summaryNotProvided,
+      }
+    : null,
+};
 };
 if (preConsultationStep === "ayushAssessment") {
+
   const ayushQuestions = [
+
     {
       key: "prakriti",
-      label: "Prakriti",
-      question: "What is your natural body constitution or Prakriti?",
-      placeholder: "Describe your natural body type, habits, and tendencies...",
+      label: t.summaryPrakriti,
+      question: t.ayushPrakritiQuestion,
+      placeholder: t.ayushPrakritiPlaceholder,
     },
+
     {
       key: "vikriti",
-      label: "Vikriti",
-      question: "What changes or imbalances are you currently experiencing?",
-      placeholder: "Describe your current health changes or imbalances...",
+      label: t.summaryVikriti,
+      question: t.ayushVikritiQuestion,
+      placeholder: t.ayushVikritiPlaceholder,
     },
+
     {
       key: "sara",
-      label: "Sara",
-      question:
-        "How would you describe the quality or strength of your body tissues?",
-      placeholder: "Describe your general tissue quality and strength...",
+      label: t.summarySara,
+      question: t.ayushSaraQuestion,
+      placeholder: t.ayushSaraPlaceholder,
     },
+
     {
       key: "samhanana",
-      label: "Samhanana",
-      question:
-        "How would you describe your body build and physical structure?",
-      placeholder: "Describe your body build and physical structure...",
+      label: t.summarySamhanana,
+      question: t.ayushSamhananaQuestion,
+      placeholder: t.ayushSamhananaPlaceholder,
     },
+
     {
       key: "pramana",
-      label: "Pramana",
-      question:
-        "What are your height, weight, and general body proportions?",
-      placeholder: "Enter your height, weight, and body proportions...",
+      label: t.summaryPramana,
+      question: t.ayushPramanaQuestion,
+      placeholder: t.ayushPramanaPlaceholder,
     },
+
     {
       key: "satmya",
-      label: "Satmya",
-      question:
-        "What foods, routines, or habits suit your body well?",
-      placeholder:
-        "Describe foods, routines, climate, or habits that suit you...",
+      label: t.summarySatmya,
+      question: t.ayushSatmyaQuestion,
+      placeholder: t.ayushSatmyaPlaceholder,
     },
+
     {
       key: "sattva",
-      label: "Sattva",
-      question:
-        "How would you describe your mental and emotional state?",
-      placeholder:
-        "Describe your mood, stress, emotional stability, and mental state...",
+      label: t.summarySattva,
+      question: t.ayushSattvaQuestion,
+      placeholder: t.ayushSattvaPlaceholder,
     },
+
     {
       key: "aharaShakti",
-      label: "Ahara Shakti",
-      question:
-        "How would you describe your appetite and digestive capacity?",
-      placeholder:
-        "Describe your appetite, digestion, and ability to eat...",
+      label: t.summaryAharaShakti,
+      question: t.ayushAharaShaktiQuestion,
+      placeholder: t.ayushAharaShaktiPlaceholder,
     },
+
     {
       key: "vyayamaShakti",
-      label: "Vyayama Shakti",
-      question:
-        "How would you describe your physical activity capacity?",
-      placeholder:
-        "Describe your exercise tolerance and physical activity...",
+      label: t.summaryVyayamaShakti,
+      question: t.ayushVyayamaShaktiQuestion,
+      placeholder: t.ayushVyayamaShaktiPlaceholder,
     },
+
     {
       key: "vaya",
-      label: "Vaya",
-      question:
-        "What is your age and how would you describe your current stage of life?",
-      placeholder:
-        "Enter your age and relevant life-stage information...",
+      label: t.summaryVaya,
+      question: t.ayushVayaQuestion,
+      placeholder: t.ayushVayaPlaceholder,
     },
+
     {
       key: "aharaVihara",
-      label: "Ahara & Vihara",
-      question:
-        "Tell us about your diet, daily routine, sleep, activity, and lifestyle.",
-      placeholder:
-        "Describe your food habits, sleep, exercise, daily routine, and lifestyle...",
+      label: t.summaryAharaVihara,
+      question: t.ayushAharaViharaQuestion,
+      placeholder: t.ayushAharaViharaPlaceholder,
     },
+
   ];
 
   const currentAyushQuestion =
@@ -6148,7 +6583,7 @@ if (preConsultationStep === "ayushAssessment") {
           className="flex items-center gap-2 text-sm font-semibold text-teal-700"
         >
           <ArrowLeft size={18} />
-          Back
+        {t.back}
         </button>
 
         {/* HEADER */}
@@ -6162,11 +6597,11 @@ if (preConsultationStep === "ayushAssessment") {
 
               <div>
                 <p className="text-xs font-bold tracking-wide text-teal-600">
-                  AYUSH HISTORY
+                  {t.ayushHistory}
                 </p>
 
                 <h1 className="mt-1 text-2xl font-bold">
-                  AYUSH Assessment
+                  {t.ayushHistory}
                 </h1>
               </div>
             </div>
@@ -6255,7 +6690,7 @@ if (preConsultationStep === "ayushAssessment") {
               }
               className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Previous
+              {t.previous}
             </button>
 
             {!isLastAyushQuestion ? (
@@ -6271,7 +6706,7 @@ if (preConsultationStep === "ayushAssessment") {
                 }
                 className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
               >
-                Next →
+                {t.next} →
               </button>
             ) : (
               <button
@@ -6288,7 +6723,7 @@ if (preConsultationStep === "ayushAssessment") {
 }}
                 className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
               >
-                Complete AYUSH Assessment
+                {t.completeAyushAssessment}
               </button>
             )}
 
@@ -6298,9 +6733,8 @@ if (preConsultationStep === "ayushAssessment") {
         {/* INFO */}
         <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50 p-4">
           <p className="text-sm leading-6 text-teal-800">
-            Your answers are saved automatically. Use
-            Previous to review and edit earlier answers.
-          </p>
+  {t.ayushAnswersSaved} {t.previous} {t.ayushReviewEdit}
+</p>
         </div>s
 
       </main>
@@ -6374,10 +6808,10 @@ if (preConsultationStep === "ayushAssessment") {
   <div className="flex items-center justify-between gap-3">
     <div>
       <p className="font-bold text-teal-800">
-        Track new symptoms
+        {t.trackNewSymptoms}
       </p>
       <p className="mt-1 text-xs leading-5 text-teal-700">
-        Add symptoms that develop later so your healthcare professional can see how your condition changed over time.
+        {t.trackNewSymptomsDescription}
       </p>
     </div>
 {symptomTimeline.length > 0 && (
@@ -6390,11 +6824,11 @@ if (preConsultationStep === "ayushAssessment") {
 
       <div>
         <h2 className="font-bold">
-          Symptom Timeline
+          {t.symptomTimeline}
         </h2>
 
         <p className="text-sm text-slate-500">
-          See how your symptoms developed over time.
+          {t.symptomTimelineDescription}
         </p>
       </div>
     </div>
@@ -6535,7 +6969,7 @@ if (preConsultationStep === "ayushAssessment") {
       {preConsultationAnswers.associatedSymptoms || "Not provided"}
     </p>
   </div>
-  {/* AYUSH HISTORY SUMMARY */}
+  {/* {t.ayushHistory} SUMMARY */}
 {Object.values(ayushAnswers).some(
   (answer) => answer && answer.trim()
 ) && (
@@ -6594,10 +7028,8 @@ if (preConsultationStep === "ayushAssessment") {
 
     <div className="mt-4 rounded-2xl border border-teal-100 bg-white p-4">
       <p className="text-xs leading-5 text-slate-500">
-        This information was provided by the patient during the
-        optional AYUSH assessment. It should be reviewed by a
-        qualified healthcare professional.
-      </p>
+  {t.summaryAyushDisclaimer}
+</p>
     </div>
 
   </div>
@@ -6645,7 +7077,7 @@ if (preConsultationStep === "ayushAssessment") {
      {t.summaryKnownAllergies}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.allergies || t.summaryNoneReported}
+      {preConsultationAnswers.allergies || t.summaryNotReported}
     </p>
   </div>
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -6709,28 +7141,28 @@ if (preConsultationStep === "ayushAssessment") {
 
     <p>
       <span className="font-semibold">{t.summaryAssociatedSymptoms}:</span>{" "}
-     {preConsultationAnswers.associatedSymptoms || t.summaryNoneReported}
+     {preConsultationAnswers.associatedSymptoms || t.summaryNotReported}
     </p>
 
     <p>
    <span className="font-semibold">{t.summaryRelevantHistory}:</span>{" "}
-      {preConsultationAnswers.relevantHistory || t.summaryNotProvided}xl
+      {preConsultationAnswers.relevantHistory || t.summaryNotProvided}
     </p>
   </div>
 </div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Family History</p>
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.summaryFamilyHistory}</p>
     <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.familyHistory || "Not provided"}</p>
   </div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Personal History</p>
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.summaryPersonalHistory}</p>
     <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.personalHistory || "Not provided"}</p>
   </div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Review of Systems</p>
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.summaryReviewOfSystems}</p>
     <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.reviewOfSystems || "Not provided"}</p>
   </div>
 
@@ -6742,12 +7174,12 @@ if (preConsultationStep === "ayushAssessment") {
     <p className={`text-xs font-semibold uppercase tracking-wide ${
       hasRedFlag(preConsultationAnswers.redFlags) || hasRedFlag(preConsultationAnswers.associatedSymptoms)
         ? "text-red-600" : "text-emerald-700"
-    }`}>Safety / Red-Flag Check</p>
+    }`}>{t.summarySafetyRedFlag}</p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.redFlags || "Not reported"}
+      {preConsultationAnswers.redFlags || "{t.summaryNotReported}"}
     </p>
     {(hasRedFlag(preConsultationAnswers.redFlags) || hasRedFlag(preConsultationAnswers.associatedSymptoms)) && (
-      <p className="mt-3 font-bold text-red-700">Emergency symptoms reported — seek urgent medical attention and alert healthcare staff.</p>
+      <p className="mt-3 font-bold text-red-700">{t.summaryEmergencyWarning}</p>
     )}
   </div>
 
@@ -6817,7 +7249,7 @@ if (preConsultationStep === "ayushAssessment") {
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Current Medications
+       {t.currentMedications}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {preConsultationAnswers.medications || "Not provided"}
@@ -6826,7 +7258,7 @@ if (preConsultationStep === "ayushAssessment") {
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Known Allergies
+     {t.allergies}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {preConsultationAnswers.allergies || "Not provided"}
@@ -7004,7 +7436,7 @@ if (preConsultationStep === "ayushAssessment") {
         <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">
-            AROVIA
+             AROVIA
           </p>
 <div className="mb-5">
   <div className="flex items-center justify-between text-sm font-semibold text-slate-600">
@@ -7043,7 +7475,7 @@ if (preConsultationStep === "ayushAssessment") {
   }}
   className="mt-4 flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700"
 >
-  🔊 Read Aloud
+  🔊 {t.readAloud}
 </button>
 
         </div>
@@ -7157,7 +7589,7 @@ if (preConsultationStep === "ayushAssessment") {
     }
     className="flex-1 rounded-xl border-2 border-slate-300 bg-white py-3 font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
   >
-    Previous
+    {t.previous}
   </button>
 
   {/* SPEAK */}
@@ -7259,8 +7691,8 @@ if (page === "emergency-access") {
                   {t.bloodGroup}
                 </p>
                 <p className="mt-1 font-semibold">
-                 {t.notAvailable}
-                </p>
+  {patient?.blood_group || t.notAvailable}
+</p>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -7348,8 +7780,8 @@ if (page === "emergency-access") {
     </p>
 
     <h1 className="mt-1 text-2xl font-bold text-slate-900">
-     {patientDemographics.name || t.summaryNotProvided}
-    </h1>
+  {patient?.full_name || patientDemographics.name || t.summaryNotProvided}
+</h1>
   </div>
 
   <div className="flex gap-2">
@@ -7491,11 +7923,11 @@ if (page === "emergency-access") {
                 </div>
 
                 <h3 className="mt-4 font-bold">
-                  AI Clinical Interview
+                  {t.aiClinicalInterview}
                 </h3>
 
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Guided history with adaptive questions, voice/text input and safety screening.
+                  {t.aiClinicalInterviewDescription}
                 </p>
               </button>
 
@@ -7555,11 +7987,11 @@ if (page === "emergency-access") {
   </div>
 
   <h3 className="mt-4 font-bold text-slate-800">
-    My Demographics
+    {t.myDemographics}
   </h3>
 
   <p className="mt-1 text-xs leading-5 text-slate-500">
-    Manage your personal, lifestyle, menstrual and obstetric health information.
+    {t.myDemographicsDescription}
   </p>
 </button>
 
@@ -7583,7 +8015,7 @@ if (page === "emergency-access") {
                 </p>
 
                             </button>
-                            {/* AYUSH HISTORY */}
+                            {/* {t.ayushHistory} */}
 
 <button
   onClick={() => {
@@ -7634,11 +8066,11 @@ if (page === "emergency-access") {
                 </div>
 
                 <h3 className="mt-4 font-bold text-red-700">
-                  Emergency Access
+                  {t.emergencyAccessLabel}
                 </h3>
 
                 <p className="mt-1 text-xs leading-5 text-slate-600">
-                  Control emergency access to your critical health information.
+                  {t.emergencyAccessCardDescription}
                 </p>
               </button>
 
@@ -7650,9 +8082,13 @@ if (page === "emergency-access") {
 
           <button
             onClick={() => {
+              sessionStorage.removeItem("arovia_patient_session");
               setPage("home");
               setPhone("");
               setOtp("");
+              setPatientId(null);
+              setPatient(null);
+              setAbhaId("");
             }}
             className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-teal-600 bg-white py-3.5 font-semibold text-teal-700 hover:bg-teal-50"
           >
