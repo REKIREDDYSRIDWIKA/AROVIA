@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { QRCodeCanvas } from "qrcode.react";
+
 import {
   Mic,
   User,
@@ -15,6 +16,9 @@ import {
   QrCode,
   Hospital,
   ClipboardList,
+  Search,
+  AlertCircle,
+  Volume2,
 } from "lucide-react";
 const translations = {
   en: {
@@ -22,11 +26,44 @@ const translations = {
     chooseLanguage: "Choose your language",
     searchPlaceholder: "Describe your symptoms or ask a question...",
     patient: "I'm a Patient",
-    doctor: "I'm a Doctor / Health Worker",
     back: "Back",
     welcome: "Welcome back 👋",
     welcomeTo: "Welcome to AROVIA",
     patientLogin: "Patient Login",
+    registrationTitle: "Create your AROVIA account",
+registrationDescription: "Register once to start building your digital health record.",
+fullName: "Full Name",
+enterFullName: "Enter your full name",
+abhaIdOptional: "ABHA ID",
+optional: "optional",
+enterAbhaNumber: "Enter 14-digit ABHA number",
+abhaIntegrationNote:
+  "ABHA linking is an integration step. This prototype records the entry point; live ABDM linking can be connected by the backend later.",
+createAccount: "Create Account",
+privateProtected: "Your health information is private and protected.",
+
+aadhaarTitle: "Continue with Aadhaar",
+aadhaarDescription:
+  "Enter your 12-digit Aadhaar number to access your health records.",
+aadhaarNumber: "Aadhaar Number",
+aadhaarPlaceholder: "12-digit Aadhaar number",
+
+abhaTitle: "Continue with ABHA",
+abhaDescription:
+  "Enter your 14-digit ABHA number to connect your health records.",
+abhaNumber: "ABHA Number",
+abhaPlaceholder: "14-digit ABHA number",
+
+abdmFhirStatus: "ABDM / FHIR Integration Status",
+abdmConnection: "ABDM Connection",
+notConnected: "Not Connected",
+fhirRecord: "FHIR Record",
+readyForIntegration: "Ready for Integration",
+submissionStatus: "Submission Status",
+notSubmitted: "Not Submitted",
+apiStatus: "API Status",
+awaitingBackend: "Awaiting Backend",
+continueButton: "Continue",
     accessRecords: "Access your health records",
     mobileNumber: "Mobile Number",
     enterMobile: "Enter 10-digit number",
@@ -40,6 +77,14 @@ const translations = {
     demoOtp: "Demo OTP: 123456",
     invalidPhone: "Please enter a valid 10-digit mobile number.",
     incorrectOtp: "Incorrect OTP. Use 123456 for the demo.",
+    
+doctorNameLabel: "Doctor Name",
+dateLabel: "Date",
+diagnosisLabel: "Diagnosis",
+notesLabel: "Notes",
+hospitalPlaceholder: "Enter hospital or clinic name",
+doctorPlaceholder: "Enter doctor's name",
+diagnosisPlaceholder: "Enter diagnosis",
     medicalHistory: "Medical History",
     viewPreviousRecords: "View your previous medical records",
     diagnosis: "Diagnosis",
@@ -84,7 +129,6 @@ const translations = {
     cameraTitle: "Scan Medical Document",
     documentInstruction: "Take a clear photo of a prescription, test report, or medical document.",
     medicalDocument: "Medical Document",
-    remove: "Remove",
     extractAI: "Extract Information with AI",
     saveDocument: "Save Document",
     documentSaved: "Medical document uploaded",
@@ -92,7 +136,7 @@ const translations = {
     aiComing: "AI document extraction will be connected next.",
     healthID: "AROVIA Health ID",
     showHealthID: "Show this ID to a healthcare worker to access your record",
-    patient: "Patient",
+   
     aroviaHealthID: "AROVIA HEALTH ID",
     howItWorks: "How it works",
     healthIDDescription: "A healthcare worker can scan this code to identify the patient and access their authorized medical records.",
@@ -108,6 +152,32 @@ const translations = {
    aroviaListening: "AROVIA is listening...",
   you: "You",
   done: "Done",
+  recordGeneralConsultation: "General Consultation",
+recordBloodTest: "Blood Test",
+recordPrescription: "Prescription",
+recordVaccination: "Vaccination",
+recordOther: "Other",
+
+hospitalClinicLabel: "Hospital / Clinic",
+doctorNameLabel: "Doctor Name",
+dateLabel: "Date",
+diagnosisLabel: "Diagnosis",
+notesLabel: "Notes",
+
+hospitalPlaceholder: "Enter hospital or clinic name",
+doctorPlaceholder: "Enter doctor's name",
+diagnosisPlaceholder: "Enter diagnosis",
+
+medicalDocument: "Medical Document",
+remove: "Remove",
+aiReadingDocument: "AI is reading your document...",
+extractingMedicalInformation: "Extracting medical information",
+aiExtractedInformation: "AI Extracted Information",
+reviewBeforeSaving: "Please review the information before saving.",
+saveMedicalRecord: "Save Medical Record",
+
+voiceInput: "Voice Input",
+useThisInformation: "Use This Information",
   preConsultationIntro:
   "Tell us what you're experiencing. You can speak or type your response.",
 
@@ -128,6 +198,33 @@ preConsultationMedications:
 
 preConsultationAllergies:
   "Do you have any known allergies?",
+  preConsultationAssociatedSymptoms:
+  "Are you experiencing any other symptoms along with your main problem?",
+
+preConsultationFamilyHistory:
+  "Is there any important family history of medical conditions such as diabetes, heart disease, high blood pressure, or other hereditary conditions?",
+  preConsultationPersonalHistory:
+  "Can you tell me about your personal history, such as smoking, alcohol use, occupation, lifestyle, or other relevant habits?",
+
+preConsultationReviewOfSystems:
+  "Are you experiencing any other symptoms involving your general health, heart, breathing, stomach, nervous system, or other body systems?",
+  preConsultationRedFlags:
+  "Safety check: Are you having severe breathing difficulty, severe chest pain, fainting, sudden weakness, seizures, or uncontrolled bleeding right now?",
+  preConsultationHeadacheSymptoms:
+  "Do you have nausea, vomiting, dizziness, vision changes, or weakness?",
+
+preConsultationCoughSymptoms:
+  "Do you have fever, breathing difficulty, chest pain, or blood in your cough?",
+
+preConsultationFeverSymptoms:
+  "Do you have chills, cough, sore throat, headache, body pain, vomiting, diarrhea, or difficulty breathing?",
+
+preConsultationStomachSymptoms:
+  "Do you have vomiting, diarrhea, fever, or blood in your stool or vomit?",
+
+readAloud: "Read Aloud",
+
+
    yourHealthStory: "Your Health Story",
   latestHealthEvent: "Latest Health Event",
   viewDetails: "View Details",
@@ -142,6 +239,7 @@ notesLabel: "Notes",
 relatedMedication: "Related Medication",
 relatedReport: "Related Report",
 closeDetails: "Close Details",
+
 healthStoryText: (count) =>
   `Your health journey contains ${count} recorded healthcare events, including consultations, medications and medical reports.`,
     symptomDescription: "Describe your symptoms and get a basic health suggestion",
@@ -185,17 +283,242 @@ healthStoryText: (count) =>
     symptoms: "Symptoms",
     voiceUnsupported: "Voice input is not supported in this browser.",
     privateHealth: "AROVIA • Healthcare for everyone",
+    symptomSelectSeverity: "Select severity",
+symptomMild: "Mild",
+symptomModerate: "Moderate",
+symptomSevere: "Severe",
+addSymptom: "Add Symptom",
+summaryPatientDemographics: "Patient Demographics",
+summaryPatientId: "Patient ID",
+summaryNotAvailable: "Not available",
+summaryAbhaId: "ABHA ID",
+summaryNotLinked: "Not linked",
+summaryMainConcern: "Main Concern",
+summaryNotProvided: "Not provided",
+summaryDuration: "Duration",
+summarySeverity: "Severity",
+summaryAssociatedSymptoms: "Associated Symptoms",
+
+summaryAyushHistory: "AYUSH HISTORY",
+summaryDashavidhaLifestyle: "Dashavidha Pariksha & Lifestyle",
+summaryAyushAssessmentInfo: "Patient-provided AYUSH assessment information",
+
+summaryPrakriti: "Prakriti",
+summaryVikriti: "Vikriti",
+summarySara: "Sara",
+summarySamhanana: "Samhanana",
+summaryPramana: "Pramana",
+summarySatmya: "Satmya",
+summarySattva: "Sattva",
+summaryAharaShakti: "Ahara Shakti",
+summaryVyayamaShakti: "Vyayama Shakti",
+summaryVaya: "Vaya",
+summaryAharaVihara: "Ahara & Vihara",
+
+summaryAyushDisclaimer:
+  "This information was provided by the patient during the optional AYUSH assessment. It should be reviewed by a qualified healthcare professional.",
+
+summaryPastSurgicalHistory: "Past Surgical History",
+summaryRelevantMedicalHistory: "Relevant Medical History",
+summaryCurrentMedications: "Current Medications",
+summaryKnownAllergies: "Known Allergies",
+summaryFamilyHistory: "Family History",
+summaryPersonalHistory: "Personal History",
+summaryReviewOfSystems: "Review of Systems (ROS)",
+
+summaryPatientDescription: "Patient's Description",
+summaryHpi: "History of Present Illness (HPI)",
+summaryChiefComplaint: "Chief Complaint",
+summaryRelevantHistory: "Relevant History",
+summarySafetyRedFlag: "Safety / Red-Flag Check",
+summaryNotReported: "Not reported",
+
+summaryEmergencyWarning:
+  "Emergency symptoms reported — seek urgent medical attention and alert healthcare staff.",
+  aiClinicalSummaryDraft: "AI-Generated Clinical Summary — Draft",
+aiAssistedHistory: "AI-assisted history",
+status: "Status",
+draft: "Draft",
+editing: "Editing",
+confirmed: "Confirmed",
+correctionRequested: "Correction Requested",
+edit: "Edit",
+acceptConfirm: "Accept / Confirm",
+rejectCorrection: "Reject / Request Correction",
+aiSummaryDisclaimer:
+  "This is an AI-generated draft based on information provided by the patient. It is not a diagnosis and should be reviewed by a healthcare professional.",
+  questionProgress: "Question",
+ofText: "of",
+answered: "Answered",
+complete: "complete",
+readAloud: "Read Aloud",
+aroviaLabel: "AROVIA",
+
+medicineNameUnknown: "Don't know the medicine name?",
+medicinePhotoInstruction:
+  "Take a photo of the medicine strip, package, or prescription.",
+takePhotoUpload: "Take Photo / Upload",
+emergencyBackDashboard: "Back to Dashboard",
+emergencyAccessSettings: "Emergency Access Settings",
+emergencyAccessDescription:
+  "Manage access to your critical health information during emergencies.",
+emergencyAccessLabel: "Emergency Access",
+enabled: "Enabled",
+emergencyCriticalInfo:
+  "Critical health information can be accessed during an emergency.",
+active: "Active",
+criticalInfoAvailable: "Critical Information Available",
+bloodGroup: "Blood Group",
+notAvailable: "Not Available",
+noKnownAllergies: "No known allergies",
+medications: "Medications",
+accessControl: "Access Control",
+emergencyAccessIntended:
+  "Emergency access is intended for urgent healthcare situations.",
+disableEmergencyAccess: "Disable Emergency Access",
+enableEmergencyAccess: "Enable Emergency Access",
+currentStatus: "Current status",
+recentAccessEvent: "Recent Access Event",
+noEmergencyAccessEvent:
+  "No emergency access event has been recorded.",
+  ayushDashavidhaTitle: "AYUSH — Dashavidha Pariksha",
+ayurvedicClinicalAssessment: "Ayurvedic clinical assessment",
+question: "Question",
+
+previous: "Previous",
+next: "Next",
+
+dontKnowMedicine: "Don't know the medicine name?",
+medicinePhotoInstruction: "Take a photo of the medicine strip, package, or prescription.",
+takePhotoUpload: "Take Photo / Upload",
+investigationMedicalReport: "Investigation / Medical Report",
+procedureSurgery: "Procedure / Surgery",
+consultation: "Consultation",
+editAyush: "Edit AYUSH",
+    ayushHistory: "AYUSH History",
+    ayushHistoryDescription: "Complete your AYUSH health assessment and Dashavidha Pariksha.",
+    settings: "Settings",
+    settingsDescription: "Manage your profile, health information, privacy and preferences.",
+demographicsTitle: "Patient Demographics",
+basicInformation: "Basic Information",
+lifestyleSocialHistory: "Lifestyle & Social History",
+personalBackground: "Personal Background",
+menstrualHistoryTitle: "Menstrual History",
+gynaecologicalHistoryTitle: "Gynaecological History",
+obstetricHistoryTitle: "Obstetric History",
+saveAndContinue: "Save & Continue",
+fullNamePlaceholder: "Enter your full name",
+agePlaceholder: "Age",
+selectOption: "Select",
+female: "Female",
+male: "Male",
+intersex: "Intersex",
+preferNotToSay: "Prefer not to say",
+occupationJob: "Occupation / Job",
+occupationPlaceholder: "Student, teacher, farmer, engineer...",
+dietLabel: "Diet",
+selectDiet: "Select diet",
+vegetarian: "Vegetarian",
+nonVegetarian: "Non-vegetarian",
+vegan: "Vegan",
+other: "Other",
+physicalActivityLabel: "Physical Activity",
+selectActivityLevel: "Select activity level",
+low: "Low",
+moderate: "Moderate",
+high: "High",
+sleepLabel: "Sleep",
+sleepPlaceholder: "Example: 7 hours, good quality",
+alcoholUse: "Alcohol Use",
+never: "Never",
+occasional: "Occasional",
+regular: "Regular",
+tobaccoSmoking: "Tobacco / Smoking",
+former: "Former",
+otherSubstanceDrugUse: "Other Substance / Drug Use",
+substanceUsePlaceholder: "Mention any relevant substance use, or write None.",
+ethnicityLabel: "Ethnicity",
+religionLabel: "Religion",
+optional: "Optional",
+menstrualStatus: "Menstrual Status",
+notStarted: "Not started",
+menopausal: "Menopausal",
+notApplicable: "Not applicable",
+ageAtMenarche: "Age at Menarche",
+cycleDuration: "Cycle Duration",
+cycleDurationPlaceholder: "Example: 28 days",
+cycleRegularity: "Cycle Regularity",
+cycleRegularityPlaceholder: "Example: Regular every 28 days",
+lastMenstrualPeriod: "Last Menstrual Period",
+menopauseStatus: "Menopause Status",
+menopausePlaceholder: "Optional / Not applicable",
+gynaecologicalHistory: "Gynaecological History",
+gynaecologicalHistoryPlaceholder: "Mention relevant conditions, symptoms, or history.",
+previousGynaecologicalProcedures: "Previous Gynaecological Procedures",
+previousProceduresPlaceholder: "Mention previous procedures, if any.",
+obstetricHistory: "OBSTETRIC HISTORY",
+pregnancyDeliveryHistory: "Pregnancy & Delivery History",
+pregnancyStatus: "Pregnancy Status",
+notPregnant: "Not pregnant",
+currentlyPregnant: "Currently pregnant",
+possiblyPregnant: "Possibly pregnant",
+postpartum: "Postpartum",
+gravida: "Gravida (G)",
+para: "Para (P)",
+abortions: "Abortions (A)",
+livingChildren: "Living Children (L)",
+previousPregnancyComplications: "Previous Pregnancy Complications",
+previousComplicationsPlaceholder: "Mention any previous complications, or write None.",
+previousDeliveryDetails: "Previous Delivery Details",
+currentPregnancyDetails: "Current Pregnancy Details",
+currentPregnancyPlaceholder: "Only if currently pregnant or relevant.",
+saveAndContinue: "Save & Continue →",
+demographicsReviewNote: "You can review this information later. Sensitive fields are optional where appropriate.",
+patientInformation: "PATIENT INFORMATION",
+demographicsDescription: "Tell us about yourself so your healthcare professional has the right background information.",
+abdmBackendNote: "Live ABDM/FHIR communication will be connected through the backend.",
   },
   te: {
     tagline: "మీ ఆరోగ్య రికార్డు, మీరు ఎక్కడ ఉన్నా",
     chooseLanguage: "మీ భాషను ఎంచుకోండి",
     searchPlaceholder: "మీ లక్షణాలను వివరించండి లేదా ప్రశ్న అడగండి...",
-    patient: "నేను రోగిని",
-    doctor: "నేను వైద్యుడు / ఆరోగ్య కార్యకర్తను",
+  
     back: "వెనక్కి",
     welcome: "తిరిగి స్వాగతం 👋",
     welcomeTo: "AROVIA కి స్వాగతం",
     patientLogin: "రోగి లాగిన్",
+    registrationTitle: "మీ AROVIA ఖాతాను సృష్టించండి",
+registrationDescription: "మీ డిజిటల్ ఆరోగ్య రికార్డును ప్రారంభించడానికి ఒకసారి నమోదు చేసుకోండి.",
+fullName: "పూర్తి పేరు",
+enterFullName: "మీ పూర్తి పేరు నమోదు చేయండి",
+abhaIdOptional: "ABHA ID",
+optional: "ఐచ్ఛికం",
+enterAbhaNumber: "14 అంకెల ABHA నంబర్ నమోదు చేయండి",
+abhaIntegrationNote:
+  "ABHA అనుసంధానం ఒక ఇంటిగ్రేషన్ దశ. ఈ ప్రోటోటైప్‌లో ప్రవేశం నమోదు చేయబడుతుంది; నిజమైన ABDM అనుసంధానాన్ని తరువాత బ్యాక్‌ఎండ్ ద్వారా కలుపవచ్చు.",
+createAccount: "ఖాతాను సృష్టించండి",
+privateProtected: "మీ ఆరోగ్య సమాచారం గోప్యంగా మరియు సురక్షితంగా ఉంటుంది.",
+
+aadhaarTitle: "ఆధార్‌తో కొనసాగండి",
+aadhaarDescription: "మీ ఆరోగ్య రికార్డులను యాక్సెస్ చేయడానికి 12 అంకెల ఆధార్ నంబర్ నమోదు చేయండి.",
+aadhaarNumber: "ఆధార్ నంబర్",
+aadhaarPlaceholder: "12 అంకెల ఆధార్ నంబర్",
+
+abhaTitle: "ABHAతో కొనసాగండి",
+abhaDescription: "మీ ఆరోగ్య రికార్డులను అనుసంధానించడానికి 14 అంకెల ABHA నంబర్ నమోదు చేయండి.",
+abhaNumber: "ABHA నంబర్",
+abhaPlaceholder: "14 అంకెల ABHA నంబర్",
+
+abdmFhirStatus: "ABDM / FHIR ఇంటిగ్రేషన్ స్థితి",
+abdmConnection: "ABDM కనెక్షన్",
+notConnected: "అనుసంధానం కాలేదు",
+fhirRecord: "FHIR రికార్డు",
+readyForIntegration: "ఇంటిగ్రేషన్‌కు సిద్ధంగా ఉంది",
+submissionStatus: "సమర్పణ స్థితి",
+notSubmitted: "సమర్పించలేదు",
+apiStatus: "API స్థితి",
+awaitingBackend: "బ్యాక్‌ఎండ్ కోసం వేచి ఉంది",
+continueButton: "కొనసాగించండి",
     accessRecords: "మీ ఆరోగ్య రికార్డులను చూడండి",
     mobileNumber: "మొబైల్ నంబర్",
     enterMobile: "10 అంకెల నంబర్ నమోదు చేయండి",
@@ -209,6 +532,14 @@ healthStoryText: (count) =>
     demoOtp: "డెమో OTP: 123456",
     invalidPhone: "దయచేసి సరైన 10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి.",
     incorrectOtp: "తప్పు OTP. డెమో కోసం 123456 ఉపయోగించండి.",
+    hospitalClinicLabel: "ఆసుపత్రి / క్లినిక్",
+doctorNameLabel: "వైద్యుని పేరు",
+dateLabel: "తేదీ",
+diagnosisLabel: "రోగ నిర్ధారణ",
+notesLabel: "గమనికలు",
+hospitalPlaceholder: "ఆసుపత్రి లేదా క్లినిక్ పేరు నమోదు చేయండి",
+doctorPlaceholder: "వైద్యుని పేరు నమోదు చేయండి",
+diagnosisPlaceholder: "రోగ నిర్ధారణ నమోదు చేయండి",
     medicalHistory: "వైద్య చరిత్ర",
     viewPreviousRecords: "మీ పాత వైద్య రికార్డులను చూడండి",
     diagnosis: "నిర్ధారణ",
@@ -290,6 +621,22 @@ preConsultationMedications:
 
 preConsultationAllergies:
   "మీకు తెలిసిన ఏవైనా అలెర్జీలు ఉన్నాయా?",
+  preConsultationAssociatedSymptoms:
+  "మీ ప్రధాన సమస్యతో పాటు మీకు ఏవైనా ఇతర లక్షణాలు ఉన్నాయా?",
+
+preConsultationFamilyHistory:
+  "డయాబెటిస్, గుండె జబ్బులు, అధిక రక్తపోటు లేదా ఇతర వంశపారంపర్య వ్యాధులు వంటి ముఖ్యమైన కుటుంబ వైద్య చరిత్ర ఏదైనా ఉందా?",
+
+preConsultationPersonalHistory:
+  "ధూమపానం, మద్యం వినియోగం, వృత్తి, జీవనశైలి లేదా ఇతర సంబంధిత అలవాట్ల గురించి మీ వ్యక్తిగత చరిత్రను చెప్పగలరా?",
+
+preConsultationReviewOfSystems:
+  "మీ సాధారణ ఆరోగ్యం, గుండె, శ్వాస, కడుపు, నాడీ వ్యవస్థ లేదా ఇతర శరీర భాగాలకు సంబంధించిన ఏవైనా ఇతర లక్షణాలు మీకు ఉన్నాయా?",
+
+preConsultationRedFlags:
+  "భద్రతా తనిఖీ: ప్రస్తుతం మీకు తీవ్రమైన శ్వాస తీసుకోవడంలో ఇబ్బంది, తీవ్రమైన ఛాతీ నొప్పి, మూర్ఛ, అకస్మాత్తు బలహీనత, మూర్ఛలు లేదా నియంత్రించలేని రక్తస్రావం ఏదైనా ఉందా?",
+  readAloud: "బిగ్గరగా చదవండి",
+startSpeaking: "మాట్లాడటం ప్రారంభించండి",
 
     preConsultationSummary: "ప్రీ-కన్సల్టేషన్ సారాంశం",
 
@@ -302,6 +649,32 @@ preConsultationAllergies:
    done: "పూర్తయింది",
 
   you: "మీరు",
+  recordGeneralConsultation: "సాధారణ వైద్య సంప్రదింపు",
+recordBloodTest: "రక్త పరీక్ష",
+recordPrescription: "ప్రిస్క్రిప్షన్",
+recordVaccination: "టీకా",
+recordOther: "ఇతర",
+
+hospitalClinicLabel: "ఆసుపత్రి / క్లినిక్",
+doctorNameLabel: "వైద్యుని పేరు",
+dateLabel: "తేదీ",
+diagnosisLabel: "రోగ నిర్ధారణ",
+notesLabel: "గమనికలు",
+
+hospitalPlaceholder: "ఆసుపత్రి లేదా క్లినిక్ పేరు నమోదు చేయండి",
+doctorPlaceholder: "వైద్యుని పేరు నమోదు చేయండి",
+diagnosisPlaceholder: "రోగ నిర్ధారణ నమోదు చేయండి",
+
+medicalDocument: "వైద్య పత్రం",
+remove: "తొలగించు",
+aiReadingDocument: "AI మీ పత్రాన్ని చదువుతోంది...",
+extractingMedicalInformation: "వైద్య సమాచారాన్ని వెలికితీస్తోంది",
+aiExtractedInformation: "AI ద్వారా వెలికితీసిన సమాచారం",
+reviewBeforeSaving: "సేవ్ చేయడానికి ముందు సమాచారాన్ని సమీక్షించండి.",
+saveMedicalRecord: "వైద్య రికార్డును సేవ్ చేయండి",
+
+voiceInput: "వాయిస్ ఇన్‌పుట్",
+useThisInformation: "ఈ సమాచారాన్ని ఉపయోగించండి",
 
   aroviaListening: "AROVIA వింటోంది...",
 
@@ -318,7 +691,6 @@ preConsultationAllergies:
     medicalReport: "వైద్య రిపోర్ట్",
     diagnosisLabel: "నిర్ధారణ",
     doctorLabel: "డాక్టర్",
-    hospitalClinicLabel: "ఆసుపత్రి / క్లినిక్",
     dateLabel: "తేదీ",
     notesLabel: "గమనికలు",
     relatedMedication: "సంబంధిత మందు",
@@ -367,17 +739,245 @@ preConsultationAllergies:
     symptoms: "లక్షణాలు",
     voiceUnsupported: "ఈ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు.",
     privateHealth: "AROVIA • అందరికీ ఆరోగ్య సేవలు",
+    symptomSelectSeverity: "తీవ్రతను ఎంచుకోండి",
+symptomMild: "తేలికపాటి",
+symptomModerate: "మధ్యస్థం",
+symptomSevere: "తీవ్రమైన",
+addSymptom: "లక్షణాన్ని జోడించండి",
+summaryPatientDemographics: "రోగి వివరాలు",
+summaryPatientId: "రోగి ID",
+summaryNotAvailable: "అందుబాటులో లేదు",
+summaryAbhaId: "ABHA ID",
+summaryNotLinked: "లింక్ చేయలేదు",
+summaryMainConcern: "ప్రధాన సమస్య",
+summaryNotProvided: "అందించలేదు",
+summaryDuration: "వ్యవధి",
+summarySeverity: "తీవ్రత",
+summaryAssociatedSymptoms: "సంబంధిత లక్షణాలు",
+
+summaryAyushHistory: "ఆయుష్ చరిత్ర",
+summaryDashavidhaLifestyle: "దశవిధ పరీక్ష & జీవనశైలి",
+summaryAyushAssessmentInfo: "రోగి అందించిన ఆయుష్ అంచనా సమాచారం",
+
+summaryPrakriti: "ప్రకృతి",
+summaryVikriti: "వికృతి",
+summarySara: "సారం",
+summarySamhanana: "సంహననం",
+summaryPramana: "ప్రమాణం",
+summarySatmya: "సాత్మ్యం",
+summarySattva: "సత్త్వం",
+summaryAharaShakti: "ఆహార శక్తి",
+summaryVyayamaShakti: "వ్యాయామ శక్తి",
+summaryVaya: "వయస్సు",
+summaryAharaVihara: "ఆహారం & విహారం",
+
+summaryAyushDisclaimer:
+  "ఈ సమాచారం రోగి ఐచ్ఛిక ఆయుష్ అంచనా సమయంలో అందించారు. దీనిని అర్హత కలిగిన ఆరోగ్య నిపుణుడు సమీక్షించాలి.",
+
+summaryPastSurgicalHistory: "గత శస్త్రచికిత్స చరిత్ర",
+summaryRelevantMedicalHistory: "సంబంధిత వైద్య చరిత్ర",
+summaryCurrentMedications: "ప్రస్తుత మందులు",
+summaryKnownAllergies: "తెలిసిన అలర్జీలు",
+summaryFamilyHistory: "కుటుంబ చరిత్ర",
+summaryPersonalHistory: "వ్యక్తిగత చరిత్ర",
+summaryReviewOfSystems: "వ్యవస్థల సమీక్ష (ROS)",
+
+summaryPatientDescription: "రోగి వివరణ",
+summaryHpi: "ప్రస్తుత అనారోగ్య చరిత్ర (HPI)",
+summaryChiefComplaint: "ప్రధాన ఫిర్యాదు",
+summaryRelevantHistory: "సంబంధిత చరిత్ర",
+summarySafetyRedFlag: "భద్రత / ప్రమాద సూచనల తనిఖీ",
+summaryNotReported: "నివేదించలేదు",
+
+summaryEmergencyWarning:
+  "అత్యవసర లక్షణాలు నివేదించబడ్డాయి — వెంటనే వైద్య సహాయం పొందండి మరియు ఆరోగ్య సిబ్బందికి తెలియజేయండి.",
+  aiClinicalSummaryDraft: "AI ద్వారా రూపొందించిన క్లినికల్ సారాంశం — డ్రాఫ్ట్",
+aiAssistedHistory: "AI సహాయంతో రూపొందించిన చరిత్ర",
+status: "స్థితి",
+draft: "డ్రాఫ్ట్",
+editing: "సవరిస్తున్నారు",
+confirmed: "ధృవీకరించబడింది",
+correctionRequested: "సవరణ కోరబడింది",
+edit: "సవరించు",
+acceptConfirm: "ఆమోదించు / ధృవీకరించు",
+rejectCorrection: "తిరస్కరించు / సవరణ కోరండి",
+aiSummaryDisclaimer:
+  "ఇది రోగి అందించిన సమాచారం ఆధారంగా AI రూపొందించిన డ్రాఫ్ట్. ఇది రోగ నిర్ధారణ కాదు మరియు ఆరోగ్య నిపుణుడు సమీక్షించాలి.",
+  questionProgress: "ప్రశ్న",
+ofText: "లో",
+answered: "సమాధానమిచ్చారు",
+complete: "పూర్తయింది",
+readAloud: "వినిపించు",
+aroviaLabel: "AROVIA",
+
+medicineNameUnknown: "మందు పేరు తెలియదా?",
+medicinePhotoInstruction:
+  "మందు స్ట్రిప్, ప్యాకేజీ లేదా ప్రిస్క్రిప్షన్ ఫోటో తీయండి.",
+takePhotoUpload: "ఫోటో తీయండి / అప్‌లోడ్ చేయండి",
+emergencyBackDashboard: "డ్యాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి",
+emergencyAccessSettings: "అత్యవసర యాక్సెస్ సెట్టింగ్‌లు",
+emergencyAccessDescription:
+  "అత్యవసర పరిస్థితుల్లో మీ ముఖ్యమైన ఆరోగ్య సమాచారానికి యాక్సెస్‌ను నిర్వహించండి.",
+emergencyAccessLabel: "అత్యవసర యాక్సెస్",
+enabled: "ప్రారంభించబడింది",
+emergencyCriticalInfo:
+  "అత్యవసర సమయంలో ముఖ్యమైన ఆరోగ్య సమాచారాన్ని యాక్సెస్ చేయవచ్చు.",
+active: "క్రియాశీలం",
+criticalInfoAvailable: "అందుబాటులో ఉన్న ముఖ్యమైన సమాచారం",
+bloodGroup: "రక్త వర్గం",
+notAvailable: "అందుబాటులో లేదు",
+noKnownAllergies: "తెలిసిన అలర్జీలు లేవు",
+medications: "మందులు",
+accessControl: "యాక్సెస్ నియంత్రణ",
+emergencyAccessIntended:
+  "అత్యవసర యాక్సెస్ అత్యవసర ఆరోగ్య పరిస్థితుల కోసం ఉద్దేశించబడింది.",
+disableEmergencyAccess: "అత్యవసర యాక్సెస్‌ను నిలిపివేయండి",
+enableEmergencyAccess: "అత్యవసర యాక్సెస్‌ను ప్రారంభించండి",
+currentStatus: "ప్రస్తుత స్థితి",
+recentAccessEvent: "ఇటీవలి యాక్సెస్ ఈవెంట్",
+noEmergencyAccessEvent:
+  "ఎటువంటి అత్యవసర యాక్సెస్ ఈవెంట్ నమోదు కాలేదు.",
+  ayushDashavidhaTitle: "ఆయుష్ — దశవిధ పరీక్ష",
+ayurvedicClinicalAssessment: "ఆయుర్వేద క్లినికల్ అంచనా",
+question: "ప్రశ్న",
+ofText: "లో",
+answered: "సమాధానమిచ్చారు",
+complete: "పూర్తయింది",
+previous: "మునుపటి",
+next: "తదుపరి",
+
+dontKnowMedicine: "మందు పేరు తెలియదా?",
+medicinePhotoInstruction: "మందు స్ట్రిప్, ప్యాకేజీ లేదా ప్రిస్క్రిప్షన్ ఫోటో తీయండి.",
+takePhotoUpload: "ఫోటో తీయండి / అప్‌లోడ్ చేయండి",
+investigationMedicalReport: "పరీక్ష / వైద్య నివేదిక",
+procedureSurgery: "ప్రక్రియ / శస్త్రచికిత్స",
+consultation: "వైద్య సంప్రదింపు",
+editAyush: "ఆయుష్‌ను సవరించండి",
+    ayushHistory: "ఆయుష్ చరిత్ర",
+    ayushHistoryDescription: "మీ ఆయుష్ ఆరోగ్య అంచనా మరియు దశవిధ పరీక్షను పూర్తి చేయండి.",
+    settings: "సెట్టింగ్‌లు",
+    settingsDescription: "మీ ప్రొఫైల్, ఆరోగ్య సమాచారం, గోప్యత మరియు ప్రాధాన్యతలను నిర్వహించండి.",
+demographicsTitle: "రోగి వివరాలు",
+basicInformation: "ప్రాథమిక సమాచారం",
+lifestyleSocialHistory: "జీవనశైలి & సామాజిక చరిత్ర",
+personalBackground: "వ్యక్తిగత నేపథ్యం",
+menstrualHistoryTitle: "మాసిక ధర్మ చరిత్ర",
+gynaecologicalHistoryTitle: "స్త్రీ జననేంద్రియ చరిత్ర",
+obstetricHistoryTitle: "ప్రసూతి చరిత్ర",
+saveAndContinue: "సేవ్ చేసి కొనసాగించండి",
+fullNamePlaceholder: "మీ పూర్తి పేరును నమోదు చేయండి",
+agePlaceholder: "వయస్సు",
+selectOption: "ఎంచుకోండి",
+female: "స్త్రీ",
+male: "పురుషుడు",
+intersex: "ఇంటర్‌సెక్స్",
+preferNotToSay: "చెప్పడానికి ఇష్టపడటం లేదు",
+occupationJob: "వృత్తి / ఉద్యోగం",
+occupationPlaceholder: "విద్యార్థి, ఉపాధ్యాయుడు, రైతు, ఇంజనీర్...",
+dietLabel: "ఆహారం",
+selectDiet: "ఆహారాన్ని ఎంచుకోండి",
+vegetarian: "శాకాహారం",
+nonVegetarian: "మాంసాహారం",
+vegan: "వీగన్",
+other: "ఇతర",
+physicalActivityLabel: "శారీరక కార్యకలాపాలు",
+selectActivityLevel: "కార్యకలాప స్థాయిని ఎంచుకోండి",
+low: "తక్కువ",
+moderate: "మధ్యస్థం",
+high: "అధికం",
+sleepLabel: "నిద్ర",
+sleepPlaceholder: "ఉదాహరణ: 7 గంటలు, మంచి నాణ్యత",
+alcoholUse: "మద్యం వినియోగం",
+never: "ఎప్పుడూ కాదు",
+occasional: "అప్పుడప్పుడు",
+regular: "క్రమం తప్పకుండా",
+tobaccoSmoking: "పొగాకు / ధూమపానం",
+former: "గతంలో",
+otherSubstanceDrugUse: "ఇతర పదార్థం / మాదకద్రవ్య వినియోగం",
+substanceUsePlaceholder: "సంబంధిత పదార్థ వినియోగాన్ని పేర్కొనండి లేదా లేదు అని రాయండి.",
+ethnicityLabel: "జాతి నేపథ్యం",
+religionLabel: "మతం",
+optional: "ఐచ్ఛికం",
+menstrualStatus: "మాసిక ధర్మ స్థితి",
+notStarted: "ఇంకా ప్రారంభం కాలేదు",
+menopausal: "రజోనివృత్తి",
+notApplicable: "వర్తించదు",
+ageAtMenarche: "మొదటి మాసిక ధర్మం వచ్చిన వయస్సు",
+cycleDuration: "చక్ర వ్యవధి",
+cycleDurationPlaceholder: "ఉదాహరణ: 28 రోజులు",
+cycleRegularity: "చక్ర క్రమబద్ధత",
+cycleRegularityPlaceholder: "ఉదాహరణ: ప్రతి 28 రోజులకు క్రమం తప్పకుండా",
+lastMenstrualPeriod: "చివరి మాసిక ధర్మం",
+menopauseStatus: "రజోనివృత్తి స్థితి",
+menopausePlaceholder: "ఐచ్ఛికం / వర్తించదు",
+gynaecologicalHistory: "స్త్రీ జననేంద్రియ చరిత్ర",
+gynaecologicalHistoryPlaceholder: "సంబంధిత పరిస్థితులు, లక్షణాలు లేదా చరిత్రను పేర్కొనండి.",
+previousGynaecologicalProcedures: "మునుపటి స్త్రీ జననేంద్రియ ప్రక్రియలు",
+previousProceduresPlaceholder: "మునుపటి ప్రక్రియలు ఉంటే పేర్కొనండి.",
+obstetricHistory: "ప్రసూతి చరిత్ర",
+pregnancyDeliveryHistory: "గర్భధారణ & ప్రసవ చరిత్ర",
+pregnancyStatus: "గర్భధారణ స్థితి",
+notPregnant: "గర్భవతి కాదు",
+currentlyPregnant: "ప్రస్తుతం గర్భవతి",
+possiblyPregnant: "గర్భవతి అయ్యే అవకాశం ఉంది",
+postpartum: "ప్రసవానంతర కాలం",
+gravida: "గ్రావిడా (G)",
+para: "పారా (P)",
+abortions: "గర్భస్రావాలు (A)",
+livingChildren: "జీవించి ఉన్న పిల్లలు (L)",
+previousPregnancyComplications: "మునుపటి గర్భధారణ సమస్యలు",
+previousComplicationsPlaceholder: "మునుపటి సమస్యలను పేర్కొనండి లేదా లేదు అని రాయండి.",
+previousDeliveryDetails: "మునుపటి ప్రసవ వివరాలు",
+currentPregnancyDetails: "ప్రస్తుత గర్భధారణ వివరాలు",
+currentPregnancyPlaceholder: "ప్రస్తుతం గర్భవతిగా ఉన్నప్పుడు లేదా సంబంధితమైనప్పుడు మాత్రమే.",
+saveAndContinue: "సేవ్ చేసి కొనసాగించండి →",
+demographicsReviewNote: "మీరు ఈ సమాచారాన్ని తర్వాత సమీక్షించవచ్చు. అవసరమైన చోట సున్నితమైన వివరాలు ఐచ్ఛికం.",
+patientInformation: "రోగి సమాచారం",
+demographicsDescription: "మీ గురించి వివరాలను అందించండి, తద్వారా మీ ఆరోగ్య నిపుణుడికి అవసరమైన నేపథ్య సమాచారం అందుతుంది.",
+abdmBackendNote: "లైవ్ ABDM/FHIR కమ్యూనికేషన్ బ్యాకెండ్ ద్వారా అనుసంధానించబడుతుంది.",
   },
   hi: {
     tagline: "आपका स्वास्थ्य रिकॉर्ड, जहां भी आप हों",
     chooseLanguage: "अपनी भाषा चुनें",
     searchPlaceholder: "अपने लक्षण बताएं या कोई प्रश्न पूछें...",
-    patient: "मैं एक मरीज हूं",
-    doctor: "मैं डॉक्टर / स्वास्थ्य कार्यकर्ता हूं",
+  
+
     back: "वापस",
     welcome: "वापसी पर स्वागत है 👋",
     welcomeTo: "AROVIA में आपका स्वागत है",
     patientLogin: "मरीज़ लॉगिन",
+    registrationTitle: "अपना AROVIA खाता बनाएं",
+registrationDescription: "अपना डिजिटल स्वास्थ्य रिकॉर्ड शुरू करने के लिए एक बार पंजीकरण करें।",
+fullName: "पूरा नाम",
+enterFullName: "अपना पूरा नाम दर्ज करें",
+abhaIdOptional: "ABHA ID",
+optional: "वैकल्पिक",
+enterAbhaNumber: "14 अंकों का ABHA नंबर दर्ज करें",
+abhaIntegrationNote:
+  "ABHA लिंकिंग एक इंटीग्रेशन चरण है। यह प्रोटोटाइप प्रवेश बिंदु को रिकॉर्ड करता है; वास्तविक ABDM लिंकिंग को बाद में बैकएंड से जोड़ा जा सकता है।",
+createAccount: "खाता बनाएं",
+privateProtected: "आपकी स्वास्थ्य जानकारी निजी और सुरक्षित है।",
+
+aadhaarTitle: "आधार के साथ जारी रखें",
+aadhaarDescription: "अपने स्वास्थ्य रिकॉर्ड तक पहुंचने के लिए 12 अंकों का आधार नंबर दर्ज करें।",
+aadhaarNumber: "आधार नंबर",
+aadhaarPlaceholder: "12 अंकों का आधार नंबर",
+
+abhaTitle: "ABHA के साथ जारी रखें",
+abhaDescription: "अपने स्वास्थ्य रिकॉर्ड को जोड़ने के लिए 14 अंकों का ABHA नंबर दर्ज करें।",
+abhaNumber: "ABHA नंबर",
+abhaPlaceholder: "14 अंकों का ABHA नंबर",
+
+abdmFhirStatus: "ABDM / FHIR इंटीग्रेशन स्थिति",
+abdmConnection: "ABDM कनेक्शन",
+notConnected: "कनेक्ट नहीं है",
+fhirRecord: "FHIR रिकॉर्ड",
+readyForIntegration: "इंटीग्रेशन के लिए तैयार",
+submissionStatus: "सबमिशन स्थिति",
+notSubmitted: "सबमिट नहीं किया गया",
+apiStatus: "API स्थिति",
+awaitingBackend: "बैकएंड की प्रतीक्षा है",
+continueButton: "जारी रखें",
     accessRecords: "अपने स्वास्थ्य रिकॉर्ड देखें",
     mobileNumber: "मोबाइल नंबर",
     enterMobile: "10 अंकों का नंबर दर्ज करें",
@@ -391,6 +991,14 @@ preConsultationAllergies:
     demoOtp: "डेमो OTP: 123456",
     invalidPhone: "कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।",
     incorrectOtp: "गलत OTP। डेमो के लिए 123456 का उपयोग करें।",
+    hospitalClinicLabel: "अस्पताल / क्लिनिक",
+doctorNameLabel: "डॉक्टर का नाम",
+dateLabel: "तारीख",
+diagnosisLabel: "निदान",
+notesLabel: "नोट्स",
+hospitalPlaceholder: "अस्पताल या क्लिनिक का नाम दर्ज करें",
+doctorPlaceholder: "डॉक्टर का नाम दर्ज करें",
+diagnosisPlaceholder: "निदान दर्ज करें",
     medicalHistory: "चिकित्सा इतिहास",
     viewPreviousRecords: "अपने पिछले चिकित्सा रिकॉर्ड देखें",
     diagnosis: "निदान",
@@ -472,6 +1080,23 @@ preConsultationMedications:
 
 preConsultationAllergies:
   "क्या आपको कोई ज्ञात एलर्जी है?",
+  preConsultationAssociatedSymptoms:
+  "क्या आपको अपनी मुख्य समस्या के साथ कोई अन्य लक्षण भी महसूस हो रहे हैं?",
+
+preConsultationFamilyHistory:
+  "क्या आपके परिवार में मधुमेह, हृदय रोग, उच्च रक्तचाप या अन्य वंशानुगत बीमारियों का कोई महत्वपूर्ण चिकित्सा इतिहास है?",
+
+preConsultationPersonalHistory:
+  "क्या आप अपने व्यक्तिगत इतिहास के बारे में बता सकते हैं, जैसे धूम्रपान, शराब का सेवन, व्यवसाय, जीवनशैली या अन्य संबंधित आदतें?",
+
+preConsultationReviewOfSystems:
+  "क्या आपको अपने सामान्य स्वास्थ्य, हृदय, सांस लेने, पेट, तंत्रिका तंत्र या शरीर के अन्य हिस्सों से संबंधित कोई अन्य लक्षण हो रहे हैं?",
+
+preConsultationRedFlags:
+  "सुरक्षा जांच: क्या आपको अभी गंभीर सांस लेने में कठिनाई, तेज सीने में दर्द, बेहोशी, अचानक कमजोरी, दौरे या अनियंत्रित रक्तस्राव हो रहा है?",
+
+readAloud: "ज़ोर से पढ़ें",
+startSpeaking: "बोलना शुरू करें",
     preConsultationSummary: "प्री-कंसल्टेशन सारांश",
 
     reviewBeforeDoctor:
@@ -483,6 +1108,32 @@ preConsultationAllergies:
     done: "हो गया",
 
     you: "आप",
+    recordGeneralConsultation: "सामान्य परामर्श",
+recordBloodTest: "रक्त परीक्षण",
+recordPrescription: "प्रिस्क्रिप्शन",
+recordVaccination: "टीकाकरण",
+recordOther: "अन्य",
+
+hospitalClinicLabel: "अस्पताल / क्लिनिक",
+doctorNameLabel: "डॉक्टर का नाम",
+dateLabel: "तारीख",
+diagnosisLabel: "निदान",
+notesLabel: "नोट्स",
+
+hospitalPlaceholder: "अस्पताल या क्लिनिक का नाम दर्ज करें",
+doctorPlaceholder: "डॉक्टर का नाम दर्ज करें",
+diagnosisPlaceholder: "निदान दर्ज करें",
+
+medicalDocument: "चिकित्सा दस्तावेज़",
+remove: "हटाएं",
+aiReadingDocument: "AI आपका दस्तावेज़ पढ़ रहा है...",
+extractingMedicalInformation: "चिकित्सा जानकारी निकाली जा रही है",
+aiExtractedInformation: "AI द्वारा निकाली गई जानकारी",
+reviewBeforeSaving: "सेव करने से पहले जानकारी की समीक्षा करें।",
+saveMedicalRecord: "चिकित्सा रिकॉर्ड सेव करें",
+
+voiceInput: "वॉइस इनपुट",
+useThisInformation: "इस जानकारी का उपयोग करें",
 
     aroviaListening: "AROVIA सुन रहा है...",
 
@@ -499,7 +1150,6 @@ preConsultationAllergies:
     medicalReport: "चिकित्सा रिपोर्ट",
     diagnosisLabel: "निदान",
     doctorLabel: "डॉक्टर",
-    hospitalClinicLabel: "अस्पताल / क्लिनिक",
     dateLabel: "तारीख",
     notesLabel: "नोट्स",
     relatedMedication: "संबंधित दवा",
@@ -548,6 +1198,203 @@ preConsultationAllergies:
     symptoms: "लक्षण",
     voiceUnsupported: "इस ब्राउज़र में वॉइस इनपुट उपलब्ध नहीं है।",
     privateHealth: "AROVIA • सभी के लिए स्वास्थ्य सेवा",
+    symptomSelectSeverity: "गंभीरता चुनें",
+symptomMild: "हल्का",
+symptomModerate: "मध्यम",
+symptomSevere: "गंभीर",
+addSymptom: "लक्षण जोड़ें",
+summaryPatientDemographics: "रोगी का विवरण",
+summaryPatientId: "रोगी ID",
+summaryNotAvailable: "उपलब्ध नहीं",
+summaryAbhaId: "ABHA ID",
+summaryNotLinked: "लिंक नहीं किया गया",
+summaryMainConcern: "मुख्य समस्या",
+summaryNotProvided: "प्रदान नहीं किया गया",
+summaryDuration: "अवधि",
+summarySeverity: "गंभीरता",
+summaryAssociatedSymptoms: "संबंधित लक्षण",
+
+summaryAyushHistory: "आयुष इतिहास",
+summaryDashavidhaLifestyle: "दशविध परीक्षा और जीवनशैली",
+summaryAyushAssessmentInfo: "रोगी द्वारा प्रदान की गई आयुष मूल्यांकन जानकारी",
+
+summaryPrakriti: "प्रकृति",
+summaryVikriti: "विकृति",
+summarySara: "सार",
+summarySamhanana: "संहनन",
+summaryPramana: "प्रमाण",
+summarySatmya: "सात्म्य",
+summarySattva: "सत्त्व",
+summaryAharaShakti: "आहार शक्ति",
+summaryVyayamaShakti: "व्यायाम शक्ति",
+summaryVaya: "आयु",
+summaryAharaVihara: "आहार और विहार",
+
+summaryAyushDisclaimer:
+  "यह जानकारी रोगी द्वारा वैकल्पिक आयुष मूल्यांकन के दौरान प्रदान की गई थी। इसकी समीक्षा योग्य स्वास्थ्य विशेषज्ञ द्वारा की जानी चाहिए।",
+
+summaryPastSurgicalHistory: "पिछला शल्य चिकित्सा इतिहास",
+summaryRelevantMedicalHistory: "प्रासंगिक चिकित्सा इतिहास",
+summaryCurrentMedications: "वर्तमान दवाएँ",
+summaryKnownAllergies: "ज्ञात एलर्जी",
+summaryFamilyHistory: "पारिवारिक इतिहास",
+summaryPersonalHistory: "व्यक्तिगत इतिहास",
+summaryReviewOfSystems: "प्रणाली समीक्षा (ROS)",
+
+summaryPatientDescription: "रोगी का विवरण",
+summaryHpi: "वर्तमान बीमारी का इतिहास (HPI)",
+summaryChiefComplaint: "मुख्य शिकायत",
+summaryRelevantHistory: "प्रासंगिक इतिहास",
+summarySafetyRedFlag: "सुरक्षा / रेड-फ्लैग जाँच",
+summaryNotReported: "रिपोर्ट नहीं किया गया",
+
+summaryEmergencyWarning:
+  "आपातकालीन लक्षण बताए गए हैं — तुरंत चिकित्सा सहायता लें और स्वास्थ्य कर्मचारियों को सूचित करें।",
+  aiClinicalSummaryDraft: "AI द्वारा तैयार क्लिनिकल सारांश — ड्राफ्ट",
+aiAssistedHistory: "AI-सहायित इतिहास",
+status: "स्थिति",
+draft: "ड्राफ्ट",
+editing: "संपादन",
+confirmed: "पुष्टि की गई",
+correctionRequested: "सुधार का अनुरोध किया गया",
+edit: "संपादित करें",
+acceptConfirm: "स्वीकार / पुष्टि करें",
+rejectCorrection: "अस्वीकार / सुधार का अनुरोध करें",
+aiSummaryDisclaimer:
+  "यह रोगी द्वारा प्रदान की गई जानकारी के आधार पर AI द्वारा तैयार किया गया ड्राफ्ट है। यह निदान नहीं है और स्वास्थ्य विशेषज्ञ द्वारा इसकी समीक्षा की जानी चाहिए।",
+  questionProgress: "प्रश्न",
+ofText: "में से",
+answered: "उत्तर दिए गए",
+complete: "पूर्ण",
+readAloud: "ज़ोर से पढ़ें",
+aroviaLabel: "AROVIA",
+
+medicineNameUnknown: "दवा का नाम नहीं पता?",
+medicinePhotoInstruction:
+  "दवा की स्ट्रिप, पैकेज या प्रिस्क्रिप्शन की फोटो लें।",
+takePhotoUpload: "फोटो लें / अपलोड करें",
+emergencyBackDashboard: "डैशबोर्ड पर वापस जाएँ",
+emergencyAccessSettings: "आपातकालीन एक्सेस सेटिंग्स",
+emergencyAccessDescription:
+  "आपातकाल के दौरान अपनी महत्वपूर्ण स्वास्थ्य जानकारी तक पहुँच प्रबंधित करें।",
+emergencyAccessLabel: "आपातकालीन एक्सेस",
+enabled: "सक्षम",
+emergencyCriticalInfo:
+  "आपातकाल के दौरान महत्वपूर्ण स्वास्थ्य जानकारी तक पहुँच प्राप्त की जा सकती है।",
+active: "सक्रिय",
+criticalInfoAvailable: "उपलब्ध महत्वपूर्ण जानकारी",
+bloodGroup: "ब्लड ग्रुप",
+notAvailable: "उपलब्ध नहीं",
+noKnownAllergies: "कोई ज्ञात एलर्जी नहीं",
+medications: "दवाएँ",
+accessControl: "एक्सेस नियंत्रण",
+emergencyAccessIntended:
+  "आपातकालीन एक्सेस तत्काल स्वास्थ्य स्थितियों के लिए है।",
+disableEmergencyAccess: "आपातकालीन एक्सेस बंद करें",
+enableEmergencyAccess: "आपातकालीन एक्सेस सक्षम करें",
+currentStatus: "वर्तमान स्थिति",
+recentAccessEvent: "हाल की एक्सेस घटना",
+noEmergencyAccessEvent:
+  "कोई आपातकालीन एक्सेस घटना दर्ज नहीं की गई है।",
+  ayushDashavidhaTitle: "आयुष — दशविध परीक्षा",
+ayurvedicClinicalAssessment: "आयुर्वेदिक क्लिनिकल मूल्यांकन",
+question: "प्रश्न",
+ofText: "में से",
+answered: "उत्तर दिए गए",
+complete: "पूर्ण",
+previous: "पिछला",
+next: "अगला",
+
+takePhotoUpload: "फोटो लें / अपलोड करें",
+dontKnowMedicine: "दवा का नाम नहीं पता?",
+medicinePhotoInstruction: "दवा की स्ट्रिप, पैकेज या प्रिस्क्रिप्शन की फोटो लें।",
+takePhotoUpload: "फोटो लें / अपलोड करें",
+investigationMedicalReport: "जाँच / चिकित्सा रिपोर्ट",
+procedureSurgery: "प्रक्रिया / सर्जरी",
+consultation: "परामर्श",
+editAyush: "आयुष संपादित करें",
+    ayushHistory: "आयुष इतिहास",
+    ayushHistoryDescription: "अपना आयुष स्वास्थ्य आकलन और दशविध परीक्षा पूरा करें।",
+    settings: "सेटिंग्स",
+    settingsDescription: "अपनी प्रोफ़ाइल, स्वास्थ्य जानकारी, गोपनीयता और प्राथमिकताओं को प्रबंधित करें।",
+demographicsTitle: "रोगी विवरण",
+basicInformation: "मूल जानकारी",
+lifestyleSocialHistory: "जीवनशैली और सामाजिक इतिहास",
+personalBackground: "व्यक्तिगत पृष्ठभूमि",
+menstrualHistoryTitle: "मासिक धर्म इतिहास",
+gynaecologicalHistoryTitle: "स्त्री रोग संबंधी इतिहास",
+obstetricHistoryTitle: "प्रसूति इतिहास",
+saveAndContinue: "सेव करें और जारी रखें",
+fullNamePlaceholder: "अपना पूरा नाम दर्ज करें",
+agePlaceholder: "आयु",
+selectOption: "चुनें",
+female: "महिला",
+male: "पुरुष",
+intersex: "इंटरसेक्स",
+preferNotToSay: "बताना पसंद नहीं करेंगे",
+occupationJob: "व्यवसाय / नौकरी",
+occupationPlaceholder: "छात्र, शिक्षक, किसान, इंजीनियर...",
+dietLabel: "आहार",
+selectDiet: "आहार चुनें",
+vegetarian: "शाकाहारी",
+nonVegetarian: "मांसाहारी",
+vegan: "वीगन",
+other: "अन्य",
+physicalActivityLabel: "शारीरिक गतिविधि",
+selectActivityLevel: "गतिविधि स्तर चुनें",
+low: "कम",
+moderate: "मध्यम",
+high: "उच्च",
+sleepLabel: "नींद",
+sleepPlaceholder: "उदाहरण: 7 घंटे, अच्छी गुणवत्ता",
+alcoholUse: "शराब का सेवन",
+never: "कभी नहीं",
+occasional: "कभी-कभी",
+regular: "नियमित",
+tobaccoSmoking: "तंबाकू / धूम्रपान",
+former: "पहले करते थे",
+otherSubstanceDrugUse: "अन्य पदार्थ / नशीली दवाओं का उपयोग",
+substanceUsePlaceholder: "संबंधित पदार्थ के उपयोग का उल्लेख करें या 'नहीं' लिखें।",
+ethnicityLabel: "जातीय पृष्ठभूमि",
+religionLabel: "धर्म",
+optional: "वैकल्पिक",
+menstrualStatus: "मासिक धर्म की स्थिति",
+notStarted: "अभी शुरू नहीं हुआ",
+menopausal: "रजोनिवृत्त",
+notApplicable: "लागू नहीं",
+ageAtMenarche: "पहली माहवारी की आयु",
+cycleDuration: "चक्र की अवधि",
+cycleDurationPlaceholder: "उदाहरण: 28 दिन",
+cycleRegularity: "चक्र की नियमितता",
+cycleRegularityPlaceholder: "उदाहरण: हर 28 दिन में नियमित",
+lastMenstrualPeriod: "अंतिम मासिक धर्म",
+menopauseStatus: "रजोनिवृत्ति की स्थिति",
+menopausePlaceholder: "वैकल्पिक / लागू नहीं",
+gynaecologicalHistory: "स्त्री रोग संबंधी इतिहास",
+gynaecologicalHistoryPlaceholder: "संबंधित स्थितियों, लक्षणों या इतिहास का उल्लेख करें।",
+previousGynaecologicalProcedures: "पिछली स्त्री रोग संबंधी प्रक्रियाएं",
+previousProceduresPlaceholder: "यदि कोई पिछली प्रक्रिया हुई हो तो उसका उल्लेख करें।",
+obstetricHistory: "प्रसूति इतिहास",
+pregnancyDeliveryHistory: "गर्भावस्था और प्रसव का इतिहास",
+pregnancyStatus: "गर्भावस्था की स्थिति",
+notPregnant: "गर्भवती नहीं",
+currentlyPregnant: "वर्तमान में गर्भवती",
+possiblyPregnant: "गर्भवती होने की संभावना",
+postpartum: "प्रसवोत्तर",
+gravida: "ग्रेविडा (G)",
+para: "पैरा (P)",
+abortions: "गर्भपात (A)",
+livingChildren: "जीवित बच्चे (L)",
+previousPregnancyComplications: "पिछली गर्भावस्था की जटिलताएं",
+previousComplicationsPlaceholder: "पिछली जटिलताओं का उल्लेख करें या 'नहीं' लिखें।",
+previousDeliveryDetails: "पिछले प्रसव का विवरण",
+currentPregnancyDetails: "वर्तमान गर्भावस्था का विवरण",
+currentPregnancyPlaceholder: "केवल वर्तमान गर्भावस्था या प्रासंगिक स्थिति में।",
+saveAndContinue: "सेव करें और जारी रखें →",
+demographicsReviewNote: "आप बाद में इस जानकारी की समीक्षा कर सकते हैं। जहां उचित हो, संवेदनशील विवरण वैकल्पिक हैं।",
+patientInformation: "रोगी की जानकारी",
+demographicsDescription: "अपने बारे में जानकारी दें ताकि आपके स्वास्थ्य विशेषज्ञ को आवश्यक पृष्ठभूमि की जानकारी मिल सके।",
+abdmBackendNote: "लाइव ABDM/FHIR संचार बैकएंड के माध्यम से जोड़ा जाएगा.",
   },
 };
 
@@ -555,10 +1402,51 @@ function App() {
   
   const [language, setLanguage] = useState("en");
   const [page, setPage] = useState("home");
+  const [aadhaarNumber, setAadhaarNumber] = useState("");
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
+  const [emergencyReason, setEmergencyReason] = useState("");
+const [emergencyStatus, setEmergencyStatus] = useState("Not Requested");
+const [emergencyAccessEvent, setEmergencyAccessEvent] = useState("");
   const [patientId, setPatientId] = useState(null);
+  // Clinical Interview
+const [clinicalConcern, setClinicalConcern] = useState("");
+const [clinicalAnswers, setClinicalAnswers] = useState({});
+const [clinicalQuestionIndex, setClinicalQuestionIndex] = useState(0);
+const [clinicalInterviewStarted, setClinicalInterviewStarted] = useState(false);
+
+const speakQuestion = (text, language = "en-IN") => {
+  if (!("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = language;
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  window.speechSynthesis.speak(utterance);
+};
+
+// Symptom timeline
+const [symptomTimeline, setSymptomTimeline] = useState([]);
+const [editingSymptomIndex, setEditingSymptomIndex] = useState(null);
+
+// New symptom
+const [newSymptom, setNewSymptom] = useState({
+  name: "",
+  startedAt: "",
+  severity: "",
+  details: ""
+});
+
+// Interim guidance
+const [interimGuidance, setInterimGuidance] = useState([]);
+  const [abhaId, setAbhaId] = useState("");
+  const [registrationName, setRegistrationName] = useState("");
+  const [registrationPhone, setRegistrationPhone] = useState("");
+  const [authLoading, setAuthLoading] = useState(true);
 
   const healthId = phone
   ? `AROVIA-${phone.replace(/\D/g, "").slice(-4)}`
@@ -566,6 +1454,56 @@ function App() {
 
   const [query, setQuery] = useState("");
   const [listening, setListening] = useState(false);
+  const detectClinicalConcern = (text) => {
+  const value = text.toLowerCase();
+
+  if (
+    value.includes("vomit") ||
+    value.includes("throwing up")
+  ) {
+    return "vomiting";
+  }
+
+  if (
+    value.includes("stomach") ||
+    value.includes("abdomen") ||
+    value.includes("abdominal") ||
+    value.includes("belly")
+  ) {
+    return "stomach";
+  }
+
+  if (
+    value.includes("chest") ||
+    value.includes("chest pain")
+  ) {
+    return "chest";
+  }
+
+  if (
+    value.includes("headache") ||
+    value.includes("head pain")
+  ) {
+    return "headache";
+  }
+
+  if (
+    value.includes("cough") ||
+    value.includes("coughing")
+  ) {
+    return "cough";
+  }
+
+  if (
+    value.includes("fever") ||
+    value.includes("temperature")
+  ) {
+    return "fever";
+  }
+
+  return "general";
+};
+const [aiSummaryStatus, setAiSummaryStatus] = useState("draft");
     // ==================================================
   // PRE-CONSULTATION ASSISTANT
   // ==================================================
@@ -575,18 +1513,76 @@ function App() {
 
   const [preConsultationInput, setPreConsultationInput] =
     useState("");
-
+const [medicinePhoto, setMedicinePhoto] = useState(null);
   const [preConsultationAnswers, setPreConsultationAnswers] =
-    useState({
-      complaint: "",
-      duration: "",
-      severity: "",
-      associatedSymptoms: "",
-      relevantHistory: "",
-      medications: "",
-      allergies: "",
-    });
+  useState({
+    complaint: "",
+    duration: "",
+    severity: "",
+    associatedSymptoms: "",
+    relevantHistory: "",
+    pastSurgicalHistory: "",
+    medications: "",
+    allergies: "",
+    familyHistory: "",
+    personalHistory: "",
+    reviewOfSystems: "",
+    redFlags: "",
 
+    ayushHistory: {},
+  });
+const [ayushAnswers, setAyushAnswers] = useState({
+  prakriti: "",
+  vikriti: "",
+  sara: "",
+  samhanana: "",
+  pramana: "",
+  satmya: "",
+  sattva: "",
+  aharaShakti: "",
+  vyayamaShakti: "",
+  vaya: "",
+  aharaVihara: "",
+});
+const [patientDemographics, setPatientDemographics] = useState({
+  name: "",
+  age: "",
+  sex: "",
+  occupation: "",
+  diet: "",
+  physicalActivity: "",
+  sleep: "",
+  alcohol: "",
+  tobacco: "",
+  substanceUse: "",
+  ethnicity: "",
+  religion: "",
+
+  // Menstrual History
+  menstrualStatus: "",
+  menarcheAge: "",
+  menstrualRegularity: "",
+  cycleDuration: "",
+  lastMenstrualPeriod: "",
+  menopauseStatus: "",
+
+  // Gynaecological History
+  gynecologicalHistory: "",
+  gynecologicalProcedures: "",
+
+  // Obstetric History
+  pregnancyStatus: "",
+  gravida: "",
+  para: "",
+  abortions: "",
+  livingChildren: "",
+  previousPregnancyComplications: "",
+  previousDeliveryDetails: "",
+  currentPregnancyDetails: "",
+});
+const [ayushMode, setAyushMode] = useState(false);
+const [ayushQuestionIndex, setAyushQuestionIndex] = useState(0);
+const [ayushLanding, setAyushLanding] = useState(false);
   const [preConsultationMessages, setPreConsultationMessages] =
     useState([]);
 
@@ -603,7 +1599,77 @@ function App() {
   labReports: false,
   prescriptions: true,
   emergencyAccess: true,
+  ayushHistory: true,
 });
+const clinicalQuestionBank = {
+  fever: [
+    "When did your fever start?",
+    "What is the highest temperature you have measured?",
+    "Do you have chills or sweating?",
+    "Do you have headache or body aches?",
+    "Do you have cough, sore throat, or difficulty breathing?",
+    "Do you have nausea, vomiting, or diarrhea?",
+    "Have you taken any medicine for the fever?"
+  ],
+
+  headache: [
+    "When did the headache start?",
+    "Where exactly do you feel the pain?",
+    "How severe is the headache from 1 to 10?",
+    "Is the pain continuous or does it come and go?",
+    "Do you have nausea or vomiting?",
+    "Do you have blurred vision or sensitivity to light?",
+    "Have you experienced this type of headache before?"
+  ],
+
+  cough: [
+    "When did your cough start?",
+    "Is your cough dry or are you producing mucus?",
+    "If you have mucus, what does it look like?",
+    "Do you have fever?",
+    "Do you have chest pain or difficulty breathing?",
+    "Does anything make the cough better or worse?"
+  ],
+
+  stomach: [
+    "Where exactly is the stomach pain?",
+    "When did the pain start?",
+    "How severe is the pain from 1 to 10?",
+    "Is the pain continuous or does it come and go?",
+    "Does eating make the pain better or worse?",
+    "Do you have nausea or vomiting?",
+    "Do you have diarrhea or constipation?",
+    "Have you noticed blood in your vomit or stool?"
+  ],
+
+  vomiting: [
+    "When did the vomiting start?",
+    "How many times have you vomited?",
+    "Are you able to keep water or other fluids down?",
+    "Do you have stomach pain?",
+    "Do you have fever or diarrhea?",
+    "Have you noticed blood in the vomit?",
+    "Do you feel dizzy or unusually weak?"
+  ],
+
+  chest: [
+    "When did the chest pain start?",
+    "Where exactly is the pain?",
+    "How severe is it from 1 to 10?",
+    "What does the pain feel like?",
+    "Does physical activity make it worse?",
+    "Are you having difficulty breathing?",
+    "Do you have sweating, dizziness, or fainting?"
+  ]
+};
+
+const getSpeechLanguage = () => {
+  if (language === "Telugu") return "te-IN";
+  if (language === "Hindi") return "hi-IN";
+  return "en-IN";
+};
+
+
 
   const [medicalHistoryPermissions, setMedicalHistoryPermissions] =
   useState({
@@ -618,45 +1684,6 @@ function App() {
 
   const [documentProcessing, setDocumentProcessing] = useState(false);
   const [documentReady, setDocumentReady] = useState(false);
-
-  // ==================================================
-  // DOCTOR / HEALTH WORKER DEMO FLOW
-  // ==================================================
-  const [doctorPhone, setDoctorPhone] = useState("");
-  const [doctorOtp, setDoctorOtp] = useState("");
-  const [doctorSearch, setDoctorSearch] = useState("");
-  const [doctorSearchError, setDoctorSearchError] = useState("");
-  const [doctorPatient, setDoctorPatient] = useState(null);
-  const [doctorPatientRecords, setDoctorPatientRecords] = useState([]);
-  const [doctorAllergiesMeds, setDoctorAllergiesMeds] = useState([]);
-  const [doctorConsent, setDoctorConsent] = useState([]);
-  const [doctorActiveTab, setDoctorActiveTab] = useState("overview");
-  const [doctorNote, setDoctorNote] = useState("");
-  const [doctorNoteSaved, setDoctorNoteSaved] = useState(false);
-  const [showEmergencyAccess, setShowEmergencyAccess] = useState(false);
-  const [emergencyReason, setEmergencyReason] = useState("");
-  const [emergencyGranted, setEmergencyGranted] = useState(false);
-
-  const [selectedRecordIndex, setSelectedRecordIndex] = useState(null);
-  const [showRecordSharing, setShowRecordSharing] = useState(false);
- 
-  const [recordSharing, setRecordSharing] = useState({
-  0: {
-    diagnosis: true,
-    hospital: true,
-    doctor: true,
-    date: true,
-    notes: false,
-  },
-  1: {
-    diagnosis: true,
-    hospital: true,
-    doctor: true,
-    date: true,
-    notes: false,
-  },
-});
-  const [expandedJourneyEvent, setExpandedJourneyEvent] = useState(null);
 
   // ==================================================
   // MEDICATIONS
@@ -686,7 +1713,6 @@ function App() {
     {
       type: "General Consultation",
       hospital: "City Health Centre",
-      doctor: "Dr. Ananya",
       date: "12 Aug 2026",
       diagnosis: "Routine health consultation",
       notes: "Routine health consultation and examination.",
@@ -694,7 +1720,6 @@ function App() {
     {
       type: "Blood Test",
       hospital: "District Hospital",
-      doctor: "Dr. Ravi",
       date: "28 Jul 2026",
       diagnosis: "Blood test",
       notes: "Blood test report added to your health record.",
@@ -704,13 +1729,42 @@ function App() {
   const [newRecord, setNewRecord] = useState({
     type: "General Consultation",
     hospital: "",
-    doctor: "",
     date: "",
     diagnosis: "",
     notes: "",
   });
 
+  // Medical-record sharing controls
+  const [expandedJourneyEvent, setExpandedJourneyEvent] = useState(null);
+  const [savedConsultations, setSavedConsultations] = useState([]);
+  const [selectedRecordIndex, setSelectedRecordIndex] = useState(null);
+  const [showRecordSharing, setShowRecordSharing] = useState(false);
+  const [recordSharing, setRecordSharing] = useState({});
+
   const t = translations[language];
+
+  // Restore the patient session when the page is refreshed.
+useEffect(() => {
+  try {
+   const savedSession = sessionStorage.getItem("arovia_patient_session");
+
+    if (savedSession) {
+      const session = JSON.parse(savedSession);
+
+      if (session?.patientId && session?.phone) {
+        setPatientId(session.patientId);
+        setPhone(session.phone);
+        setAbhaId(session.abhaId || "");
+        setPage("patient-dashboard");
+      }
+    }
+  } catch (error) {
+    console.error("Unable to restore patient session:", error);
+    sessionStorage.removeItem("arovia_patient_session");
+  } finally {
+    setAuthLoading(false);
+  }
+}, []);
   useEffect(() => {
   if (!patientId) {
     return;
@@ -731,7 +1785,6 @@ function App() {
   (data || []).map((record) => ({
     type: record.record_type || record.title || "Medical Record",
     hospital: "AROVIA Healthcare",
-    doctor: "Healthcare Professional",
     date: record.record_date
       ? new Date(record.record_date).toLocaleDateString("en-IN", {
           day: "2-digit",
@@ -752,159 +1805,6 @@ function App() {
 }, [patientId]);
 
   // ==================================================
-  // DOCTOR SEARCH / SHARED RECORD VIEW
-  // ==================================================
-  const searchPatientForDoctor = async (rawQuery) => {
-    setDoctorSearchError("");
-    setDoctorPatient(null);
-    setDoctorPatientRecords([]);
-    setDoctorAllergiesMeds([]);
-    setDoctorConsent([]);
-    setDoctorActiveTab("overview");
-    setDoctorNoteSaved(false);
-    setEmergencyGranted(false);
-    setEmergencyReason("");
-
-    const queryText = (rawQuery || "").trim();
-    if (!queryText) {
-      setDoctorSearchError("Enter a phone number or Health ID.");
-      return;
-    }
-
-    const phoneDigits = queryText.replace(/\D/g, "");
-    const healthIdMatch = queryText.toUpperCase().match(/AROVIA-(\d{4})/);
-    const last4 = healthIdMatch ? healthIdMatch[1] : phoneDigits.slice(-4);
-    let patientRow = null;
-
-    if (phoneDigits.length === 10) {
-      const { data, error } = await supabase
-        .from("patients")
-        .select("id, full_name, phone")
-        .eq("phone", phoneDigits)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Doctor patient search error:", error);
-        setDoctorSearchError("Unable to search patient records.");
-        return;
-      }
-      patientRow = data;
-    }
-
-    if (!patientRow && last4) {
-      const { data, error } = await supabase
-        .from("patients")
-        .select("id, full_name, phone")
-        .ilike("phone", `%${last4}`);
-
-      if (error) {
-        console.error("Doctor Health ID search error:", error);
-        setDoctorSearchError("Unable to search patient records.");
-        return;
-      }
-
-      if (data && data.length === 1) patientRow = data[0];
-      else if (data && data.length > 1) {
-        setDoctorSearchError("Multiple patients matched. Please enter the full phone number.");
-        return;
-      }
-    }
-
-    if (!patientRow) {
-      setDoctorSearchError("No patient found with that phone number or Health ID.");
-      return;
-    }
-
-    setDoctorPatient(patientRow);
-
-    const { data: records, error: recordsError } = await supabase
-      .from("medical_records")
-      .select("*")
-      .eq("patient_id", patientRow.id);
-
-    if (!recordsError) {
-      setDoctorPatientRecords(
-        (records || []).map((record) => ({
-          type: record.record_type || record.title || "Medical Record",
-          hospital: record.hospital || "AROVIA Healthcare",
-          doctor: record.doctor || "Healthcare Professional",
-          date: record.record_date
-            ? new Date(record.record_date).toLocaleDateString("en-IN", {
-                day: "2-digit", month: "short", year: "numeric",
-              })
-            : "Date not available",
-          diagnosis: record.diagnosis || record.title || "Not provided",
-          notes: record.notes || record.description || "No notes available",
-        }))
-      );
-    } else {
-      console.error("Doctor records error:", recordsError);
-    }
-
-    const { data: allergyRows, error: allergyError } = await supabase
-      .from("allergies_medications")
-      .select("*")
-      .eq("patient_id", patientRow.id);
-
-    if (!allergyError) setDoctorAllergiesMeds(allergyRows || []);
-    else console.error("Doctor allergies/medications error:", allergyError);
-
-    const { data: consentRows, error: consentError } = await supabase
-      .from("consent")
-      .select("*")
-      .eq("patient_id", patientRow.id);
-
-    if (!consentError) setDoctorConsent(consentRows || []);
-    else console.error("Doctor consent error:", consentError);
-  };
-
-    const downloadDoctorSummary = (patient, records, medicines, allergies, consentRows) => {
-    if (!patient) return;
-    const lines = [
-      "AROVIA PATIENT SUMMARY",
-      `Patient: ${patient.full_name || "Unnamed Patient"}`,
-      `Phone: +91 ${patient.phone || ""}`,
-      `Health ID: AROVIA-${String(patient.phone || "").slice(-4)}`,
-      "",
-      "MEDICAL RECORDS",
-      ...(records.length
-        ? records.flatMap((r, i) => [
-            `${i + 1}. ${r.diagnosis || r.type || "Medical Record"}`,
-            `   Date: ${r.date}`,
-            `   Facility: ${r.hospital}`,
-            `   Doctor: ${r.doctor}`,
-            `   Notes: ${r.notes}`,
-          ])
-        : ["No medical records found."]),
-      "",
-      "MEDICATIONS",
-      ...(medicines.length
-        ? medicines.map(
-            (item) => `- ${item.name || "Medication"} ${item.dosage || ""}${item.frequency ? ` • ${item.frequency}` : ""}`
-          )
-        : ["No medication data available."]),
-      "",
-      "ALLERGIES",
-      ...(allergies.length
-        ? allergies.map(
-            (item) => `- ${item.name || "Allergy"}${item.reaction ? ` — ${item.reaction}` : ""}`
-          )
-        : ["No allergy data available."]),
-      "",
-      `Consent status: ${consentRows.length ? "Available" : "Not available in demo session"}`,
-      "Generated from AROVIA hackathon demo.",
-    ];
-
-    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `AROVIA-${patient.phone || "patient"}-summary.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // ==================================================
   // HEALTH JOURNEY
   // ==================================================
 
@@ -917,7 +1817,6 @@ function App() {
       type: "condition",
       title: "Fever Consultation",
       hospital: "City Health Centre",
-      doctor: "Dr. Ananya",
       diagnosis: "Viral fever",
       notes: "Patient consulted for fever and weakness.",
       medication: "Paracetamol 500 mg",
@@ -932,47 +1831,121 @@ function App() {
       type: "condition",
       title: "Hypertension Diagnosis",
       hospital: "District Hospital",
-      doctor: "Dr. Ravi",
       diagnosis: "Hypertension",
       notes: "Blood pressure was elevated during consultation.",
       medication: "Amlodipine 5 mg once daily",
       report: "",
     },
-
+...symptomTimeline.map((symptom, index) => ({
+  id: `symptom-${index}`,
+  date: new Date(symptom.startedAt).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }),
+  sortDate: symptom.startedAt,
+  year: new Date(symptom.startedAt).getFullYear().toString(),
+  type: "condition",
+  title: `Symptom: ${symptom.symptom}`,
+  hospital: "Patient Reported",
+  diagnosis: "",
+  notes: symptom.details || "Symptom reported by patient.",
+ medication: "",
+  report: "",
+})),
     ...medicalRecords.map((record, index) => {
       const lowerType = record.type.toLowerCase();
 
-      let eventType = "consultation";
+   
+   let eventType = "consultation";
 
-      if (
-        lowerType.includes("blood") ||
-        lowerType.includes("test") ||
-        lowerType.includes("report") ||
-        lowerType.includes("document")
-      ) {
-        eventType = "medicalReport";
-      }
+if (
+  lowerType.includes("blood") ||
+  lowerType.includes("test") ||
+  lowerType.includes("report") ||
+  lowerType.includes("document") ||
+  lowerType.includes("investigation")
+) {
+  eventType = "medicalReport";
+}
 
-      if (lowerType.includes("prescription")) {
-        eventType = "prescription";
-      }
+if (lowerType.includes("prescription")) {
+  eventType = "prescription";
+}
 
+if (
+  lowerType.includes("medication") ||
+  lowerType.includes("medicine") ||
+  lowerType.includes("drug")
+) {
+  eventType = "medication";
+}
+
+if (
+  lowerType.includes("surgery") ||
+  lowerType.includes("surgical") ||
+  lowerType.includes("procedure") ||
+  lowerType.includes("operation")
+) {
+  eventType = "procedure";
+}
       return {
         id: `record-${index}`,
         date: record.date,
         sortDate: new Date(record.date).toISOString(),
         year: new Date(record.date).getFullYear().toString(),
+        addedAt: record.addedAt || null,
         type: eventType,
         title: record.type,
         hospital: record.hospital,
         doctor: record.doctor,
         diagnosis: record.diagnosis,
         notes: record.notes,
-        medication: "",
+       medication: record.medication || "",
         report: record.type,
       };
     }),
-
+    ...(Object.values(preConsultationAnswers.ayushHistory || {}).some(
+  (answer) => answer && answer.trim()
+)
+  ? [
+      {
+        id: "ayush-assessment",
+        date: new Date().toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        sortDate: new Date().toISOString(),
+        year: new Date().getFullYear().toString(),
+        type: "ayush",
+        title: "AYUSH Assessment",
+        hospital: "AROVIA AYUSH History",
+        diagnosis: "",
+        notes: "AYUSH Dashavidha Pariksha assessment completed.",
+        medication: "",
+        report: "",
+        ayushHistory: preConsultationAnswers.ayushHistory,
+      },
+    ]
+  : []),
+    ...savedConsultations.map((consultation) => ({
+      id: consultation.id,
+      date: new Date(consultation.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      sortDate: consultation.date,
+      year: new Date(consultation.date).getFullYear().toString(),
+      type: "consultation",
+      title: consultation.title,
+      hospital: "AROVIA Pre-Consultation",
+      diagnosis: "",
+      notes: consultation.notes,
+      medication: consultation.medication || "",
+      report: "",
+    })),
     
   ].sort(
     (a, b) =>
@@ -984,6 +1957,7 @@ function App() {
     medicalRecords.length > 0
       ? medicalRecords[medicalRecords.length - 1]
       : null;
+      
 
   const getJourneyIcon = (type) => {
     if (type === "medication") {
@@ -1002,6 +1976,13 @@ function App() {
       return <Activity size={24} />;
     }
 
+      if (type === "procedure") {
+  return <Activity size={24} />;
+}
+    
+if (type === "ayush") {
+  return <span className="text-xl">🌿</span>;
+}
     return <Stethoscope size={24} />;
   };
 
@@ -1018,13 +1999,16 @@ function App() {
       return "bg-purple-50 text-purple-600";
     }
 
-    if (type === "condition") {
-      return "bg-amber-50 text-amber-600";
-    }
+if (type === "condition") {
+  return "bg-amber-50 text-amber-600";
+}
 
-    return "bg-teal-50 text-teal-600";
+if (type === "ayush") {
+  return "bg-green-50 text-green-600";
+}
+
+return "bg-teal-50 text-teal-600";
   };
-
   // ==================================================
 // VOICE INPUT
 // ==================================================
@@ -1119,338 +2103,1300 @@ const startPreConsultationVoice = () => {
 };
 
   // ==================================================
-  // DOCTOR LOGIN
+  // PATIENT AUTH LOADING
   // ==================================================
 
-  if (page === "doctor-login") {
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-5">
+        <div className="text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
+          <p className="mt-4 text-sm font-medium text-slate-500">Loading your secure session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ==================================================
+  // PATIENT REGISTRATION
+  // ==================================================
+
+  if (page === "patient-register") {
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900">
         <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
-          <button onClick={() => setPage("home")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700">
-            <ArrowLeft size={18} /> Back
+          <button onClick={() => setPage("patient-login")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700">
+            <ArrowLeft size={18} /> {t.back}
           </button>
+
           <div className="mt-8 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
-            <h1 className="mt-5 text-3xl font-bold">Doctor / Health Worker</h1>
-            <p className="mt-2 text-sm text-slate-500">Secure access to authorized patient records</p>
+           <h1 className="mt-5 text-3xl font-bold">{t.registrationTitle}</h1>
+            <p className="mt-2 text-sm text-slate-500">{t.registrationDescription}</p>
           </div>
-          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
-            <label className="mb-2 block text-sm font-semibold">Mobile Number</label>
+
+          <div className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
+            <label className="mb-2 block text-sm font-semibold text-slate-700">{t.fullName}</label>
+            <input value={registrationName} onChange={(e) => setRegistrationName(e.target.value)} placeholder={t.enterFullName} className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-600" />
+
+            <label className="mb-2 mt-5 block text-sm font-semibold text-slate-700">{t.mobileNumber}</label>
             <div className="flex overflow-hidden rounded-xl border border-slate-200">
               <span className="flex items-center border-r border-slate-200 px-3 text-sm text-slate-500">+91</span>
-              <input type="tel" value={doctorPhone} onChange={(e) => setDoctorPhone(e.target.value.replace(/\D/g, ""))} maxLength="10" placeholder="Enter 10-digit number" className="min-w-0 flex-1 px-3 py-3 outline-none" />
+              <input type="tel" value={registrationPhone} onChange={(e) => setRegistrationPhone(e.target.value.replace(/\D/g, ""))} maxLength="10" placeholder="Enter 10-digit number" className="min-w-0 flex-1 px-3 py-3 outline-none" />
             </div>
-            <button onClick={() => { if (doctorPhone.length !== 10) { alert("Please enter a valid 10-digit mobile number."); return; } setPage("doctor-otp"); }} className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md">Send OTP</button>
-            <div className="mt-5 rounded-xl bg-teal-50 p-3 text-center text-xs text-teal-700">Demo mode • OTP is 123456</div>
+
+            <label className="mb-2 mt-5 block text-sm font-semibold text-slate-700">
+  {t.abhaIdOptional} <span className="font-normal text-slate-400">({t.optional})</span>
+</label>
+            <input value={abhaId} onChange={(e) => setAbhaId(e.target.value.replace(/\D/g, "").slice(0, 14))} inputMode="numeric" maxLength="14" placeholder={t.enterAbhaNumber} className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-600" />
+            <p className="mt-2 text-xs leading-5 text-slate-400">ABHA linking is an integration step. This prototype records the entry point; live ABDM linking can be connected by the backend later.</p>
+
+            <button
+              onClick={async () => {
+                if (!registrationName.trim()) { alert("Please enter your full name."); return; }
+                if (registrationPhone.length !== 10) { alert(t.invalidPhone); return; }
+                if (abhaId && abhaId.length !== 14) { alert("{t.summaryAbhaId} should contain 14 digits."); return; }
+
+                const { data: existing, error: lookupError } = await supabase.from("patients").select("id, full_name, phone").eq("phone", registrationPhone).maybeSingle();
+                if (lookupError) { console.error("Registration lookup error:", lookupError); alert("Unable to connect to patient records."); return; }
+
+                if (existing) {
+                  setPhone(registrationPhone);
+                  setPatientId(existing.id);
+                  sessionStorage.setItem("arovia_patient_session", JSON.stringify({ patientId: existing.id, phone: registrationPhone, abhaId }));
+                  setPage("patient-demographics");
+                  return;
+                }
+
+                const { data, error } = await supabase.from("patients").insert({ full_name: registrationName.trim(), phone: registrationPhone }).select("id, full_name, phone").single();
+                if (error) { console.error("Registration error:", error); alert("Unable to create your patient account."); return; }
+
+                setPhone(registrationPhone);
+                setPatientId(data.id);
+                sessionStorage.setItem("arovia_patient_session", JSON.stringify({ patientId: data.id, phone: registrationPhone, abhaId }));
+                setPage("patient-demographics");
+              }}
+              className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md transition hover:bg-teal-700"
+            >
+              {t.createAccount}
+            </button>
           </div>
+
+          <p className="mt-5 text-center text-xs leading-5 text-slate-400">{t.privateProtected}</p>
         </main>
       </div>
     );
   }
+// ==================================================
+// AADHAAR ENTRY POINT
+// ==================================================
 
-  // ==================================================
-  // DOCTOR OTP
-  // ==================================================
+if (page === "aadhaar-entry") {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
 
-  if (page === "doctor-otp") {
-    return (
-      <div className="min-h-screen bg-slate-50 text-slate-900">
-        <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
-          <button onClick={() => setPage("doctor-login")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700"><ArrowLeft size={18} /> Back</button>
-          <div className="mt-8 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
-            <h1 className="mt-5 text-3xl font-bold">Verify Your Number</h1>
-            <p className="mt-2 text-sm text-slate-500">Enter the 6-digit demo OTP</p>
-          </div>
-          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
-            <input type="text" inputMode="numeric" value={doctorOtp} onChange={(e) => setDoctorOtp(e.target.value.replace(/\D/g, ""))} maxLength="6" placeholder="000000" className="w-full rounded-xl border border-slate-200 px-4 py-4 text-center text-2xl tracking-[0.5em] outline-none" />
-            <button onClick={() => { if (doctorOtp !== "123456") { alert("Incorrect OTP. Use 123456."); return; } setPage("doctor-dashboard"); }} className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md">Verify OTP</button>
-            <p className="mt-5 text-center text-xs text-slate-400">Demo OTP: <strong>123456</strong></p>
-          </div>
-        </main>
-      </div>
-    );
-  }
+        <button
+          onClick={() => setPage("patient-login")}
+          className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          {t.back}
+        </button>
 
-  // ==================================================
-  // DOCTOR DASHBOARD
-  // ==================================================
-
-  if (page === "doctor-dashboard") {
-    const activeRecords = doctorPatientRecords;
-    const allergyItems = doctorAllergiesMeds.filter((item) => (item.item_type || "").toLowerCase().includes("allerg"));
-    const medicineItems = doctorAllergiesMeds.filter((item) => !(item.item_type || "").toLowerCase().includes("allerg"));
-    const consentGranted = doctorConsent.filter((item) => String(item.status || "").toLowerCase() === "granted");
-
-    return (
-      <div className="min-h-screen bg-slate-50 text-slate-900">
-        <main className="mx-auto w-full max-w-3xl px-5 py-8">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setPage("home")} className="flex items-center gap-2 text-sm font-semibold text-teal-700"><ArrowLeft size={18} /> Back</button>
-            <button onClick={() => { setDoctorPhone(""); setDoctorOtp(""); setDoctorSearch(""); setDoctorPatient(null); setDoctorPatientRecords([]); setDoctorAllergiesMeds([]); setDoctorConsent([]); setPage("home"); }} className="flex items-center gap-2 text-sm font-semibold text-red-500"><LogOut size={16} /> Logout</button>
+        <div className="mt-8 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">
+            A
           </div>
 
-          <div className="mt-8 flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-600"><Stethoscope size={27} /></div>
-            <div><h1 className="text-3xl font-bold">Healthcare Dashboard</h1><p className="mt-1 text-sm text-slate-500">Find a patient and review authorized health information.</p></div>
-          </div>
+          <h1 className="mt-5 text-3xl font-bold">
+            {t.aadhaarTitle}
+          </h1>
 
-          <section className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
-            <label className="text-sm font-semibold">Patient Phone / AROVIA Health ID</label>
-            <div className="mt-3 flex gap-2">
-              <input value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="9100000002 or AROVIA-0002" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-600" />
-              <button onClick={() => searchPatientForDoctor(doctorSearch)} className="rounded-xl bg-teal-600 px-5 py-3 font-semibold text-white">Search</button>
-            </div>
-            {doctorSearchError && <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-600">{doctorSearchError}</p>}
-          </section>
+          <p className="mt-2 text-sm text-slate-500">
+            Enter your 12-digit Aadhaar number to continue.
+          </p>
+        </div>
 
-          {doctorPatient && (
-            <div className="mt-6">
-              <section className="rounded-3xl bg-teal-600 p-6 text-white shadow-md">
-                <p className="text-sm text-teal-100">Patient Found</p>
-                <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-                  <div><h2 className="text-2xl font-bold">{doctorPatient.full_name || "Unnamed Patient"}</h2><p className="mt-1 text-sm text-teal-50">+91 {doctorPatient.phone}</p></div>
-                  <div className="rounded-xl bg-white/15 px-3 py-2 text-xs font-semibold">Health ID: AROVIA-{String(doctorPatient.phone || "").slice(-4)}</div>
-                </div>
-              </section>
+        <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <button
-                  onClick={() => downloadDoctorSummary(doctorPatient, activeRecords, medicineItems, allergyItems, doctorConsent)}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-300 hover:text-teal-700"
-                >
-                  Download Patient Summary
-                </button>
-                <button
-                  onClick={() => window.print()}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-300 hover:text-teal-700"
-                >
-                  Print Record
-                </button>
-                <button
-                  onClick={() => setShowEmergencyAccess(true)}
-                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 hover:bg-red-100"
-                >
-                  Emergency Access
-                </button>
-              </div>
+         <label className="mb-2 block text-sm font-semibold text-slate-700">
+  {t.aadhaarNumber}
+</label>
 
-              {showEmergencyAccess && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5">
-                  <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900">Emergency Access</h3>
-                        <p className="mt-1 text-sm text-slate-500">Use only when immediate clinical access is necessary.</p>
-                      </div>
-                      <button onClick={() => setShowEmergencyAccess(false)} className="text-xl text-slate-400">✕</button>
-                    </div>
-
-                    {!emergencyGranted ? (
-                      <>
-                        <textarea
-                          value={emergencyReason}
-                          onChange={(e) => setEmergencyReason(e.target.value)}
-                          rows="4"
-                          placeholder="Reason for emergency access..."
-                          className="mt-5 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-red-400"
-                        />
-                        <button
-                          onClick={() => {
-                            if (!emergencyReason.trim()) {
-                              alert("Enter a reason for emergency access.");
-                              return;
-                            }
-                            setEmergencyGranted(true);
-                          }}
-                          className="mt-3 w-full rounded-xl bg-red-600 py-3.5 font-semibold text-white hover:bg-red-700"
-                        >
-                          Grant Emergency Access (Demo)
-                        </button>
-                      </>
-                    ) : (
-                      <div className="mt-5 rounded-2xl bg-amber-50 p-4">
-                        <p className="font-semibold text-amber-900">Emergency access granted for this demo.</p>
-                        <p className="mt-2 text-sm leading-6 text-amber-800">Reason: {emergencyReason}</p>
-                        <p className="mt-2 text-xs leading-5 text-amber-700">In production, this action should be restricted by role, consent policy and recorded in an emergency access audit log.</p>
-                        <button
-                          onClick={() => setShowEmergencyAccess(false)}
-                          className="mt-4 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"
-                        >
-                          Continue
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  ["Records", activeRecords.length],
-                  ["Medicines", medicineItems.length],
-                  ["Allergies", allergyItems.length],
-                  ["Consent", consentGranted.length],
-                ].map(([label, value]) => <div key={label} className="rounded-2xl bg-white p-4 text-center shadow-sm"><p className="text-2xl font-bold text-slate-900">{value}</p><p className="mt-1 text-xs text-slate-500">{label}</p></div>)}
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm sm:grid-cols-5">
-                {[['overview','Overview'],['history','Medical History'],['meds','Allergies & Meds'],['consent','Consent'],['notes','Consultation']].map(([key,label]) => <button key={key} onClick={() => setDoctorActiveTab(key)} className={`rounded-xl px-3 py-3 text-sm font-semibold ${doctorActiveTab === key ? 'bg-teal-600 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>{label}</button>)}
-              </div>
-
-              {doctorActiveTab === "overview" && (
-                <section className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Recent Medical History</h3>{activeRecords.slice(0,2).map((r,i)=><div key={i} className="mt-4 border-l-4 border-teal-500 pl-3"><p className="text-xs text-slate-400">{r.date}</p><p className="mt-1 font-semibold">{r.diagnosis}</p><p className="mt-1 text-sm text-slate-500">{r.hospital}</p></div>)}{activeRecords.length===0&&<p className="mt-3 text-sm text-slate-500">No records available.</p>}</div>
-                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Access & Safety</h3><div className="mt-4 rounded-xl bg-teal-50 p-4"><p className="text-sm font-semibold text-teal-800">Patient data retrieved through Supabase</p><p className="mt-1 text-xs leading-5 text-teal-700">Use only for authorized care. Sharing permissions should govern production access.</p></div><div className="mt-3 rounded-xl bg-amber-50 p-4"><p className="text-xs leading-5 text-amber-800">Hackathon demo mode — real authentication and emergency audit controls should be enforced in production.</p></div></div>
-                </section>
-              )}
-
-              {doctorActiveTab === "history" && (
-                <section className="mt-5 space-y-4">
-                  {activeRecords.map((r,i)=><div key={i} className="rounded-2xl bg-white p-5 shadow-sm"><div className="flex justify-between gap-3"><div><h3 className="font-bold">{r.diagnosis}</h3><p className="mt-1 text-sm text-slate-500">{r.type} • {r.hospital}</p></div><span className="text-xs text-slate-400">{r.date}</span></div><p className="mt-4 text-sm text-slate-600">{r.notes}</p><p className="mt-3 text-xs text-slate-400">Doctor: {r.doctor}</p></div>)}{activeRecords.length===0&&<div className="rounded-2xl bg-white p-5 text-sm text-slate-500 shadow-sm">No medical records found.</div>}
-                </section>
-              )}
-
-              {doctorActiveTab === "meds" && (
-                <section className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Current Medications</h3>{medicineItems.length ? medicineItems.map((item,i)=><div key={i} className="mt-3 rounded-xl bg-slate-50 p-4"><p className="font-semibold">{item.name || "Medication"}</p><p className="mt-1 text-sm text-slate-500">{item.dosage || "Dosage not recorded"}{item.frequency ? ` • ${item.frequency}` : ""}</p></div>) : <p className="mt-3 text-sm text-slate-500">No medication data available.</p>}</div>
-                  <div className="rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Known Allergies</h3>{allergyItems.length ? allergyItems.map((item,i)=><div key={i} className="mt-3 rounded-xl bg-red-50 p-4"><p className="font-semibold text-red-800">{item.name || "Allergy"}</p><p className="mt-1 text-sm text-red-700">{item.reaction || "Reaction not recorded"}</p></div>) : <p className="mt-3 text-sm text-slate-500">No allergy data available.</p>}</div>
-                </section>
-              )}
-
-              {doctorActiveTab === "consent" && (
-                <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Consent & Sharing Status</h3>{doctorConsent.length ? doctorConsent.map((item,i)=><div key={i} className="mt-3 flex items-center justify-between rounded-xl border border-slate-100 p-4"><div><p className="font-semibold">{item.consent_type || "Consent"}</p><p className="mt-1 text-xs text-slate-500">Status: {item.status || "Not specified"}</p></div><span className={`rounded-full px-3 py-1 text-xs font-semibold ${String(item.status||'').toLowerCase()==='granted' ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600'}`}>{item.status || "Unknown"}</span></div>) : <p className="mt-3 text-sm text-slate-500">Consent records are not available to this demo session.</p>}</section>
-              )}
-
-              {doctorActiveTab === "notes" && (
-                <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h3 className="font-bold">Consultation Notes</h3><p className="mt-1 text-sm text-slate-500">Add notes for this consultation demo.</p><textarea value={doctorNote} onChange={(e)=>{setDoctorNote(e.target.value);setDoctorNoteSaved(false);}} rows="6" placeholder="Enter consultation observations, plan or follow-up..." className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-600"/><button onClick={()=>setDoctorNoteSaved(true)} className="mt-3 rounded-xl bg-teal-600 px-5 py-3 font-semibold text-white">Save Note</button>{doctorNoteSaved&&<p className="mt-3 text-sm font-medium text-teal-700">Note saved for this demo session.</p>}</section>
-              )}
-            </div>
-          )}
-
-          <div className="mt-6 rounded-2xl bg-amber-50 p-4"><p className="text-xs leading-5 text-amber-800">AROVIA doctor portal demo: patient lookup is connected to Supabase. Production deployment should enforce authenticated roles, consent policies and full audit logging.</p></div>
-        </main>
-      </div>
-    );
-  }
-
-  // ==================================================
-  // PATIENT LOGIN
-  // ==================================================
-
-  if (page === "patient-login") {
-    return (
-      <div className="min-h-screen bg-slate-50 text-slate-900">
-        <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
+          <input
+            type="password"
+            value={aadhaarNumber}
+            onChange={(e) =>
+              setAadhaarNumber(
+                e.target.value.replace(/\D/g, "").slice(0, 12)
+              )
+            }
+            inputMode="numeric"
+            maxLength="12"
+           placeholder={t.aadhaarPlaceholder}
+            className="w-full rounded-xl border border-slate-200 px-4 py-4 text-center text-xl tracking-wider outline-none focus:border-teal-600"
+          />
 
           <button
-            onClick={() => setPage("home")}
-            className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700"
+            onClick={() => {
+              if (aadhaarNumber.length !== 12) {
+                alert("Please enter a valid 12-digit Aadhaar number.");
+                return;
+              }
+
+              alert(
+                "Aadhaar verification will be connected through a secure identity service in the production version."
+              );
+            }}
+            className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
           >
-            <ArrowLeft size={18} />
-            {t.back}
+            Continue
           </button>
 
-          <div className="mt-8 text-center">
+          <div className="mt-5 rounded-xl bg-amber-50 p-3 text-center text-xs leading-5 text-amber-700">
+            Aadhaar verification is not live in this prototype.
+            Your Aadhaar number is not actually verified or stored.
+          </div>
 
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">
-              A
+        </div>
+      </main>
+    </div>
+  );
+}
+  // ==================================================
+  // ABHA ENTRY POINT
+  // ==================================================
+
+  if (page === "abha-entry") {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
+          <button onClick={() => setPage("patient-login")} className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700"><ArrowLeft size={18} /> {t.back}</button>
+          <div className="mt-8 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">A</div>
+            <h1 className="mt-5 text-3xl font-bold">{t.abhaTitle}</h1>
+<p className="mt-2 text-sm text-slate-500">{t.abhaDescription}</p>
+          </div>
+          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+  {t.abhaNumber}
+</label>
+            <input value={abhaId} onChange={(e) => setAbhaId(e.target.value.replace(/\D/g, "").slice(0, 14))} inputMode="numeric" maxLength="14" placeholder={t.abhaPlaceholder}className="w-full rounded-xl border border-slate-200 px-4 py-4 text-center text-xl tracking-wider outline-none focus:border-teal-600" />
+            <button onClick={() => { if (abhaId.length !== 14) { alert("Please enter a valid 14-digit ABHA number."); return; } setPage("patient-register"); }} className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700">{t.continueButton}</button>
+           <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+  <p className="text-sm font-bold text-slate-800">
+   {t.abdmFhirStatus}
+  </p>
+
+  <div className="mt-3 space-y-2 text-xs">
+    <div className="flex justify-between">
+      <span className="text-slate-500">{t.abdmConnection}</span>
+      <span className="font-semibold text-amber-600">
+        {t.notConnected}
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-slate-500">{t.fhirRecord}</span>
+      <span className="font-semibold text-teal-600">
+        {t.readyForIntegration}
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-slate-500">{t.submissionStatus}</span>
+      <span className="font-semibold text-slate-600">
+       {t.notSubmitted}
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-slate-500">{t.apiStatus}</span>
+      <span className="font-semibold text-amber-600">
+      {t.awaitingBackend}
+      </span>
+    </div>
+  </div>
+
+  <p className="mt-3 rounded-xl bg-amber-50 p-3 text-center leading-5 text-amber-700">
+    {t.abdmBackendNote}
+  </p>
+</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+// ==================================================
+// PATIENT DEMOGRAPHICS
+// ==================================================
+
+if (page === "patient-demographics") {
+  const updateDemographic = (field, value) => {
+    setPatientDemographics((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const isFemale =
+    patientDemographics.sex.toLowerCase() === "female";
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-2xl px-5 py-8">
+
+        {/* BACK */}
+        <button
+          onClick={() => setPage("patient-dashboard")}
+          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          {t.back}
+        </button>
+
+        {/* HEADER */}
+        <div className="mt-8">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+            <User size={28} />
+          </div>
+
+          <p className="mt-5 text-xs font-bold uppercase tracking-widest text-teal-600">
+  {t.patientInformation}
+</p>
+
+          <h1 className="mt-2 text-3xl font-bold">
+            {t.summaryPatientDemographics}
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+           {t.demographicsDescription}
+          </p>
+        </div>
+
+        {/* BASIC INFORMATION */}
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="text-lg font-bold">
+            {t.basicInformation}
+          </h2>
+
+          <div className="mt-5 space-y-5">
+
+            {/* NAME */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+               {t.fullName}
+              </label>
+
+              <input
+                type="text"
+                value={patientDemographics.name}
+                onChange={(e) =>
+                  updateDemographic("name", e.target.value)
+                }
+                placeholder={t.fullNamePlaceholder}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
             </div>
 
-            <h1 className="mt-5 text-3xl font-bold text-slate-900">
-              {t.welcomeTo}
-            </h1>
+            {/* AGE + SEX */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
-            <p className="mt-2 text-sm text-slate-500">
-              {t.tagline}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  {t.age}
+                </label>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="120"
+                  value={patientDemographics.age}
+                  onChange={(e) =>
+                    updateDemographic("age", e.target.value)
+                  }
+                  placeholder={t.agePlaceholder}
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                   {t.sex}
+                </label>
+
+                <select
+                  value={patientDemographics.sex}
+                  onChange={(e) =>
+                    updateDemographic("sex", e.target.value)
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+                >
+                  <option value="">{t.selectOption}</option>
+                  <option value="Female">{t.female}</option>
+                  <option value="Male">{t.male}</option>
+                  <option value="Intersex">{t.intersex}</option>
+                  <option value="Prefer not to say">
+                    {t.preferNotToSay}
+                  </option>
+                </select>
+              </div>
+
+            </div>
+
+            {/* OCCUPATION */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.occupationJob}
+              </label>
+
+              <input
+                type="text"
+                value={patientDemographics.occupation}
+                onChange={(e) =>
+                  updateDemographic(
+                    "occupation",
+                    e.target.value
+                  )
+                }
+                placeholder={t.occupationPlaceholder}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+          </div>
+        </div>
+
+        {/* LIFESTYLE */}
+        <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="text-lg font-bold">
+           {t.lifestyleSocialHistory}
+          </h2>
+
+          <div className="mt-5 space-y-5">
+
+            {/* DIET */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.dietLabel}
+              </label>
+
+              <select
+                value={patientDemographics.diet}
+                onChange={(e) =>
+                  updateDemographic("diet", e.target.value)
+                }
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
+              >
+               → <option value="">{t.selectDiet}</option>
+                <option value="Vegetarian">{t.vegetarian}</option>
+                <option value="Non-vegetarian">{t.nonVegetarian}</option>
+                <option value="Vegan">{t.vegan}</option>
+                <option value="Other">{t.other}</option>
+              </select>
+            </div>
+
+            {/* ACTIVITY */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              {t.physicalActivityLabel} 
+              </label>
+
+              <select
+                value={patientDemographics.physicalActivity}
+                onChange={(e) =>
+                  updateDemographic(
+                    "physicalActivity",
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
+              >
+                <option value="">{t.selectActivityLevel}</option>
+              <option value="Low">{t.low}</option>
+                <option value="Moderate">{t.moderate}</option>
+                 <option value="High">{t.high}</option>
+              </select>
+            </div>
+
+            {/* SLEEP */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              {t.sleepLabel}
+              </label>
+
+              <input
+                type="text"
+                value={patientDemographics.sleep}
+                onChange={(e) =>
+                  updateDemographic("sleep", e.target.value)
+                }
+               placeholder={t.sleepPlaceholder}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+            {/* ALCOHOL */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.alcoholUse}
+              </label>
+
+              <select
+                value={patientDemographics.alcohol}
+                onChange={(e) =>
+                  updateDemographic("alcohol", e.target.value)
+                }
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
+              >
+                <option value="">{t.selectOption}</option>
+               <option value="Never">{t.never}</option>
+               <option value="Occasional">{t.occasional}</option>
+               <option value="Regular">{t.regular}</option>
+               <option value="Prefer not to say">
+  {t.preferNotToSay}
+</option>
+              </select>
+            </div>
+
+            {/* TOBACCO */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.tobaccoSmoking}
+              </label>
+
+              <select
+                value={patientDemographics.tobacco}
+                onChange={(e) =>
+                  updateDemographic("tobacco", e.target.value)
+                }
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
+              >
+                <option value="">{t.selectOption}</option>
+                <option value="Never">{t.never}</option>
+                <option value="Former">{t.former}</option>
+                <option value="Current">{t.current}</option>
+                <option value="Prefer not to say">
+                  Prefer not to say
+                </option>
+              </select>
+            </div>
+
+            {/* OTHER SUBSTANCE */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.otherSubstanceDrugUse}
+              </label>
+
+              <textarea
+                value={patientDemographics.substanceUse}
+                onChange={(e) =>
+                  updateDemographic(
+                    "substanceUse",
+                    e.target.value
+                  )
+                }
+                placeholder={t.substanceUsePlaceholder}
+                rows={3}
+                className="w-full rounded-xl border border-slate-200 p-4 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+          </div>
+        </div>
+
+        {/* BACKGROUND */}
+        <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="text-lg font-bold">
+            {t.personalBackground}
+          </h2>
+
+          <div className="mt-5 space-y-5">
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.ethnicityLabel}
+              </label>
+
+              <input
+                type="text"
+                value={patientDemographics.ethnicity}
+                onChange={(e) =>
+                  updateDemographic(
+                    "ethnicity",
+                    e.target.value
+                  )
+                }
+                placeholder={t.optional}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">
+                {t.religionLabel}
+              </label>
+
+              <input
+                type="text"
+                value={patientDemographics.religion}
+                onChange={(e) =>
+                  updateDemographic(
+                    "religion",
+                    e.target.value
+                  )
+                }
+                placeholder={t.optional}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+              />
+            </div>
+
+          </div>
+        </div>
+
+        {/* FEMALE HEALTH */}
+        {isFemale && (
+          <>
+            {/* MENSTRUAL */}
+            <div className="mt-5 rounded-3xl border border-pink-100 bg-white p-6 shadow-sm">
+
+              <h2 className="text-lg font-bold">
+                {t.menstrualHistoryTitle}
+              </h2>
+
+              <div className="mt-5 space-y-5">
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.menstrualStatus}
+                  </label>
+
+                  <select
+                    value={patientDemographics.menstrualStatus}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "menstrualStatus",
+                        e.target.value
+                      )
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"
+                  >
+                    <option value="">{t.selectOption}</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Irregular">Irregular</option>
+                    <option value="Not started">{t.notStarted}</option>
+                    <option value="Menopausal">{t.menopausal}</option>
+                    <option value="Not applicable">
+                      Not applicable
+                    </option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                     {t.ageAtMenarche}
+                    </label>
+
+                    <input
+                      type="number"
+                      value={patientDemographics.menarcheAge}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "menarcheAge",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Age"
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      Cycle Duration
+                    </label>
+
+                    <input
+                      type="text"
+                      value={patientDemographics.cycleDuration}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "cycleDuration",
+                          e.target.value
+                        )
+                      }
+                      placeholder={t.cycleDurationPlaceholder}
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.cycleRegularity}
+                  </label>
+
+                  <input
+                    type="text"
+                    value={patientDemographics.menstrualRegularity}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "menstrualRegularity",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.cycleRegularityPlaceholder}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.lastMenstrualPeriod}
+                  </label>
+
+                  <input
+                    type="date"
+                    value={patientDemographics.lastMenstrualPeriod}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "lastMenstrualPeriod",
+                        e.target.value
+                      )
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.menopauseStatus}
+                  </label>
+
+                  <input
+                    type="text"
+                    value={patientDemographics.menopauseStatus}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "menopauseStatus",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.menopausePlaceholder}
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* GYNAECOLOGICAL */}
+            <div className="mt-5 rounded-3xl border border-pink-100 bg-white p-6 shadow-sm">
+
+              <h2 className="text-lg font-bold">
+               {t.gynaecologicalHistoryTitle}
+              </h2>
+
+              <div className="mt-5 space-y-5">
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Gynaecological History
+                  </label>
+
+                  <textarea
+                    value={patientDemographics.gynecologicalHistory}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "gynecologicalHistory",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.gynaecologicalHistoryPlaceholder}
+                    rows={4}
+                    className="w-full rounded-xl border border-slate-200 p-4"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Previous Gynaecological Procedures
+                  </label>
+
+                  <textarea
+                    value={patientDemographics.gynecologicalProcedures}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "gynecologicalProcedures",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.previousProceduresPlaceholder}
+                    rows={3}
+                    className="w-full rounded-xl border border-slate-200 p-4"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* OBSTETRIC */}
+            <div className="mt-5 rounded-3xl border border-amber-100 bg-white p-6 shadow-sm">
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-amber-600">
+               {t.obstetricHistoryLabel}
+                </p>
+
+                <h2 className="mt-1 text-lg font-bold">
+                {t.pregnancyDeliveryHistory}
+                </h2>
+              </div>
+
+              <div className="mt-5 space-y-5">
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  {t.pregnancyStatus}
+                  </label>
+
+                  <select
+                    value={patientDemographics.pregnancyStatus}
+                    onChange={(e) =>
+                      updateDemographic(
+                        "pregnancyStatus",
+                        e.target.value
+                      )
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3"
+                  >
+                    <option value="Not pregnant">
+  {t.notPregnant}
+</option>
+
+<option value="Currently pregnant">
+  {t.currentlyPregnant}
+</option>
+
+<option value="Possibly pregnant">
+  {t.possiblyPregnant}
+</option>
+
+<option value="Postpartum">
+  {t.postpartum}
+</option>
+
+<option value="Prefer not to say">
+  {t.preferNotToSay}
+</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      {t.gravida}
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={patientDemographics.gravida}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "gravida",
+                          e.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      {t.para}
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={patientDemographics.para}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "para",
+                          e.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      {t.abortions}
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={patientDemographics.abortions}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "abortions",
+                          e.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      {t.livingChildren}
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={patientDemographics.livingChildren}
+                      onChange={(e) =>
+                        updateDemographic(
+                          "livingChildren",
+                          e.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-200 px-4 py-3"
+                    />
+                  </div>
+
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.previousPregnancyComplications}
+                  </label>
+
+                  <textarea
+                    value={
+                      patientDemographics.previousPregnancyComplications
+                    }
+                    onChange={(e) =>
+                      updateDemographic(
+                        "previousPregnancyComplications",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.previousComplicationsPlaceholder}
+                    rows={3}
+                    className="w-full rounded-xl border border-slate-200 p-4"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.previousDeliveryDetails}
+                  </label>
+
+                  <textarea
+                    value={
+                      patientDemographics.previousDeliveryDetails
+                    }
+                    onChange={(e) =>
+                      updateDemographic(
+                        "previousDeliveryDetails",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.optional}
+                    rows={3}
+                    className="w-full rounded-xl border border-slate-200 p-4"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    {t.currentPregnancyDetails}
+                  </label>
+
+                  <textarea
+                    value={
+                      patientDemographics.currentPregnancyDetails
+                    }
+                    onChange={(e) =>
+                      updateDemographic(
+                        "currentPregnancyDetails",
+                        e.target.value
+                      )
+                    }
+                    placeholder={t.currentPregnancyPlaceholder}
+                    rows={3}
+                    className="w-full rounded-xl border border-slate-200 p-4"
+                  />
+                </div>
+
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* CONTINUE */}
+        <button
+         onClick={() => {
+  setPage("patient-dashboard");
+}}
+          className="mt-6 w-full rounded-2xl bg-teal-600 py-4 font-semibold text-white shadow-md transition hover:bg-teal-700"
+        >
+          {t.saveAndContinue}
+        </button>
+
+        <p className="mt-4 text-center text-xs leading-5 text-slate-400">
+          {t.demographicsReviewNote}
+        </p>
+
+      </main>
+    </div>
+  );
+}
+// ==================================================
+// SETTINGS
+// ==================================================
+
+if (page === "settings") {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-md px-5 py-8">
+
+        <button
+          onClick={() => setPage("patient-dashboard")}
+          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          {t.backToDashboard}
+        </button>
+
+        <div className="mt-8">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+            ⚙️
+          </div>
+
+          <h1 className="mt-5 text-3xl font-bold">
+          {t.settings}
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+           {t.settingsDescription}
+          </p>
+        </div>
+
+        <div className="mt-8 space-y-3">
+
+          {/* PERSONAL INFORMATION */}
+          <button
+            onClick={() => setPage("patient-demographics")}
+            className="flex w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-teal-300 hover:bg-teal-50"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+              <User size={22} />
+            </div>
+
+            <div className="flex-1">
+              <h2 className="font-bold">
+               {t.personalMedicalInformation}
+              </h2>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+              {t.personalMedicalInformationDescription}
+              </p>
+            </div>
+
+            <span className="text-slate-400">
+              →
+            </span>
+          </button>
+
+          {/* PRIVACY */}
+          <button
+            onClick={() => setPage("privacy-permissions")}
+            className="flex w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-teal-300 hover:bg-teal-50"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              🔒
+            </div>
+
+            <div className="flex-1">
+              <h2 className="font-bold">
+               {t.privacyConsent}
+              </h2>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                {t.privacyConsentDescription}
+              </p>
+            </div>
+
+            <span className="text-slate-400">
+              →
+            </span>
+          </button>
+
+          {/* EMERGENCY */}
+          <button
+            onClick={() => setPage("emergency-access")}
+            className="flex w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-red-300 hover:bg-red-50"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+              🚨
+            </div>
+
+            <div className="flex-1">
+              <h2 className="font-bold">
+              {t.emergencyAccessLabel}
+              </h2>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+              {t.emergencyAccessDescription}
+              </p>
+            </div>
+
+            <span className="text-slate-400">
+              →
+            </span>
+          </button>
+
+        </div>
+
+      </main>
+    </div>
+  );
+}
+  // ==================================================
+// PATIENT LOGIN
+// ==================================================
+
+if (page === "patient-login") {
+  const isValidPhone = phone.length === 10;
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-8">
+
+        {/* BACK */}
+        <button
+          onClick={() => setPage("home")}
+          className="flex items-center gap-2 self-start text-sm font-semibold text-teal-700 transition hover:text-teal-900"
+        >
+          <ArrowLeft size={18} />
+          {t.back}
+        </button>
+
+        {/* HEADER */}
+        <div className="mt-8 text-center">
+
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-600 text-xl font-bold text-white shadow-md">
+            A
+          </div>
+
+          <h1 className="mt-5 text-3xl font-bold text-slate-900">
+            {t.welcomeTo}
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            {t.tagline}
+          </p>
+
+        </div>
+
+        {/* LOGIN CARD */}
+        <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <div className="flex items-center gap-3">
+
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+              <User size={22} />
+            </div>
+
+            <div>
+              <h2 className="text-xl font-bold">
+                {t.patientLogin}
+              </h2>
+
+              <p className="text-sm text-slate-500">
+                Secure access to your health records
+              </p>
+            </div>
+
+          </div>
+
+          {/* MOBILE LOGIN */}
+          <div className="mt-7">
+
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              {t.mobileNumber}
+            </label>
+
+            <div
+              className={`flex overflow-hidden rounded-xl border bg-white transition ${
+                phone.length > 0 && !isValidPhone
+                  ? "border-red-300 focus-within:border-red-400"
+                  : isValidPhone
+                  ? "border-emerald-300 focus-within:border-emerald-500"
+                  : "border-slate-200 focus-within:border-teal-600"
+              }`}
+            >
+
+              <span className="flex items-center border-r border-slate-200 px-3 text-sm font-medium text-slate-500">
+                +91
+              </span>
+
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={phone}
+                onChange={(e) =>
+                  setPhone(
+                    e.target.value.replace(/\D/g, "")
+                  )
+                }
+                placeholder="Enter 10-digit number"
+                maxLength="10"
+                className="min-w-0 flex-1 px-3 py-3 outline-none"
+              />
+
+              {isValidPhone && (
+                <div className="flex items-center px-3 text-emerald-600">
+                  ✓
+                </div>
+              )}
+
+            </div>
+
+            {phone.length > 0 && phone.length < 10 && (
+              <p className="mt-2 text-xs text-red-500">
+              placeholder={t.enter10DigitNumber}
+              </p>
+            )}
+
+            {isValidPhone && (
+              <p className="mt-2 text-xs text-emerald-600">
+               {t.invalidMobileNumber}
+              </p>
+            )}
+
+          </div>
+
+          {/* OTP BUTTON */}
+          <button
+            disabled={!isValidPhone}
+            onClick={() => {
+              if (!isValidPhone) return;
+              setPage("otp");
+            }}
+            className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+          >
+            {t.sendOTP}
+          </button>
+
+          {/* DEMO NOTICE */}
+          <div className="mt-5 rounded-xl border border-teal-100 bg-teal-50 p-3 text-center">
+
+            <p className="text-xs font-semibold text-teal-800">
+              {t.demoMode}
+            </p>
+
+            <p className="mt-1 text-xs text-teal-700">
+             {t.demoSmsNotice}
             </p>
 
           </div>
 
-          <div className="mt-10 rounded-3xl bg-white p-6 shadow-sm">
+          {/* ALTERNATIVE ACCESS */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+             {t.otherAccessOptions}
+            </span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
 
-            <div className="flex items-center gap-3">
+          <div className="space-y-3">
 
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
-                <User size={22} />
-              </div>
+            {/* AADHAAR */}
+            <button
+              onClick={() => setPage("aadhaar-entry")}
+              className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-left transition hover:border-teal-300 hover:bg-teal-50"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-50 text-lg">
+                🪪
+              </span>
 
-              <div>
-                <h2 className="text-xl font-bold">
-                  {t.patientLogin}
-                </h2>
-
-                <p className="text-sm text-slate-500">
-                  {t.accessRecords}
+              <div className="flex-1">
+               <p className="text-sm font-bold text-slate-800">
+  {t.aadhaarTitle}
+</p>
+                <p className="text-xs text-slate-500">
+                   {t.aadhaarAccessDescription}
                 </p>
               </div>
 
-            </div>
-
-            <div className="mt-7">
-
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Mobile Number
-              </label>
-
-              <div className="flex overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:border-teal-600">
-
-                <span className="flex items-center border-r border-slate-200 px-3 text-sm font-medium text-slate-500">
-                  +91
-                </span>
-
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) =>
-                    setPhone(
-                      e.target.value.replace(/\D/g, "")
-                    )
-                  }
-                  placeholder="Enter 10-digit number"
-                  maxLength="10"
-                  className="min-w-0 flex-1 px-3 py-3 outline-none"
-                />
-
-              </div>
-
-            </div>
-
-            <button
-              onClick={() => {
-                if (phone.length !== 10) {
-                  alert(
-                    t.invalidPhone
-                  );
-                  return;
-                }
-
-                setPage("otp");
-              }}
-              className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md transition hover:bg-teal-700"
-            >
-              {t.sendOTP}
+              <span className="text-slate-400">
+                →
+              </span>
             </button>
 
-            <div className="mt-5 rounded-xl bg-teal-50 p-3 text-center">
+            {/* ABHA */}
+            <button
+              onClick={() => setPage("abha-entry")}
+              className="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-left transition hover:border-teal-300 hover:bg-teal-50"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-50 text-lg">
+                🏥
+              </span>
 
-              <p className="text-xs text-teal-700">
-                Demo mode • No real SMS will be sent
-              </p>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-slate-800">
+                 {t.continueWithAbha}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {t.abhaAccessDescription}
+                </p>
+              </div>
 
-            </div>
+              <span className="text-slate-400">
+                →
+              </span>
+            </button>
 
           </div>
 
-          <p className="mt-6 text-center text-xs leading-5 text-slate-400">
-            Your health information is private and protected.
+          {/* REGISTER */}
+          <button
+            onClick={() => setPage("patient-register")}
+            className="mt-4 w-full rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-700 transition hover:bg-teal-100"
+          >
+           {t.newPatientRegister}
+          </button>
+
+        </div>
+
+        {/* PRIVACY */}
+        <div className="mt-6 flex items-center justify-center gap-2 text-center">
+          <span className="text-sm">🔒</span>
+          <p className="text-xs leading-5 text-slate-400">
+            {t.healthInformationPrivate}
           </p>
+        </div>
 
-        </main>
-      </div>
-    );
-  }
-
+      </main>
+    </div>
+  );
+}
   // ==================================================
   // OTP PAGE
   // ==================================================
@@ -1530,6 +3476,8 @@ const startPreConsultationVoice = () => {
 }
 
 setPatientId(data.id);
+setOtp("");
+sessionStorage.setItem("arovia_patient_session", JSON.stringify({ patientId: data.id, phone, abhaId }));
 setPage("patient-dashboard");
               }}
               className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
@@ -1553,18 +3501,23 @@ setPage("patient-dashboard");
   // ==================================================
 
   if (page === "health-journey") {
-    const groupedJourney = healthJourneyEvents.reduce(
-      (groups, event) => {
-        if (!groups[event.year]) {
-          groups[event.year] = [];
-        }
+   const groupedJourney = healthJourneyEvents.reduce(
+  (groups, event) => {
+    if (!groups[event.year]) {
+      groups[event.year] = [];
+    }
 
-        groups[event.year].push(event);
-        return groups;
-      },
-      {}
-    );
+    groups[event.year].push(event);
+    return groups;
+  },
+  {}
+);
 
+Object.keys(groupedJourney).forEach((year) => {
+  groupedJourney[year].sort(
+    (a, b) => new Date(b.sortDate) - new Date(a.sortDate)
+  );
+});
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900">
 
@@ -1653,15 +3606,17 @@ setPage("patient-dashboard");
 
               <button
                 onClick={() => {
-                  const latestEventIndex =
-                    healthJourneyEvents.findIndex(
-                      (event) =>
-                        event.id ===
-                        `record-${
-                          medicalRecords.length - 1
-                        }`
-                    );
+                  const latestEventIndex = healthJourneyEvents.reduce(
+  (latestIndex, event, index, events) => {
+    if (!events[latestIndex]) return index;
 
+    return new Date(event.sortDate) >
+      new Date(events[latestIndex].sortDate)
+      ? index
+      : latestIndex;
+  },
+  0
+);
                   setExpandedJourneyEvent(
                     latestEventIndex
                   );
@@ -1753,6 +3708,17 @@ setPage("patient-dashboard");
                                   <h3 className="mt-1 text-lg font-bold text-slate-900">
                                     {event.title}
                                   </h3>
+                                  <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-teal-600">
+  {event.type === "medicalReport"
+  ? t.investigationMedicalReport
+  : event.type === "prescription"
+  ? t.prescription
+  : event.type === "medication"
+  ? t.medication
+  : event.type === "procedure"
+  ? t.procedureSurgery
+  : t.consultation}
+</p>
 
                                   {event.hospital && (
                                     <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
@@ -1760,6 +3726,18 @@ setPage("patient-dashboard");
                                       {event.hospital}
                                     </div>
                                   )}
+                                  {event.addedAt && (
+  <p className="mt-1 text-xs text-slate-500">
+    Added to AROVIA:{" "}
+    {new Date(event.addedAt).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </p>
+)}
 
                                   {event.doctor && (
                                     <div className="mt-1 flex items-center gap-2 text-sm text-slate-500">
@@ -1767,7 +3745,11 @@ setPage("patient-dashboard");
                                       {event.doctor}
                                     </div>
                                   )}
-
+{event.diagnosis && (
+  <p className="mt-2 text-sm font-medium text-slate-700">
+    {event.diagnosis}
+  </p>
+)}
                                 </div>
 
                                 <span className="shrink-0 text-sm font-semibold text-teal-600">
@@ -1785,7 +3767,40 @@ setPage("patient-dashboard");
                                   onClick={(e) =>
                                     e.stopPropagation()
                                   }
-                                >
+                                      >
+                                  
+                               {event.type === "ayush" && (
+  <div className="rounded-xl bg-green-50 p-4">
+    <div className="flex items-center justify-between gap-3">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-green-600">
+          🌿 AYUSH History
+        </p>
+
+        <p className="mt-1 text-sm text-green-800">
+          Your AYUSH assessment has been saved to your health record.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => {
+         setAyushAnswers({
+  ...event.ayushHistory,
+});
+setAyushQuestionIndex(0);
+setAyushLanding(false);
+setPreConsultationStep("ayushAssessment");
+setPage("pre-consultation");
+        }}
+        className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+      >
+       {t.editAyush}
+      </button>
+    </div>
+  </div>
+)}
+                               
 
                                   {event.diagnosis && (
                                     <div>
@@ -1844,11 +3859,28 @@ setPage("patient-dashboard");
                                       </p>
                                     </div>
                                   )}
+                                {event.type === "procedure" && (
+  <div className="rounded-xl bg-purple-50 p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-purple-600">
+      Procedure / Surgery
+    </p>
 
+    <p className="mt-1 text-sm font-semibold text-purple-800">
+      {event.title}
+    </p>
+
+    {event.notes && (
+      <p className="mt-2 text-xs leading-5 text-purple-700">
+        {event.notes}
+      </p>
+    )}
+  </div>
+)}
                                   {event.medication && (
                                     <div className="rounded-xl bg-orange-50 p-4">
                                       <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
-                                        {t.relatedMedication}
+                                       Medication History
+                                         {t.relatedMedication}
                                       </p>
 
                                       <p className="mt-1 text-sm font-semibold text-orange-800">
@@ -1856,19 +3888,50 @@ setPage("patient-dashboard");
                                       </p>
                                     </div>
                                   )}
+{event.title?.startsWith("Symptom:") && (
+  <button
+    type="button"
+    onClick={() => {
+      const symptomIndex = symptomTimeline.findIndex(
+        (symptom) =>
+          `Symptom: ${symptom.symptom}` === event.title
+      );
 
-                                  {event.report && (
-                                    <div className="rounded-xl bg-blue-50 p-4">
-                                      <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-                                        {t.relatedReport}
-                                      </p>
+      if (symptomIndex === -1) return;
 
-                                      <p className="mt-1 text-sm font-semibold text-blue-800">
-                                        {event.report}
-                                      </p>
-                                    </div>
-                                  )}
+      const symptom = symptomTimeline[symptomIndex];
 
+      setEditingSymptomIndex(symptomIndex);
+
+      setNewSymptom({
+        name: symptom.symptom || "",
+        startedAt: symptom.startedAt || "",
+        severity: symptom.severity || "",
+        details: symptom.details || "",
+      });
+
+      setPage("add-symptom");
+    }}
+    className="w-full rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-100"
+  >
+    ✏️ {t.edit}
+  </button>
+)}
+                                  {event.type === "medicalReport" && (
+  <div className="rounded-xl bg-blue-50 p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+  Investigation / Medical Report / Document
+</p>
+
+    <p className="mt-1 text-sm font-semibold text-blue-800">
+      {event.report}
+    </p>
+
+    <p className="mt-2 text-xs text-blue-700">
+      Investigation document associated with this health record.
+    </p>
+  </div>
+)}
                                   <p className="pt-1 text-xs font-semibold text-teal-600">
                                     {t.closeDetails}
                                   </p>
@@ -2322,7 +4385,6 @@ if (page === "add-record") {
                       ...newRecord,
                       type: "Medical Document",
                       hospital: "City Health Centre",
-                      doctor: "Dr. Ananya",
                       date: new Date().toISOString().split("T")[0],
                       diagnosis: "Viral Fever",
                       notes:
@@ -2336,7 +4398,7 @@ if (page === "add-record") {
             </div>
 
             <p className="mt-3 text-center text-xs text-slate-500">
-              Take a clear photo of a prescription, test report, or medical document.
+                {t.documentInstruction}
             </p>
 
           </div>
@@ -2433,7 +4495,7 @@ if (page === "add-record") {
 
             <div className="flex items-center justify-between">
               <h2 className="font-bold">
-                Medical Document
+                 {t.medicalDocument}
               </h2>
 
               <button
@@ -2465,11 +4527,11 @@ if (page === "add-record") {
                 </div>
 
                 <p className="mt-3 font-semibold text-teal-800">
-                  AI is reading your document...
+                  {t.extractAI}
                 </p>
 
                 <p className="mt-1 text-xs text-teal-600">
-                  Extracting medical information
+                  {t.documentNote}
                 </p>
 
               </div>
@@ -2485,7 +4547,7 @@ if (page === "add-record") {
                     <span className="text-lg">✨</span>
 
                     <h3 className="font-bold text-teal-800">
-                      AI Extracted Information
+                      {t.extractAI}
                     </h3>
                   </div>
 
@@ -2498,7 +4560,7 @@ if (page === "add-record") {
                 {/* HOSPITAL */}
                 <div className="mt-5">
                   <label className="mb-2 block text-sm font-semibold">
-                    Hospital / Clinic
+                     {t.hospitalClinic}
                   </label>
 
                   <input
@@ -2595,7 +4657,6 @@ if (page === "add-record") {
                     setNewRecord({
                       type: "General Consultation",
                       hospital: "",
-                      doctor: "",
                       date: "",
                       diagnosis: "",
                       notes: "",
@@ -2605,7 +4666,7 @@ if (page === "add-record") {
                   }}
                   className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-semibold text-white shadow-md hover:bg-teal-700"
                 >
-                  Save Medical Record
+                 {t.saveMedicalRecord}
                 </button>
 
               </div>
@@ -2622,7 +4683,7 @@ if (page === "add-record") {
               <Mic size={19} className="text-teal-700" />
 
               <h2 className="font-bold text-teal-800">
-                Voice Input
+                {t.voiceInput}
               </h2>
             </div>
 
@@ -2639,7 +4700,7 @@ if (page === "add-record") {
               }
               className="mt-4 w-full rounded-xl bg-teal-600 py-3 font-semibold text-white hover:bg-teal-700"
             >
-              Use This Information
+             {t.useThisInformation}
             </button>
 
           </div>
@@ -2661,7 +4722,7 @@ if (page === "add-record") {
             {/* RECORD TYPE */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Record Type
+               {t.recordType}
               </label>
 
               <select
@@ -2674,18 +4735,18 @@ if (page === "add-record") {
                 }
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-600"
               >
-                <option>General Consultation</option>
-                <option>Blood Test</option>
-                <option>Prescription</option>
-                <option>Vaccination</option>
-                <option>Other</option>
+               <option>{t.recordGeneralConsultation}</option>
+<option>{t.recordBloodTest}</option>
+<option>{t.recordPrescription}</option>
+<option>{t.recordVaccination}</option>
+<option>{t.recordOther}</option>
               </select>
             </div>
 
             {/* HOSPITAL */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Hospital / Clinic
+              {t.hospitalClinicLabel}
               </label>
 
               <input
@@ -2697,7 +4758,7 @@ if (page === "add-record") {
                     hospital: e.target.value,
                   })
                 }
-                placeholder="Enter hospital or clinic name"
+                placeholder={t.hospitalPlaceholder}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-600"
               />
             </div>
@@ -2705,7 +4766,7 @@ if (page === "add-record") {
             {/* DOCTOR */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Doctor Name
+                  {t.doctorNameLabel}
               </label>
 
               <input
@@ -2717,7 +4778,7 @@ if (page === "add-record") {
                     doctor: e.target.value,
                   })
                 }
-                placeholder="Enter doctor's name"
+                placeholder={t.doctorPlaceholder}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-600"
               />
             </div>
@@ -2725,7 +4786,7 @@ if (page === "add-record") {
             {/* DATE */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Date
+                 {t.dateLabel}
               </label>
 
               <input
@@ -2744,7 +4805,7 @@ if (page === "add-record") {
             {/* DIAGNOSIS */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Diagnosis
+                 {t.diagnosisLabel}
               </label>
 
               <input
@@ -2764,7 +4825,7 @@ if (page === "add-record") {
             {/* NOTES */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Notes
+                 {t.notesLabel}
               </label>
 
               <textarea
@@ -2804,21 +4865,21 @@ if (page === "add-record") {
                 });
 
                 setMedicalRecords([
-                  ...medicalRecords,
-                  {
-                    ...newRecord,
-                    hospital: newRecord.hospital.trim(),
-                    doctor: newRecord.doctor.trim(),
-                    diagnosis: newRecord.diagnosis.trim(),
-                    notes: newRecord.notes.trim(),
-                    date: formattedDate,
-                  },
-                ]);
+  ...medicalRecords,
+  {
+    ...newRecord,
+    hospital: newRecord.hospital.trim(),
+    doctor: newRecord.doctor.trim(),
+    diagnosis: newRecord.diagnosis.trim(),
+    notes: newRecord.notes.trim(),
+    date: formattedDate,
+    addedAt: new Date().toISOString(),
+  },
+]);
 
                 setNewRecord({
                   type: "General Consultation",
                   hospital: "",
-                  doctor: "",
                   date: "",
                   diagnosis: "",
                   notes: "",
@@ -2873,7 +4934,7 @@ if (page === "health-id") {
           </div>
 
           <h1 className="mt-5 text-3xl font-bold">
-            AROVIA Health ID
+          {t.aroviaHealthID}
           </h1>
 
           <p className="mt-2 text-sm text-slate-500">
@@ -2955,6 +5016,7 @@ if (page === "health-id") {
     </div>
   );
 }
+
   // ==================================================
   // SYMPTOM CHECKER
   // ==================================================
@@ -3059,6 +5121,130 @@ if (page === "health-id") {
       </div>
     );
   }
+  // ==================================================
+// AYUSH HISTORY LANDING PAGE
+// ==================================================
+
+if (page === "ayush-history") {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-md px-5 py-8">
+
+        {/* BACK */}
+        <button
+          onClick={() => setPage("patient-dashboard")}
+          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          Back to Dashboard
+        </button>
+
+        {/* HEADER */}
+        <div className="mt-8 text-center">
+
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-teal-50 text-4xl">
+            🌿
+          </div>
+
+          <p className="mt-6 text-xs font-bold uppercase tracking-widest text-teal-600">
+            AYUSH HISTORY
+          </p>
+
+          <h1 className="mt-2 text-3xl font-bold">
+            Your AYUSH Health History
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-slate-500">
+            An optional guided assessment to capture important
+            traditional health-history information.
+          </p>
+
+        </div>
+
+        {/* WHAT IT COVERS */}
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="text-lg font-bold">
+            What this assessment covers
+          </h2>
+
+          <div className="mt-5 space-y-4">
+
+            <div className="flex gap-3">
+              <div className="mt-1 text-teal-600">✓</div>
+              <div>
+                <p className="font-semibold">
+                  Dashavidha Pariksha
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  Prakriti, Vikriti, Sara, Samhanana, Pramana,
+                  Satmya, Sattva, Ahara Shakti, Vyayama Shakti
+                  and Vaya.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="mt-1 text-teal-600">✓</div>
+              <div>
+                <p className="font-semibold">
+                  Ahara & Vihara
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  Diet, daily routine, sleep, physical activity
+                  and lifestyle information.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="mt-1 text-teal-600">✓</div>
+              <div>
+                <p className="font-semibold">
+                  Review & Edit
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                  Move between questions and update your answers
+                  before completing the assessment.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* OPTIONAL INFO */}
+        <div className="mt-5 rounded-2xl bg-teal-50 p-4">
+
+          <p className="text-sm font-semibold text-teal-800">
+            Optional assessment
+          </p>
+
+          <p className="mt-1 text-xs leading-5 text-teal-700">
+            You can complete this assessment separately from
+            your regular clinical consultation.
+          </p>
+
+        </div>
+
+        {/* START */}
+        <button
+          onClick={() => {
+            setAyushQuestionIndex(0);
+            setPreConsultationStep("ayushAssessment");
+            setPage("pre-consultation");
+          }}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 py-4 font-semibold text-white shadow-md transition hover:bg-teal-700"
+        >
+          Start AYUSH Assessment
+          <span>→</span>
+        </button>
+
+      </main>
+    </div>
+  );
+}
+
 // ==================================================
 // PROFILE / SETTINGS
 // ==================================================
@@ -3105,7 +5291,7 @@ if (page === "profile") {
             </p>
 
             <p className="mt-2 text-lg font-bold text-slate-900">
-              Demo Patient
+             {patientDemographics.name || "Not provided"}
             </p>
           </div>
 
@@ -3130,7 +5316,13 @@ if (page === "profile") {
               {healthId}
             </p>
           </div>
-
+          {/* PERSONAL & MEDICAL INFORMATION */}
+<div>
+  <p className="text-sm text-slate-500">Sex</p>
+  <p className="font-medium text-slate-900">
+    {patientDemographics.sex || "Not provided"}
+  </p>
+</div>
           {/* LANGUAGE */}
           <div className="pt-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -3198,7 +5390,10 @@ if (page === "profile") {
           onClick={() => {
             setPhone("");
             setOtp("");
+            setPatientId(null);
+            setAbhaId("");
             setPage("home");
+            sessionStorage.removeItem("arovia_patient_session");
           }}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-50 px-5 py-4 font-semibold text-red-600"
         >
@@ -3220,6 +5415,10 @@ if (page === "privacy-permissions") {
       key: "medicalHistory",
       label: t.medicalHistoryPermission,
     },
+    {
+  key: "ayushHistory",
+  label: "AYUSH History",
+},
     {
       key: "medications",
       label: t.medicationsPermission,
@@ -3244,10 +5443,8 @@ if (page === "privacy-permissions") {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-
       <main className="mx-auto w-full max-w-md px-5 py-8">
 
-        {/* BACK */}
         <button
           onClick={() => setPage("profile")}
           className="flex items-center gap-2 text-sm font-semibold text-teal-700"
@@ -3256,9 +5453,7 @@ if (page === "privacy-permissions") {
           {t.back}
         </button>
 
-        {/* HEADER */}
         <div className="mt-8">
-
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-2xl">
             🔐
           </div>
@@ -3270,59 +5465,112 @@ if (page === "privacy-permissions") {
           <p className="mt-2 text-sm leading-6 text-slate-500">
             {t.manageAccess}
           </p>
-
         </div>
 
-        {/* PERMISSION CARD */}
-        <div className="mt-8 rounded-3xl bg-white p-5 shadow-sm">
+        {/* CONSENT STATUS */}
+        <div className="mt-8 rounded-3xl border border-teal-200 bg-teal-50 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+                Consent Status
+              </p>
 
-          {permissionItems.map((item, index) => (
-            <div
-              key={item.key}
-              className={`flex items-center justify-between py-4 ${
-                index !== permissionItems.length - 1
-                  ? "border-b border-slate-100"
-                  : ""
-              }`}
-            >
+              <p className="mt-1 text-lg font-bold text-slate-900">
+                Active
+              </p>
+            </div>
 
-              <div className="pr-4">
-                <p className="font-semibold text-slate-900">
-                  {item.label}
-                </p>
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+              Active
+            </span>
+          </div>
 
-                <p className="mt-1 text-xs text-slate-400">
-                  {permissions[item.key]
-                    ? "Allowed"
-                    : "Not allowed"}
-                </p>
-              </div>
+          <div className="mt-4 space-y-2 text-sm text-slate-700">
+            <p>
+              <span className="font-semibold">Purpose:</span>{" "}
+              Healthcare access, consultation, medical record review and
+              emergency care.
+            </p>
 
-              <button
-                onClick={() =>
-                  setPermissions({
-                    ...permissions,
-                    [item.key]: !permissions[item.key],
-                  })
-                }
-                className={`relative h-7 w-12 rounded-full transition ${
-                  permissions[item.key]
-                    ? "bg-teal-600"
-                    : "bg-slate-300"
+            <p>
+              <span className="font-semibold">Access State:</span>{" "}
+              Patient-controlled access is currently active.
+            </p>
+
+            <p>
+              <span className="font-semibold">Expiry:</span>{" "}
+              No expiry set for this consent.
+            </p>
+          </div>
+
+          <button
+            onClick={() =>
+              alert(
+                "Consent revocation request recorded. Healthcare access should be reviewed before revocation is finalized."
+              )
+            }
+            className="mt-4 w-full rounded-xl border border-red-200 bg-white py-3 font-semibold text-red-600 hover:bg-red-50"
+          >
+            Revoke Consent
+          </button>
+        </div>
+
+        {/* DATA SHARING CONTROLS */}
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Data Sharing Controls
+          </p>
+
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            Choose which categories of your health information can be accessed.
+          </p>
+
+          <div className="mt-4">
+            {permissionItems.map((item, index) => (
+              <div
+                key={item.key}
+                className={`flex items-center justify-between py-4 ${
+                  index !== permissionItems.length - 1
+                    ? "border-b border-slate-100"
+                    : ""
                 }`}
               >
-                <span
-                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                <div className="pr-4">
+                  <p className="font-semibold text-slate-900">
+                    {item.label}
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-400">
+                    {permissions[item.key]
+                      ? "Allowed"
+                      : "Not allowed"}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() =>
+                    setPermissions({
+                      ...permissions,
+                      [item.key]: !permissions[item.key],
+                    })
+                  }
+                  className={`relative h-7 w-12 rounded-full transition ${
                     permissions[item.key]
-                      ? "left-6"
-                      : "left-1"
+                      ? "bg-teal-600"
+                      : "bg-slate-300"
                   }`}
-                />
-              </button>
-
-            </div>
-          ))}
-
+                >
+                  <span
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                      permissions[item.key]
+                        ? "left-6"
+                        : "left-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* SAVE */}
@@ -3333,36 +5581,217 @@ if (page === "privacy-permissions") {
           {t.savePermissions}
         </button>
 
-        {/* INFO */}
-        <div className="mt-5 rounded-2xl bg-amber-50 p-4">
-
-          <p className="text-sm leading-6 text-amber-800">
-            Your permissions control normal healthcare access.
-            Emergency access will follow a separate doctor
-            verification process.
+        {/* ACCESS EVENT */}
+        <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Recent Access Event
           </p>
 
+          <p className="mt-2 text-sm font-semibold text-slate-800">
+            Patient-controlled access
+          </p>
+
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            Your current sharing preferences are being applied to normal
+            healthcare access.
+          </p>
+
+          <p className="mt-2 text-xs text-slate-400">
+            Status: Active
+          </p>
+        </div>
+
+        {/* INFO */}
+        <div className="mt-5 rounded-2xl bg-amber-50 p-4">
+          <p className="text-sm leading-6 text-amber-800">
+            Your permissions control normal healthcare access. Emergency
+            access will follow a separate doctor verification process.
+          </p>
         </div>
 
       </main>
     </div>
   );
 }
-// ==================================================
-// HEALTH JOURNEY
-// ==================================================
 
-if (page === "health-journey") {
+//====================================
+// PRE-CONSULTATION ASSISTANT
+// ==================================================
+if (page === "add-symptom") {
   return (
-    <div>
-      {/* Health Journey page will go here */}
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-2xl px-5 py-8">
+
+        <button
+          onClick={() => setPage("pre-consultation")}
+          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          {t.back}
+        </button>
+
+        <div className="mt-8">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+            <Plus size={30} />
+          </div>
+
+          <h1 className="mt-5 text-3xl font-bold">
+            Add New Symptom
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Tell us about a new symptom that developed after your initial consultation.
+          </p>
+        </div>
+
+        <div className="mt-8 space-y-5 rounded-3xl border border-teal-100 bg-white p-6 shadow-sm">
+
+          <div>
+            <label className="text-sm font-semibold text-slate-700">
+              What new symptom did you develop?
+            </label>
+
+            <input
+              value={newSymptom.name}
+              onChange={(e) =>
+                setNewSymptom((prev) => ({
+                  ...prev,
+                  name: e.target.value
+                }))
+              }
+              placeholder="Example: Vomiting"
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-slate-700">
+              When did this symptom actually start?
+            </label>
+
+            <input
+              type="datetime-local"
+              value={newSymptom.startedAt}
+              onChange={(e) =>
+                setNewSymptom((prev) => ({
+                  ...prev,
+                  startedAt: e.target.value
+                }))
+              }
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
+            />
+
+            <p className="mt-1 text-xs text-slate-400">
+              Enter when the symptom began, not when you are reporting it.
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-slate-700">
+              How severe is it?
+            </label>
+
+            <select
+              value={newSymptom.severity}
+              onChange={(e) =>
+                setNewSymptom((prev) => ({
+                  ...prev,
+                  severity: e.target.value
+                }))
+              }
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
+            >
+             <option value="">{t.symptomSelectSeverity}</option>
+<option value="mild">{t.symptomMild}</option>
+<option value="moderate">{t.symptomModerate}</option>
+<option value="severe">{t.symptomSevere}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-slate-700">
+              Tell us more
+            </label>
+
+            <textarea
+              value={newSymptom.details}
+              onChange={(e) =>
+                setNewSymptom((prev) => ({
+                  ...prev,
+                  details: e.target.value
+                }))
+              }
+              placeholder="Describe anything else you noticed..."
+              rows={4}
+              className="mt-2 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-teal-500"
+            />
+          </div>
+
+          <button
+            onClick={async () => {
+  if (!newSymptom.name.trim() || !newSymptom.startedAt) {
+    alert("Please enter the symptom and when it started.");
+    return;
+  }
+
+  if (!patientId) {
+    alert("Patient session not found.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("symptoms")
+    .insert({
+      patient_id: patientId,
+      symptom: newSymptom.name.trim(),
+      started_at: newSymptom.startedAt,
+      severity: newSymptom.severity || null,
+      details: newSymptom.details.trim() || null,
+      recorded_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Save symptom error:", error);
+    alert("Unable to save symptom.");
+    return;
+  }
+
+  setSymptomTimeline((prev) => [
+    ...prev,
+    {
+      id: data.id,
+      symptom: data.symptom,
+      startedAt: data.started_at,
+      recordedAt: data.recorded_at,
+      severity: data.severity,
+      details: data.details,
+    },
+  ]);
+
+  setNewSymptom({
+    name: "",
+    startedAt: "",
+    severity: "",
+    details: "",
+  });
+
+  setPage("health-journey");
+}}
+className="w-full rounded-xl bg-teal-600 px-5 py-3 font-bold text-white hover:bg-teal-700"
+>
+  {editingSymptomIndex !== null
+  ? "Update Symptom"
+  : "Save Symptom"}
+</button>
+           
+
+        </div>
+      </main>
     </div>
   );
 }
-// ==================================================
-// PRE-CONSULTATION ASSISTANT
-// ==================================================
-
 if (page === "pre-consultation") {
   const complaintText =
     (preConsultationAnswers.complaint || "").toLowerCase();
@@ -3390,99 +5819,167 @@ if (page === "pre-consultation") {
     complaintText.includes("పొట్ట") ||
     complaintText.includes("पेट");
 
-  const questions = {
-    intro: {
-      question: t.preConsultationIntro,
-      field: "complaint",
-    },
+    const isFever =
+  complaintText.includes("fever") ||
+  complaintText.includes("temperature") ||
+  complaintText.includes("జ్వరం") ||
+  complaintText.includes("बुखार");
+const questions = {
+  intro: {
+    question: t.preConsultationIntro,
+    field: "complaint",
+  },
 
-    duration: {
-      question: t.preConsultationDuration,
-      field: "duration",
-    },
+  duration: {
+    question: t.preConsultationDuration,
+    field: "duration",
+  },
 
-    severity: {
-      question: t.preConsultationSeverity,
-      field: "severity",
-    },
+  severity: {
+    question: t.preConsultationSeverity,
+    field: "severity",
+  },
 
-    symptoms: {
-      question: isHeadache
-        ? "Are you having dizziness, vomiting, or vision changes?"
+  symptoms: {
+    question:
+      isHeadache
+        ? t.preConsultationHeadacheSymptoms
         : isCough
-        ? "Do you have fever, breathing difficulty, or chest pain?"
+        ? t.preConsultationCoughSymptoms
+        : isFever
+        ? t.preConsultationFeverSymptoms
         : isStomach
-        ? "Are you having vomiting, diarrhea, or fever?"
-        : t.preConsultationSymptoms,
-      field: "associatedSymptoms",
-    },
+        ? t.preConsultationStomachSymptoms
+        : t.preConsultationAssociatedSymptoms,
+    field: "associatedSymptoms",
+  },
 
-    history: {
-      question: t.preConsultationHistory,
-      field: "relevantHistory",
-    },
+  history: {
+    question: t.preConsultationHistory,
+    field: "relevantHistory",
+  },
 
-    medications: {
-      question: t.preConsultationMedications,
-      field: "medications",
-    },
+  medications: {
+    question: t.preConsultationMedications,
+    field: "medications",
+  },
 
-    allergies: {
-      question: t.preConsultationAllergies,
-      field: "allergies",
-    },
-  };
+  allergies: {
+    question: t.preConsultationAllergies,
+    field: "allergies",
+  },
 
-  const currentQuestion =
-    questions[preConsultationStep] || questions.intro;
+  familyHistory: {
+    question: t.preConsultationFamilyHistory,
+    field: "familyHistory",
+  },
+
+  personalHistory: {
+    question: t.preConsultationPersonalHistory,
+    field: "personalHistory",
+  },
+
+  reviewOfSystems: {
+    question: t.preConsultationReviewOfSystems,
+    field: "reviewOfSystems",
+  },
+
+  redFlags: {
+    question: t.preConsultationRedFlags,
+    field: "redFlags",
+  },
+};
+
+const currentQuestion =
+  questions[preConsultationStep] || questions.intro;
+    const clinicalQuestionOrder = [
+  "intro",
+  "duration",
+  "severity",
+  "symptoms",
+  "history",
+  "medications",
+  "allergies",
+  "familyHistory",
+  "personalHistory",
+  "reviewOfSystems",
+  "redFlags",
+];
+
+const currentQuestionNumber =
+  clinicalQuestionOrder.indexOf(preConsultationStep) + 1;
+
+const answeredClinicalQuestions =
+  clinicalQuestionOrder.filter(
+    (step) => preConsultationAnswers[questions[step]?.field]?.trim()
+  ).length;
+
+const clinicalProgress =
+  (currentQuestionNumber / clinicalQuestionOrder.length) * 100;
+
+    const replayCurrentQuestion = () => {
+  if (!currentQuestion?.question) return;
+
+  speakQuestion(
+    currentQuestion.question,
+    getSpeechLanguage()
+  );
+};
 
   const submitPreConsultationAnswer = () => {
     const answer = preConsultationInput.trim();
+    if (!answer) return;
 
-    if (!answer) {
-      return;
-    }
+   const field = currentQuestion.field;
 
-    const field = currentQuestion.field;
-
-    setPreConsultationAnswers((prev) => ({
-      ...prev,
-      [field]: answer,
-    }));
-
+if (preConsultationStep.startsWith("ayush")) {
+  setAyushAnswers((prev) => ({
+    ...prev,
+    [field]: answer,
+  }));
+} else {
+  setPreConsultationAnswers((prev) => ({
+    ...prev,
+    [field]: answer,
+  }));
+}
     setPreConsultationMessages((prev) => [
       ...prev,
-      {
-        role: "patient",
-        text: answer,
-      },
+      { role: "patient", text: answer },
     ]);
-
     setPreConsultationInput("");
+const nextStepMap = {
+  intro: "duration",
+  duration: "severity",
+  severity: "symptoms",
+  symptoms: "history",
+  history: "medications",
+  medications: "allergies",
+  allergies: "familyHistory",
+  familyHistory: "personalHistory",
+  personalHistory: "reviewOfSystems",
+  reviewOfSystems: "redFlags",
+  redFlags: ayushMode ? "ayushAssessment" : "summary",
+  ayushAssessment: "summary",
+};
+  
 
-    const nextStepMap = {
-      intro: "duration",
-      duration: "severity",
-      severity: "symptoms",
-      symptoms: "history",
-      history: "medications",
-      medications: "allergies",
-      allergies: "summary",
-    };
-
-    const nextStep =
-      nextStepMap[preConsultationStep];
-
-    if (nextStep === "summary") {
-      setPreConsultationStep("summary");
-      return;
-    }
-
-    setPreConsultationStep(nextStep);
+    const nextStep = nextStepMap[preConsultationStep];
+    setPreConsultationStep(nextStep || "summary");
   };
 
-  
- const generatePreConsultationSummary = () => {
+  const hasRedFlag = (text = "") => {
+    const value = text.toLowerCase();
+    const terms = [
+      "severe breathing", "difficulty breathing", "can't breathe", "cannot breathe",
+      "chest pain", "fainting", "unconscious", "seizure", "stroke",
+      "sudden weakness", "sudden numbness", "uncontrolled bleeding",
+      "coughing blood", "blood in vomit", "blood in stool",
+    ];
+    return terms.some((term) => value.includes(term));
+  };
+
+  const generatePreConsultationSummary = () => {
   const a = preConsultationAnswers;
 
   const historyText =
@@ -3515,27 +6012,304 @@ if (page === "pre-consultation") {
   return {
     complaint: a.complaint || "Not provided",
     duration: a.duration || "Not provided",
-    severity: a.severity
-      ? `${a.severity}/10`
-      : "Not provided",
-    pattern: a.pattern || "Not provided",
-    associatedSymptoms:
-      a.associatedSymptoms || "None reported",
-    relevantHistory: historyText,
+    severity: a.severity ? `${a.severity}/10` : "Not provided",
+    associatedSymptoms: a.associatedSymptoms || "None reported",
+    relevantHistory: a.relevantHistory || historyText,
+    pastSurgicalHistory: a.pastSurgicalHistory || "None reported",
     currentMedications: medicationText,
     allergies: a.allergies || "None reported",
-    patientDescription:
-      a.complaint || "Not provided",
+    familyHistory: a.familyHistory || "Not provided",
+    personalHistory: a.personalHistory || "Not provided",
+    reviewOfSystems: a.reviewOfSystems || "Not provided",
+    redFlags: a.redFlags || "Not reported",
+    redFlagDetected: hasRedFlag(a.redFlags) || hasRedFlag(a.associatedSymptoms),
+    patientDescription: a.complaint || "Not provided",
+    ayush: ayushMode
+  ? {
+      prakriti: ayushAnswers.prakriti || "Not provided",
+      vikriti: ayushAnswers.vikriti || "Not provided",
+      sara: ayushAnswers.sara || "Not provided",
+      samhanana: ayushAnswers.samhanana || "Not provided",
+      pramana: ayushAnswers.pramana || "Not provided",
+      satmya: ayushAnswers.satmya || "Not provided",
+      sattva: ayushAnswers.sattva || "Not provided",
+      aharaShakti: ayushAnswers.aharaShakti || "Not provided",
+      vyayamaShakti: ayushAnswers.vyayamaShakti || "Not provided",
+      vaya: ayushAnswers.vaya || "Not provided",
+      aharaVihara: ayushAnswers.aharaVihara || "Not provided",
+    }
+  : null,
   };
 };
+if (preConsultationStep === "ayushAssessment") {
+  const ayushQuestions = [
+    {
+      key: "prakriti",
+      label: "Prakriti",
+      question: "What is your natural body constitution or Prakriti?",
+      placeholder: "Describe your natural body type, habits, and tendencies...",
+    },
+    {
+      key: "vikriti",
+      label: "Vikriti",
+      question: "What changes or imbalances are you currently experiencing?",
+      placeholder: "Describe your current health changes or imbalances...",
+    },
+    {
+      key: "sara",
+      label: "Sara",
+      question:
+        "How would you describe the quality or strength of your body tissues?",
+      placeholder: "Describe your general tissue quality and strength...",
+    },
+    {
+      key: "samhanana",
+      label: "Samhanana",
+      question:
+        "How would you describe your body build and physical structure?",
+      placeholder: "Describe your body build and physical structure...",
+    },
+    {
+      key: "pramana",
+      label: "Pramana",
+      question:
+        "What are your height, weight, and general body proportions?",
+      placeholder: "Enter your height, weight, and body proportions...",
+    },
+    {
+      key: "satmya",
+      label: "Satmya",
+      question:
+        "What foods, routines, or habits suit your body well?",
+      placeholder:
+        "Describe foods, routines, climate, or habits that suit you...",
+    },
+    {
+      key: "sattva",
+      label: "Sattva",
+      question:
+        "How would you describe your mental and emotional state?",
+      placeholder:
+        "Describe your mood, stress, emotional stability, and mental state...",
+    },
+    {
+      key: "aharaShakti",
+      label: "Ahara Shakti",
+      question:
+        "How would you describe your appetite and digestive capacity?",
+      placeholder:
+        "Describe your appetite, digestion, and ability to eat...",
+    },
+    {
+      key: "vyayamaShakti",
+      label: "Vyayama Shakti",
+      question:
+        "How would you describe your physical activity capacity?",
+      placeholder:
+        "Describe your exercise tolerance and physical activity...",
+    },
+    {
+      key: "vaya",
+      label: "Vaya",
+      question:
+        "What is your age and how would you describe your current stage of life?",
+      placeholder:
+        "Enter your age and relevant life-stage information...",
+    },
+    {
+      key: "aharaVihara",
+      label: "Ahara & Vihara",
+      question:
+        "Tell us about your diet, daily routine, sleep, activity, and lifestyle.",
+      placeholder:
+        "Describe your food habits, sleep, exercise, daily routine, and lifestyle...",
+    },
+  ];
+
+  const currentAyushQuestion =
+    ayushQuestions[ayushQuestionIndex];
+
+  const isLastAyushQuestion =
+    ayushQuestionIndex === ayushQuestions.length - 1;
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-2xl px-5 py-8">
+
+        {/* BACK */}
+        <button
+          onClick={() => {
+            if (ayushQuestionIndex > 0) {
+              setAyushQuestionIndex((prev) => prev - 1);
+            } else {
+              setPreConsultationStep("redFlags");
+            }
+          }}
+          className="flex items-center gap-2 text-sm font-semibold text-teal-700"
+        >
+          <ArrowLeft size={18} />
+          Back
+        </button>
+
+        {/* HEADER */}
+        <div className="mt-8">
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-2xl">
+                🌿
+              </div>
+
+              <div>
+                <p className="text-xs font-bold tracking-wide text-teal-600">
+                  AYUSH HISTORY
+                </p>
+
+                <h1 className="mt-1 text-2xl font-bold">
+                  AYUSH Assessment
+                </h1>
+              </div>
+            </div>
+
+            <div className="text-sm font-bold text-slate-500">
+              {ayushQuestionIndex + 1} / {ayushQuestions.length}
+            </div>
+          </div>
+
+          {/* PROGRESS */}
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="h-full rounded-full bg-teal-600 transition-all duration-300"
+              style={{
+                width: `${
+                  ((ayushQuestionIndex + 1) /
+                    ayushQuestions.length) *
+                  100
+                }%`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* QUESTION CARD */}
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <p className="text-sm font-bold uppercase tracking-wide text-teal-600">
+            {currentAyushQuestion.label}
+          </p>
+
+          <h2 className="mt-3 text-xl font-bold leading-relaxed text-slate-900">
+            {currentAyushQuestion.question}
+          </h2>
+          <button
+  type="button"
+  onClick={() => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(
+        currentAyushQuestion.question
+      );
+
+      utterance.lang =
+        language === "te"
+          ? "te-IN"
+          : language === "hi"
+          ? "hi-IN"
+          : "en-IN";
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }}
+  className="mt-4 flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700"
+>
+  🔊 {t.readAloud}
+</button>
+
+          <textarea
+            value={
+              ayushAnswers[currentAyushQuestion.key] || ""
+            }
+            onChange={(e) =>
+              setAyushAnswers((prev) => ({
+                ...prev,
+                [currentAyushQuestion.key]:
+                  e.target.value,
+              }))
+            }
+            placeholder={currentAyushQuestion.placeholder}
+            rows={7}
+            className="mt-6 w-full rounded-2xl border border-slate-200 p-4 text-sm leading-6 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100"
+          />
+
+          {/* NAVIGATION */}
+          <div className="mt-6 flex items-center justify-between gap-3">
+
+            <button
+              type="button"
+              disabled={ayushQuestionIndex === 0}
+              onClick={() =>
+                setAyushQuestionIndex((prev) =>
+                  Math.max(0, prev - 1)
+                )
+              }
+              className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Previous
+            </button>
+
+            {!isLastAyushQuestion ? (
+              <button
+                type="button"
+                onClick={() =>
+                  setAyushQuestionIndex((prev) =>
+                    Math.min(
+                      ayushQuestions.length - 1,
+                      prev + 1
+                    )
+                  )
+                }
+                className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
+              >
+                Next →
+              </button>
+            ) : (
+              <button
+                type="button"
+               onClick={() => {
+  setPreConsultationAnswers((prev) => ({
+    ...prev,
+    ayushHistory: {
+      ...ayushAnswers,
+    },
+  }));
+
+  setPreConsultationStep("summary");
+}}
+                className="rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
+              >
+                Complete AYUSH Assessment
+              </button>
+            )}
+
+          </div>
+        </div>
+
+        {/* INFO */}
+        <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50 p-4">
+          <p className="text-sm leading-6 text-teal-800">
+            Your answers are saved automatically. Use
+            Previous to review and edit earlier answers.
+          </p>
+        </div>s
+
+      </main>
+    </div>
+  );
+}
 
   if (preConsultationStep === "summary") {
-    const summary =
-      generatePreConsultationSummary();
-
-    if (preConsultationSummary !== summary) {
-      setPreConsultationSummary(summary);
-    }
+    const summary = generatePreConsultationSummary();
 
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -3565,7 +6339,21 @@ if (page === "pre-consultation") {
             </p>
           </div>
 
-          <div className="mt-8 rounded-3xl border border-teal-100 bg-white p-6 shadow-sm">
+          <div className={`mt-8 rounded-2xl border p-4 ${
+            summary.redFlagDetected ? "border-red-200 bg-red-50" : "border-emerald-200 bg-emerald-50"
+          }`}>
+            <div className="flex items-center gap-2 font-bold">
+              <AlertCircle size={19} className={summary.redFlagDetected ? "text-red-600" : "text-emerald-600"} />
+              <span className={summary.redFlagDetected ? "text-red-700" : "text-emerald-700"}>
+                {summary.redFlagDetected ? "Urgent symptoms reported" : "No red-flag symptoms reported"}
+              </span>
+            </div>
+            <p className="mt-1 text-xs leading-5 text-slate-600">
+              This is a safety screen, not a diagnosis. A healthcare professional should review the information.
+            </p>
+          </div>
+
+          <div className="mt-5 rounded-3xl border border-teal-100 bg-white p-6 shadow-sm">
 
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
@@ -3582,15 +6370,136 @@ if (page === "pre-consultation") {
                 </p>
               </div>
             </div>
+<div className="mt-5 rounded-2xl border border-teal-100 bg-teal-50 p-4">
+  <div className="flex items-center justify-between gap-3">
+    <div>
+      <p className="font-bold text-teal-800">
+        Track new symptoms
+      </p>
+      <p className="mt-1 text-xs leading-5 text-teal-700">
+        Add symptoms that develop later so your healthcare professional can see how your condition changed over time.
+      </p>
+    </div>
+{symptomTimeline.length > 0 && (
+  <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+    <div className="flex items-center gap-3">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <Clock size={22} />
+      </div>
+
+      <div>
+        <h2 className="font-bold">
+          Symptom Timeline
+        </h2>
+
+        <p className="text-sm text-slate-500">
+          See how your symptoms developed over time.
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-6 space-y-4">
+      {[...symptomTimeline]
+        .sort(
+          (a, b) =>
+            new Date(a.startedAt) - new Date(b.startedAt)
+        )
+        .map((item, index) => (
+          <div
+            key={`${item.symptom}-${index}`}
+            className="relative rounded-2xl border border-slate-200 bg-slate-50 p-4"
+          >
+            <div className="flex items-start justify-between gap-4">
+
+              <div>
+                <p className="font-bold text-slate-800">
+                  {item.symptom}
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Started:{" "}
+                  {new Date(item.startedAt).toLocaleString()}
+                </p>
+
+                <p className="mt-1 text-xs text-slate-400">
+                  Reported:{" "}
+                  {new Date(item.recordedAt).toLocaleString()}
+                </p>
+              </div>
+
+              {item.severity && (
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                  {item.severity}
+                </span>
+              )}
+
+            </div>
+
+            {item.details && (
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {item.details}
+              </p>
+            )}
+          </div>
+        ))}
+    </div>
+
+  </div>
+)}
+    <button
+      onClick={() => {
+        setNewSymptom({
+          name: "",
+          startedAt: "",
+          severity: "",
+          details: ""
+        });
+        setPage("add-symptom");
+      }}
+      className="shrink-0 rounded-xl bg-teal-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-teal-700"
+    >
+      + Add Symptom
+    </button>
+  </div>
+</div>
+            <div className="mb-6 rounded-2xl border border-teal-200 bg-teal-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+               {t.demographicsTitle}
+              </p>
+
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs text-slate-500">{t.summaryPatientId}</p>
+                  <p className="font-semibold text-slate-800">
+                     {patientId || t.summaryNotAvailable}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-slate-500">{t.mobileNumber}</p>
+                  <p className="font-semibold text-slate-800">
+                    {phone || "Not available"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-slate-500">{t.summaryAbhaId}</p>
+                  <p className="font-semibold text-slate-800">
+                   {abhaId || t.summaryNotLinked}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-6 space-y-3">
 
   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Main Concern
+      {t.summaryMainConcern}
     </p>
     <p className="mt-1 font-semibold text-slate-800">
-      {preConsultationAnswers.complaint || "Not provided"}
+     {preConsultationAnswers.complaint || t.summaryNotProvided}
     </p>
   </div>
 
@@ -3598,7 +6507,7 @@ if (page === "pre-consultation") {
 
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Duration
+       {t.summaryDuration}
       </p>
       <p className="mt-1 text-sm font-semibold text-slate-800">
         {preConsultationAnswers.duration || "Not provided"}
@@ -3607,7 +6516,7 @@ if (page === "pre-consultation") {
 
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Severity
+        {t.summarySeverity}
       </p>
       <p className="mt-1 text-sm font-semibold text-slate-800">
         {preConsultationAnswers.severity
@@ -3620,15 +6529,91 @@ if (page === "pre-consultation") {
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Associated Symptoms
+      {t.summaryAssociatedSymptoms}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {preConsultationAnswers.associatedSymptoms || "Not provided"}
     </p>
   </div>
+  {/* AYUSH HISTORY SUMMARY */}
+{Object.values(ayushAnswers).some(
+  (answer) => answer && answer.trim()
+) && (
+  <div className="mt-6 rounded-3xl border border-teal-200 bg-teal-50 p-5">
+
+    <div className="flex items-center gap-3">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-teal-600">
+        🌿
+      </div>
+
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wide text-teal-600">
+          {t.summaryAyushHistory}
+        </p>
+
+        <h2 className="mt-1 font-bold text-teal-900">
+         {t.summaryDashavidhaLifestyle}
+        </h2>
+
+        <p className="mt-1 text-xs text-teal-700">
+         {t.summaryAyushAssessmentInfo}
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-5 space-y-3">
+
+      {[
+        ["Prakriti", ayushAnswers.prakriti],
+        ["Vikriti", ayushAnswers.vikriti],
+        ["Sara", ayushAnswers.sara],
+        ["Samhanana", ayushAnswers.samhanana],
+        ["Pramana", ayushAnswers.pramana],
+        ["Satmya", ayushAnswers.satmya],
+        ["Sattva", ayushAnswers.sattva],
+        ["Ahara Shakti", ayushAnswers.aharaShakti],
+        ["Vyayama Shakti", ayushAnswers.vyayamaShakti],
+        ["Vaya", ayushAnswers.vaya],
+        ["Ahara & Vihara", ayushAnswers.aharaVihara],
+      ].map(([label, value]) => (
+        <div
+          key={label}
+          className="rounded-2xl border border-teal-100 bg-white p-4"
+        >
+          <p className="text-xs font-bold uppercase tracking-wide text-teal-600">
+            {label}
+          </p>
+
+          <p className="mt-1 text-sm leading-6 text-slate-700">
+            {value || "Not provided"}
+          </p>
+        </div>
+      ))}
+
+    </div>
+
+    <div className="mt-4 rounded-2xl border border-teal-100 bg-white p-4">
+      <p className="text-xs leading-5 text-slate-500">
+        This information was provided by the patient during the
+        optional AYUSH assessment. It should be reviewed by a
+        qualified healthcare professional.
+      </p>
+    </div>
+
+  </div>
+)}
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Relevant Medical History
+      {t.summaryPastSurgicalHistory}
+    </p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {preConsultationAnswers.pastSurgicalHistory || "None reported"}
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+     {t.summaryRelevantMedicalHistory}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {preConsultationAnswers.relevantHistory || "Not provided"}
@@ -3637,7 +6622,7 @@ if (page === "pre-consultation") {
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Current Medications
+      {t.summaryCurrentMedications}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {medications.length > 0
@@ -3657,38 +6642,169 @@ if (page === "pre-consultation") {
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Known Allergies
+     {t.summaryKnownAllergies}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
-      {preConsultationAnswers.allergies || "None reported"}
+      {preConsultationAnswers.allergies || t.summaryNoneReported}
     </p>
   </div>
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+   {t.summaryFamilyHistory}
+  </p>
+
+  <p className="mt-1 text-sm leading-6 text-slate-700">
+  {preConsultationAnswers.familyHistory || t.summaryNotProvided}
+  </p>
+</div>
+<div className="rounded-2xl border border-slate-200 bg-white p-4">
+  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+   {t.summaryPersonalHistory}
+  </p>
+
+  <p className="mt-1 text-sm leading-6 text-slate-700">
+  {preConsultationAnswers.personalHistory || t.summaryNotProvided}
+  </p>
+</div>
+<div className="rounded-2xl border border-slate-200 bg-white p-4">
+  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+    {t.summaryReviewOfSystems}
+  </p>
+
+  <p className="mt-1 text-sm leading-6 text-slate-700">
+   {preConsultationAnswers.reviewOfSystems || t.summaryNotProvided}
+  </p>
+</div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-      Patient's Description
+      {t.summaryPatientDescription}
     </p>
     <p className="mt-1 text-sm leading-6 text-slate-700">
       {preConsultationAnswers.complaint || "Not provided"}
     </p>
   </div>
-
   <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4">
-    <div className="flex items-center gap-2 text-sm font-bold text-teal-700">
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-white">
-        ✓
-      </span>
-      Ready for Healthcare Professional Review
-    </div>
+  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+   {t.summaryHpi}
+  </p>
 
-    <p className="mt-2 text-xs font-semibold text-teal-700">
-      AI-assisted history
+  <div className="mt-3 space-y-2 text-sm text-slate-700">
+    <p>
+      <span className="font-semibold">{t.summaryChiefComplaint}:</span>{" "}
+      {preConsultationAnswers.complaint || "Not provided"}
     </p>
 
-    <p className="mt-2 text-xs leading-5 text-slate-600">
-      This summary organizes information provided by the patient. It is not a diagnosis.
+    <p>
+     <span className="font-semibold">{t.summaryDuration}:</span>{" "}
+   {preConsultationAnswers.duration || t.summaryNotProvided}
+    </p>
+
+    <p>
+    <span className="font-semibold">{t.summarySeverity}:</span>{" "}
+      {preConsultationAnswers.severity
+        ? `${preConsultationAnswers.severity}/10`
+        : t.summaryNotProvided}
+    </p>
+
+    <p>
+      <span className="font-semibold">{t.summaryAssociatedSymptoms}:</span>{" "}
+     {preConsultationAnswers.associatedSymptoms || t.summaryNoneReported}
+    </p>
+
+    <p>
+   <span className="font-semibold">{t.summaryRelevantHistory}:</span>{" "}
+      {preConsultationAnswers.relevantHistory || t.summaryNotProvided}xl
     </p>
   </div>
+</div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Family History</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.familyHistory || "Not provided"}</p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Personal History</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.personalHistory || "Not provided"}</p>
+  </div>
+
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Review of Systems</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">{preConsultationAnswers.reviewOfSystems || "Not provided"}</p>
+  </div>
+
+  <div className={`rounded-2xl border p-4 ${
+    hasRedFlag(preConsultationAnswers.redFlags) || hasRedFlag(preConsultationAnswers.associatedSymptoms)
+      ? "border-red-200 bg-red-50"
+      : "border-emerald-200 bg-emerald-50"
+  }`}>
+    <p className={`text-xs font-semibold uppercase tracking-wide ${
+      hasRedFlag(preConsultationAnswers.redFlags) || hasRedFlag(preConsultationAnswers.associatedSymptoms)
+        ? "text-red-600" : "text-emerald-700"
+    }`}>Safety / Red-Flag Check</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">
+      {preConsultationAnswers.redFlags || "Not reported"}
+    </p>
+    {(hasRedFlag(preConsultationAnswers.redFlags) || hasRedFlag(preConsultationAnswers.associatedSymptoms)) && (
+      <p className="mt-3 font-bold text-red-700">Emergency symptoms reported — seek urgent medical attention and alert healthcare staff.</p>
+    )}
+  </div>
+
+  <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4">
+  <div className="flex items-center gap-2 text-sm font-bold text-teal-700">
+    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-white">
+      ✓
+    </span>
+    {t.aiClinicalSummaryDraft}
+  </div>
+
+  <p className="mt-2 text-xs font-semibold text-teal-700">
+    {t.aiAssistedHistory}
+  </p>
+  <p className="mt-2 text-xs font-bold text-slate-700">
+  {t.status}:
+  {aiSummaryStatus === "draft"
+    ? t.draft
+    : aiSummaryStatus === "editing"
+    ? t.editing
+    : aiSummaryStatus === "confirmed"
+    ? t.confirmed
+    : t.correctionRequested}
+</p>
+<div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+  <button
+    onClick={() => {
+      setAiSummaryStatus("editing");
+    }}
+    className="rounded-xl border border-teal-300 bg-white px-3 py-2 text-xs font-bold text-teal-700"
+  >
+   {t.edit}
+  </button>
+
+  <button
+    onClick={() => {
+      setAiSummaryStatus("confirmed");
+    }}
+    className="rounded-xl bg-teal-600 px-3 py-2 text-xs font-bold text-white"
+  >
+   {t.acceptConfirm}
+  </button>
+
+  <button
+    onClick={() => {
+      setAiSummaryStatus("correction-requested");
+    }}
+    className="rounded-xl border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-600"
+  >
+   {t.rejectCorrection}
+  </button>
+</div>
+
+  <p className="mt-2 text-xs leading-5 text-slate-600">
+  {t.aiSummaryDisclaimer}
+</p>
+</div>
 
   <div className="rounded-2xl border border-slate-200 bg-white p-4">
     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -3718,15 +6834,129 @@ if (page === "pre-consultation") {
   </div>
 
 </div>
+{summary.ayush && (
+  <div className="mt-6 rounded-3xl border border-teal-200 bg-teal-50 p-6">
+    <div className="flex items-center gap-3">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-teal-600">
+        🌿
+      </div>
 
+      <div>
+        <h2 className="font-bold text-teal-800">
+          {t.ayushDashavidhaTitle}
+        </h2>
+        <p className="text-sm text-teal-700">
+         {t.ayurvedicClinicalAssessment}
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryPrakriti}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.prakriti}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryVikriti}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.vikriti}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summarySara}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.sara}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summarySamhanana}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.samhanana}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryPramana}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.pramana}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summarySatmya}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.satmya}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summarySattva}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.sattva}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryAharaShakti}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.aharaShakti}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryVyayamaShakti}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.vyayamaShakti}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">{t.summaryVaya}</p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.vaya}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4 sm:col-span-2">
+        <p className="text-xs font-semibold text-slate-500">
+          {t.summaryAharaVihara}
+        </p>
+        <p className="mt-1 text-sm font-semibold">
+          {summary.ayush.aharaVihara}
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
             <p className="mt-4 text-xs leading-5 text-slate-500">
               {t.preConsultationDisclaimer}
             </p>
 
             <button
-              onClick={() =>
-                setPage("patient-dashboard")
-              }
+              onClick={() => {
+  const complaint =
+    preConsultationAnswers.complaint || "Pre-Consultation";
+
+  setSavedConsultations((prev) => [
+    ...prev,
+    {
+      id: `preconsult-${Date.now()}`,
+      date: new Date().toISOString(),
+      title: complaint,
+      notes: preConsultationSummary || "Pre-consultation completed.",
+      medication: preConsultationAnswers.medications || "",
+    },
+  ]);
+
+  setPage("patient-dashboard");
+}}
               className="mt-6 w-full rounded-xl bg-teal-600 py-3.5 font-bold text-white hover:bg-teal-700"
             >
               {t.done}
@@ -3766,45 +6996,59 @@ if (page === "pre-consultation") {
           <p className="mt-2 text-sm leading-6 text-slate-500">
             {t.preConsultationDescription}
           </p>
+          
+   
 
-        </div>
-
-        {/* QUESTION */}
+   
+ {/* QUESTION */}
         <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">
             AROVIA
           </p>
+<div className="mb-5">
+  <div className="flex items-center justify-between text-sm font-semibold text-slate-600">
+    <span>
+    {t.questionProgress} {currentQuestionNumber} {t.ofText} {clinicalQuestionOrder.length}
+    </span>
 
+    <span>
+     {t.answered} {answeredClinicalQuestions}/{clinicalQuestionOrder.length}
+    </span>
+  </div>
+
+  <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+    <div
+      className="h-full rounded-full bg-teal-600 transition-all duration-300"
+      style={{ width: `${clinicalProgress}%` }}
+    />
+  </div>
+
+  <p className="mt-2 text-xs text-slate-500">
+   {Math.round(clinicalProgress)}% {t.complete}
+  </p>
+</div>
           <h2 className="mt-3 text-xl font-bold leading-8">
             {currentQuestion.question}
           </h2>
+          <button
+  type="button"
+  onClick={() => {
+    if (currentQuestion?.question) {
+      speakQuestion(
+        currentQuestion.question,
+        getSpeechLanguage()
+      );
+    }
+  }}
+  className="mt-4 flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700"
+>
+  🔊 Read Aloud
+</button>
 
         </div>
 
-        {/* CONVERSATION */}
-        {preConsultationMessages.length > 0 && (
-          <div className="mt-5 space-y-3">
-
-            {preConsultationMessages.map(
-              (message, index) => (
-                <div
-                  key={index}
-                  className="rounded-2xl bg-teal-50 p-4 text-sm leading-6 text-slate-700"
-                >
-                  <p className="text-xs font-semibold text-teal-700">
-                    {t.you}
-                  </p>
-
-                  <p className="mt-1">
-                    {message.text}
-                  </p>
-                </div>
-              )
-            )}
-
-          </div>
-        )}
+        
 
         {/* INPUT */}
         <div className="mt-auto pt-8">
@@ -3829,49 +7073,262 @@ if (page === "pre-consultation") {
               rows={3}
               className="w-full resize-none bg-transparent p-2 text-sm outline-none"
             />
+          
+            
+            {/* MEDICINE PHOTO / PRESCRIPTION UPLOAD */}
+{preConsultationStep === "medications" && (
+  <div className="mt-3 rounded-xl border border-teal-200 bg-teal-50 p-3">
+
+    <p className="text-sm font-semibold text-teal-800">
+      {t.medicineNameUnknown}
+    </p>
+
+    <p className="mt-1 text-xs text-teal-700">
+      {t.medicinePhotoInstruction}
+    </p>
+
+    <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-teal-300 bg-white px-4 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-50">
+      📷
+    {t.takePhotoUpload}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+
+          if (file) {
+  setMedicinePhoto(file);
+
+  setPreConsultationInput(
+    `${preConsultationInput}${preConsultationInput ? "\n" : ""}📷 Medicine photo attached: ${file.name}`
+  );
+}
+        }}
+      />
+    </label>
+    {medicinePhoto && (
+  <div className="mt-3 flex items-center justify-between rounded-xl bg-white p-3">
+    <div className="flex items-center gap-2">
+      <span className="text-lg">📷</span>
+      <span className="text-xs font-semibold text-slate-700">
+        {medicinePhoto.name}
+      </span>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setMedicinePhoto(null)}
+      className="text-xs font-semibold text-red-600 hover:text-red-700"
+    >
+      {t.remove}
+    </button>
+  </div>
+)}
+
+  </div>
+)}
 
             <div className="mt-2 flex gap-3">
 
-              <button
-                onClick={startPreConsultationVoice}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
-                  listening
-                    ? "bg-red-500 text-white"
-                    : "bg-teal-600 text-white hover:bg-teal-700"
-                }`}
-              >
-                <Mic size={20} />
-                {listening
-                  ? (
-                    t.aroviaListening ||
-                    "AROVIA is listening..."
-                  )
-                  : (
-                    t.startSpeaking ||
-                    "Start Speaking"
-                  )}
-              </button>
+  {/* PREVIOUS */}
+  <button
+    onClick={() => {
+      const currentIndex =
+        clinicalQuestionOrder.indexOf(preConsultationStep);
 
-              <button
-                onClick={submitPreConsultationAnswer}
-                className="flex-1 rounded-xl border-2 border-teal-600 bg-white py-3 font-semibold text-teal-700 hover:bg-teal-50"
-              >
-                {t.continue}
-              </button>
+      if (currentIndex > 0) {
+        const previousStep =
+          clinicalQuestionOrder[currentIndex - 1];
 
-            </div>
+        setPreConsultationStep(previousStep);
+
+        const previousField =
+          questions[previousStep]?.field;
+
+        setPreConsultationInput(
+          preConsultationAnswers[previousField] || ""
+        );
+      }
+    }}
+    disabled={
+      clinicalQuestionOrder.indexOf(preConsultationStep) === 0
+    }
+    className="flex-1 rounded-xl border-2 border-slate-300 bg-white py-3 font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    Previous
+  </button>
+
+  {/* SPEAK */}
+  <button
+    onClick={startPreConsultationVoice}
+    className={`flex-1 items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
+      listening
+        ? "bg-red-500 text-white"
+        : "bg-teal-600 text-white hover:bg-teal-700"
+    }`}
+  >
+    <Mic size={20} />
+    {listening
+      ? (t.aroviaListening || "AROVIA is listening...")
+      : (t.startSpeaking || "Start Speaking")}
+  </button>
+
+  {/* NEXT */}
+  <button
+    onClick={submitPreConsultationAnswer}
+    className="flex-1 rounded-xl border-2 border-teal-600 bg-white py-3 font-semibold text-teal-700 hover:bg-teal-50"
+  >
+    {t.continue || "Next"}
+  </button>
+
+</div>
 
           </div>
 
         </div>
-
+</div>
       </main>
     </div>
   );
 }
 
+if (page === "emergency-access") {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="mx-auto w-full max-w-4xl px-6 py-8">
 
-  
+        <button
+          onClick={() => setPage("patient-dashboard")}
+          className="mb-6 text-sm font-semibold text-teal-600"
+        >
+         {t.emergencyBackDashboard}
+        </button>
+
+        <div className="rounded-3xl bg-white p-6 shadow-sm">
+
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-600">
+              <AlertCircle size={24} />
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-bold">
+               {t.emergencyAccessSettings}
+              </h1>
+              <p className="text-sm text-slate-500">
+               {t.emergencyAccessDescription} 
+              </p>
+            </div>
+          </div>
+
+          {/* ACCESS STATUS */}
+          <div className="mt-7 rounded-2xl border border-teal-200 bg-teal-50 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+                {t.emergencyAccessLabel}
+                </p>
+
+                <p className="mt-1 font-bold text-slate-800">
+                 {t.enabled}
+                </p>
+
+                <p className="mt-1 text-xs text-slate-600">
+                  {t.emergencyCriticalInfo}
+                </p>
+              </div>
+
+              <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-bold text-teal-700">
+               {t.active}
+              </span>
+            </div>
+          </div>
+
+          {/* CRITICAL INFORMATION */}
+          <div className="mt-6">
+            <h2 className="font-bold text-slate-800">
+              {t.criticalInfoAvailable}
+            </h2>
+
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs text-slate-500">
+                  {t.bloodGroup}
+                </p>
+                <p className="mt-1 font-semibold">
+                 {t.notAvailable}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs text-slate-500">
+                 {t.allergies}
+                </p>
+                <p className="mt-1 font-semibold">
+                {t.noKnownAllergies}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs text-slate-500">
+                 {t.medications}
+                </p>
+                <p className="mt-1 font-semibold">
+                {t.notAvailable}
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ACCESS CONTROL */}
+          <div className="mt-6 rounded-2xl border border-slate-200 p-5">
+            <h2 className="font-bold text-slate-800">
+              {t.accessControl}
+            </h2>
+
+            <p className="mt-1 text-xs text-slate-500">
+            {t.emergencyAccessIntended}
+            </p>
+
+            <button
+              onClick={() => {
+                setEmergencyStatus(
+                  emergencyStatus === "Enabled" ? "Disabled" : "Enabled"
+                );
+              }}
+              className="mt-4 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50"
+            >
+              {emergencyStatus === "Enabled"
+  ? t.disableEmergencyAccess
+  : t.enableEmergencyAccess}
+            </button>
+
+            <p className="mt-2 text-xs text-slate-500">
+              {t.currentStatus}: {emergencyStatus}
+            </p>
+          </div>
+
+          {/* ACCESS EVENT */}
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <p className="text-sm font-bold text-slate-800">
+             {t.recentAccessEvent}
+            </p>
+
+            <p className="mt-2 text-sm text-slate-600">
+              {emergencyAccessEvent ||
+                t.noEmergencyAccessEvent}
+            </p>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
   // ==================================================
   // PATIENT DASHBOARD
   // ==================================================
@@ -3891,7 +7348,7 @@ if (page === "pre-consultation") {
     </p>
 
     <h1 className="mt-1 text-2xl font-bold text-slate-900">
-      Demo Patient
+     {patientDemographics.name || t.summaryNotProvided}
     </h1>
   </div>
 
@@ -4019,13 +7476,9 @@ if (page === "pre-consultation") {
                   setPreConsultationStep("intro");
                   setPreConsultationInput("");
                   setPreConsultationAnswers({
-                    complaint: "",
-                    duration: "",
-                    severity: "",
-                  
-                    relevantHistory: "",
-                    medications: "",
-                    allergies: "",
+                    complaint: "", duration: "", severity: "", associatedSymptoms: "",
+                    relevantHistory: "", pastSurgicalHistory: "", medications: "", allergies: "",
+                    familyHistory: "", personalHistory: "", reviewOfSystems: "", redFlags: "",
                   });
                   setPreConsultationMessages([]);
                   setPreConsultationSummary("");
@@ -4038,11 +7491,11 @@ if (page === "pre-consultation") {
                 </div>
 
                 <h3 className="mt-4 font-bold">
-                  {t.preConsultation}
+                  AI Clinical Interview
                 </h3>
 
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  {t.preConsultationDescription}
+                  Guided history with adaptive questions, voice/text input and safety screening.
                 </p>
               </button>
 
@@ -4091,6 +7544,24 @@ if (page === "pre-consultation") {
                 </p>
 
               </button>
+              {/* PATIENT DEMOGRAPHICS */}
+
+<button
+  onClick={() => setPage("patient-demographics")}
+  className="rounded-2xl border border-teal-200 bg-white p-5 text-left shadow-sm transition hover:border-teal-400 hover:bg-teal-50"
+>
+  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+    <User size={22} />
+  </div>
+
+  <h3 className="mt-4 font-bold text-slate-800">
+    My Demographics
+  </h3>
+
+  <p className="mt-1 text-xs leading-5 text-slate-500">
+    Manage your personal, lifestyle, menstrual and obstetric health information.
+  </p>
+</button>
 
               {/* SYMPTOM CHECKER */}
 
@@ -4111,6 +7582,64 @@ if (page === "pre-consultation") {
                   {t.checkYourSymptoms}
                 </p>
 
+                            </button>
+                            {/* AYUSH HISTORY */}
+
+<button
+  onClick={() => {
+  setAyushLanding(true);
+  setPage("ayush-history");
+}}
+  className="rounded-2xl border border-teal-200 bg-teal-50 p-5 text-left shadow-sm transition hover:border-teal-400"
+>
+  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-teal-600">
+    🌿
+  </div>
+
+  <h3 className="mt-4 font-bold text-teal-800">
+    {t.ayushHistory}
+  </h3>
+
+  <p className="mt-1 text-xs leading-5 text-teal-700">
+    {t.ayushHistoryDescription}
+  </p>
+</button>
+{/* SETTINGS */}
+
+<button
+  onClick={() => setPage("settings")}
+  className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-teal-400 hover:bg-teal-50"
+>
+  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+    ⚙️
+  </div>
+
+  <h3 className="mt-4 font-bold text-slate-800">
+    {t.settings}
+  </h3>
+
+  <p className="mt-1 text-xs leading-5 text-slate-500">
+    {t.settingsDescription}
+  </p>
+</button>
+
+              {/* EMERGENCY ACCESS */}
+
+              <button
+                onClick={() => setPage("emergency-access")}
+                className="rounded-2xl border border-red-200 bg-red-50 p-5 text-left shadow-sm transition hover:border-red-400"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-red-600">
+                  <AlertCircle size={22} />
+                </div>
+
+                <h3 className="mt-4 font-bold text-red-700">
+                  Emergency Access
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-600">
+                  Control emergency access to your critical health information.
+                </p>
               </button>
 
             </div>
@@ -4128,7 +7657,7 @@ if (page === "pre-consultation") {
             className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-teal-600 bg-white py-3.5 font-semibold text-teal-700 hover:bg-teal-50"
           >
             <LogOut size={18} />
-            Log Out
+           {t.logout}
           </button>
 
         </main>
@@ -4205,7 +7734,23 @@ if (page === "pre-consultation") {
       </div>
     );
   }
+{/* EMERGENCY ACCESS */}
 
+<button
+  onClick={() => setPage("emergency-access")}
+  className="rounded-2xl border border-red-200 bg-red-50 p-5 text-left shadow-sm transition hover:border-red-400"
+>
+  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-red-600">
+    <AlertCircle size={22} />
+  </div>
+<h3 className="mt-4 font-bold text-red-700">
+  {t.emergencyAccessSettings}
+</h3>
+
+<p className="mt-1 text-xs leading-5 text-slate-600">
+{t.emergencyAccessDescription}
+</p>
+</button>
   // ==================================================
   // HOME / LANDING PAGE
   // ==================================================
@@ -4222,7 +7767,7 @@ if (page === "pre-consultation") {
           </div>
 
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-teal-700">
-            AROVIA
+            {t.aroviaLabel}
           </h1>
 
           <p className="mt-2 text-base text-slate-600">
@@ -4294,7 +7839,7 @@ if (page === "pre-consultation") {
 
           {listening && (
             <p className="mt-2 text-center text-sm font-medium text-red-500">
-              Listening...
+              {t.listening}
             </p>
           )}
 
@@ -4317,18 +7862,7 @@ if (page === "pre-consultation") {
 
           </button>
 
-          <button
-            onClick={() => setPage("doctor-login")}
-            className="flex w-full items-center gap-4 rounded-2xl border-2 border-teal-600 bg-white p-5 text-left text-teal-700 shadow-sm transition hover:bg-teal-50"
-          >
 
-            <Stethoscope size={24} />
-
-            <span className="text-lg font-semibold">
-              {t.doctor}
-            </span>
-
-          </button>
 
         </section>
 
